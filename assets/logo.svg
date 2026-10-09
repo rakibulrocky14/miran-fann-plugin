@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="420" height="420" viewBox="-13.7 -46.2 420 420">
+<!-- SVG created with Arrow, by QuiverAI (https://quiver.ai) -->
+  <defs>
+    <path id="leftFrame" d="m195.4 98.7c-18.8-18.4-36.6-40-55.1-55.2-14.4-11.8-29.7-18.3-45.3-18.1-13.2-0.8-24.8 2-34.1 9.4-17.9 14-26.6 36.5-31.5 60.3-4.6 24.7-5.6 52.7-5.5 79.8l0.3 25.6c0.1 25.1 3.6 45.9 11.6 63.6 8.3 18.6 19 29.7 36.4 35.4 11 3.7 26.5 4 37.7 0.6 19.9-6.1 35.4-19.7 50.5-32.6l38.1-32.4-56.5 43.3c-7.3 5.6-14.9 9.3-22.2 6.6-9.4-3.4-15.9-13.6-20.7-23.4-8.4-17-10.7-36.9-11-55.6-0.6-27.2-0.3-50.7 0.4-74.1 0.5-22.1 1.6-38.7 7.8-51.6 6.3-13.2 16.9-24.8 30-25.7 12.1-1.2 23.3 7 37.1 19.6z"/>
+    <path id="rightFrame" d="m195.4 98.7c14.9-12.3 29.9-28 44.9-43.6 19.6-20.4 39.6-31.9 63.3-29.7 17.6 0.6 29.8 8.4 40.3 21.7 11.9 15.5 19 36.6 22.2 61.2 2 14.8 2.7 28.8 2.6 44l-0.1 47.1c-0.1 23.2-3 42.8-11.1 62.2-7.6 18-19.2 32.9-37.1 38.2-16 5.1-33.3 2.1-46.5-4.5-22.1-11.1-46.8-33.4-75.4-60.2l42.6 37.2c10.8 9.3 19.1 14.5 27.3 12.7 10.7-1.9 20-17.6 25.8-30.9 8-18.4 9.4-38.6 9.6-60.4v-48c0-23-2.5-44-9.7-61.7-4.9-11.6-11.7-22.4-19.7-26.6-9.6-5.2-17.8 0.1-27 7.5-14.8 12.1-32.6 28.2-47.8 37.2z"/>
+    <path id="ribbon" d="m88.5 131.9c0.5-22.1 1.6-38.7 7.8-51.6 6.3-13.2 16.9-24.8 30-25.7 12.1-1.2 23.3 7 37.1 19.6l32 24.5c30.2 30 64.8 66.7 108.2 109.1-0.9 17.6-2.7 30.9-9.4 46.3-5.8 13.3-15.1 29-25.8 30.9-8.2 1.8-16.5-3.4-27.3-12.7l-42.6-37.2c-36.8-32.9-76-70.8-110-103.2z"/>
+    <path id="leftOpening" d="m88.5 131.9c34 32.4 73.2 70.3 110 103.2l-56.5 43.3c-7.3 5.6-14.9 9.3-22.2 6.6-9.4-3.4-15.9-13.6-20.7-23.4-8.4-17-10.7-36.9-11-55.6-0.6-27.2-0.3-50.7 0.4-74.1z"/>
+    <path id="rightOpening" d="m195.4 98.7 4.2 3.4c15.2-9 33-25.1 47.8-37.2 9.2-7.4 17.4-12.7 27-7.5 8 4.2 14.8 15 19.7 26.6 7.2 17.7 9.7 38.7 9.7 61.7v48c-0.1 5-0.1 9.6-0.2 14.1-43.4-42.4-78-79.1-108.2-109.1z"/>
+    <clipPath id="clipLeft">
+      <use xlink:href="#leftFrame"/>
+    </clipPath>
+    <clipPath id="clipRight">
+      <use xlink:href="#rightFrame"/>
+    </clipPath>
+    <clipPath id="clipRibbon">
+      <use xlink:href="#ribbon"/>
+    </clipPath>
+    <linearGradient id="leftPaint" x1="80" x2="89" y1="25" y2="302" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#95bafe" offset="0"/>
+      <stop stop-color="#9bbfff" offset=".19"/>
+      <stop stop-color="#a2c2fa" offset=".37"/>
+      <stop stop-color="#b1cdfe" offset=".55"/>
+      <stop stop-color="#b9d2fe" offset=".7"/>
+      <stop stop-color="#bed5fe" offset=".84"/>
+      <stop stop-color="#dce9ff" offset="1"/>
+    </linearGradient>
+    <linearGradient id="leftAcross" x1="24" x2="96" y1="170" y2="170" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7996ca" stop-opacity=".26" offset="0"/>
+      <stop stop-color="#ffffff" stop-opacity=".21" offset=".08"/>
+      <stop stop-color="#ffffff" stop-opacity=".08" offset=".31"/>
+      <stop stop-color="#9fb4d7" stop-opacity="0" offset=".63"/>
+      <stop stop-color="#7086ae" stop-opacity=".16" offset=".9"/>
+      <stop stop-color="#d7dadf" stop-opacity="0" offset="1"/>
+    </linearGradient>
+    <radialGradient id="leftCrown" cx="0" cy="0" r="1" gradientTransform="translate(79 46) rotate(25) scale(42 20)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#eff5ff" stop-opacity=".48" offset="0"/>
+      <stop stop-color="#e2ecff" stop-opacity=".31" offset=".59"/>
+      <stop stop-color="#deeaff" stop-opacity="0" offset="1"/>
+    </radialGradient>
+    <radialGradient id="leftReflection" cx="0" cy="0" r="1" gradientTransform="translate(43 124) rotate(5) scale(14 86)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f1f6ff" stop-opacity=".37" offset="0"/>
+      <stop stop-color="#ebf2ff" stop-opacity=".2" offset=".58"/>
+      <stop stop-color="#eaf1ff" stop-opacity="0" offset="1"/>
+    </radialGradient>
+    <radialGradient id="leftBlue" cx="0" cy="0" r="1" gradientTransform="translate(144 58) rotate(38) scale(47 24)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6899f5" stop-opacity=".46" offset="0"/>
+      <stop stop-color="#699cfb" stop-opacity=".23" offset=".58"/>
+      <stop stop-color="#6b9efd" stop-opacity="0" offset="1"/>
+    </radialGradient>
+    <radialGradient id="leftGold" cx="0" cy="0" r="1" gradientTransform="translate(107 288) rotate(-13) scale(70 51)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#eaf2ff" stop-opacity=".76" offset="0"/>
+      <stop stop-color="#dfeaff" stop-opacity=".46" offset=".55"/>
+      <stop stop-color="#dae7ff" stop-opacity="0" offset="1"/>
+    </radialGradient>
+    <linearGradient id="leftInnerShade" x1="89" x2="89" y1="53" y2="276" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#598ef2" stop-opacity=".46" offset="0"/>
+      <stop stop-color="#6d99ec" stop-opacity=".47" offset=".35"/>
+      <stop stop-color="#8699bd" stop-opacity=".21" offset=".66"/>
+      <stop stop-color="#90b7fd" stop-opacity=".34" offset="1"/>
+    </linearGradient>
+    <linearGradient id="rightPaint" x1="303" x2="328" y1="25" y2="303" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#eda0b9" offset="0"/>
+      <stop stop-color="#f7afc7" offset=".13"/>
+      <stop stop-color="#ee91b1" offset=".3"/>
+      <stop stop-color="#f088ad" offset=".43"/>
+      <stop stop-color="#ef91b2" offset=".55"/>
+      <stop stop-color="#f2a2bc" offset=".68"/>
+      <stop stop-color="#f4adc4" offset=".8"/>
+      <stop stop-color="#fec0d4" offset=".93"/>
+      <stop stop-color="#ffcddc" offset="1"/>
+    </linearGradient>
+    <linearGradient id="rightAcross" x1="301" x2="369" y1="160" y2="160" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#dd6694" stop-opacity=".25" offset="0"/>
+      <stop stop-color="#ed7ea7" stop-opacity=".11" offset=".22"/>
+      <stop stop-color="#fdf1f4" stop-opacity=".06" offset=".62"/>
+      <stop stop-color="#feeff4" stop-opacity=".22" offset=".9"/>
+      <stop stop-color="#df7b9f" stop-opacity=".3" offset="1"/>
+    </linearGradient>
+    <radialGradient id="rightCrown" cx="0" cy="0" r="1" gradientTransform="translate(307 46) rotate(15) scale(43 38)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fcdee7" stop-opacity=".4" offset="0"/>
+      <stop stop-color="#fcd9e3" stop-opacity=".24" offset=".52"/>
+      <stop stop-color="#fcd2df" stop-opacity="0" offset="1"/>
+    </radialGradient>
+    <linearGradient id="rightInnerShade" x1="301" x2="301" y1="60" y2="284" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e483a5" stop-opacity=".24" offset="0"/>
+      <stop stop-color="#dd6392" stop-opacity=".43" offset=".32"/>
+      <stop stop-color="#e26f9a" stop-opacity=".49" offset=".63"/>
+      <stop stop-color="#ec92b1" stop-opacity=".19" offset="1"/>
+    </linearGradient>
+    <linearGradient id="ribbonPaint" x1="90" x2="296" y1="99" y2="231" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c4d9fe" offset="0"/>
+      <stop stop-color="#d3d3fe" offset=".24"/>
+      <stop stop-color="#e3c8fe" offset=".47"/>
+      <stop stop-color="#fdc7f8" offset=".7"/>
+      <stop stop-color="#ffcfde" offset="1"/>
+    </linearGradient>
+    <radialGradient id="ribbonSheen" cx="0" cy="0" r="1" gradientTransform="translate(137 96) rotate(43) scale(59 24)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f5f9ff" stop-opacity=".75" offset="0"/>
+      <stop stop-color="#f0f5ff" stop-opacity=".55" offset=".47"/>
+      <stop stop-color="#edf3ff" stop-opacity="0" offset="1"/>
+    </radialGradient>
+    <radialGradient id="ribbonBlue" cx="0" cy="0" r="1" gradientTransform="translate(164 74) rotate(39) scale(43 19)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#78a3f4" stop-opacity=".4" offset="0"/>
+      <stop stop-color="#7da7f4" stop-opacity=".24" offset=".6"/>
+      <stop stop-color="#8eb2f5" stop-opacity="0" offset="1"/>
+    </radialGradient>
+    <linearGradient id="leftTransmission" x1="108" x2="162" y1="149" y2="279" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#b5c7e8" stop-opacity=".46" offset="0"/>
+      <stop stop-color="#c0cce2" stop-opacity=".45" offset=".36"/>
+      <stop stop-color="#b3cefe" stop-opacity=".39" offset=".65"/>
+      <stop stop-color="#dce9ff" stop-opacity=".45" offset="1"/>
+    </linearGradient>
+    <radialGradient id="warmTransmission" cx="0" cy="0" r="1" gradientTransform="translate(92 244) scale(53 80)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d2e2ff" stop-opacity=".5" offset="0"/>
+      <stop stop-color="#d8e6fe" stop-opacity=".31" offset=".59"/>
+      <stop stop-color="#e1ecff" stop-opacity="0" offset="1"/>
+    </radialGradient>
+    <linearGradient id="rightTransmission" x1="207" x2="309" y1="87" y2="163" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#eab2c4" stop-opacity=".7" offset="0"/>
+      <stop stop-color="#febad0" stop-opacity=".72" offset=".4"/>
+      <stop stop-color="#fec5d7" stop-opacity=".68" offset=".7"/>
+      <stop stop-color="#ffadc8" stop-opacity=".73" offset="1"/>
+    </linearGradient>
+    <radialGradient id="pinkTransmissionLight" cx="0" cy="0" r="1" gradientTransform="translate(266 106) rotate(-16) scale(34 56)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff4f7" stop-opacity=".38" offset="0"/>
+      <stop stop-color="#fff1f5" stop-opacity=".19" offset=".54"/>
+      <stop stop-color="#ffe9ef" stop-opacity="0" offset="1"/>
+    </radialGradient>
+    <linearGradient id="lowerLeftBevel" x1="121" x2="199" y1="288" y2="235" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c8dbfe" stop-opacity=".76" offset="0"/>
+      <stop stop-color="#bcd4ff" stop-opacity=".68" offset=".56"/>
+      <stop stop-color="#c5d9fe" stop-opacity=".2" offset="1"/>
+    </linearGradient>
+    <linearGradient id="lowerRightBevel" x1="202" x2="270" y1="237" y2="287" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f2aec4" stop-opacity=".13" offset="0"/>
+      <stop stop-color="#f19eba" stop-opacity=".39" offset=".55"/>
+      <stop stop-color="#f3aac2" stop-opacity=".72" offset="1"/>
+    </linearGradient>
+    <filter id="soft" x="-25%" y="-20%" width="150%" height="140%">
+      <feGaussianBlur stdDeviation="1.7"/>
+    </filter>
+    <filter id="fineSoft" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur stdDeviation=".55"/>
+    </filter>
+    <!-- Where the blue half meets the pink half the colours mix into violet -->
+    <radialGradient id="mixBloom" cx="0" cy="0" r="1" gradientTransform="translate(197 167) rotate(43) scale(118 64)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c8a1e6" stop-opacity=".8" offset="0"/>
+      <stop stop-color="#cfb1e7" stop-opacity=".42" offset=".5"/>
+      <stop stop-color="#d9c4e9" stop-opacity="0" offset="1"/>
+    </radialGradient>
+  </defs>
+  <!-- Opaque base so the see-through openings look the same on any background -->
+  <use fill="#fff" xlink:href="#leftOpening"/>
+  <use fill="#fff" xlink:href="#rightOpening"/>
+  <use fill="url(#leftTransmission)" xlink:href="#leftOpening"/>
+  <use fill="url(#warmTransmission)" xlink:href="#leftOpening"/>
+  <use fill="url(#rightTransmission)" xlink:href="#rightOpening"/>
+  <use fill="url(#pinkTransmissionLight)" xlink:href="#rightOpening"/>
+  <g clip-path="url(#clipLeft)">
+    <use fill="url(#leftPaint)" xlink:href="#leftFrame"/>
+    <use fill="url(#leftAcross)" xlink:href="#leftFrame"/>
+    <use fill="url(#leftCrown)" xlink:href="#leftFrame"/>
+    <use fill="url(#leftReflection)" xlink:href="#leftFrame"/>
+    <use fill="url(#leftBlue)" xlink:href="#leftFrame"/>
+    <use fill="url(#leftGold)" xlink:href="#leftFrame"/>
+    <path d="m191 97c-19-18-41-40-56-43-16-3-27 8-36 22-10 16-12 35-12.4 59v72c0.2 28 5.4 51 16.4 68" fill="none" filter="url(#soft)" stroke="url(#leftInnerShade)" stroke-width="4.3"/>
+    <path d="m39 263c-9-21-11-45-11-71-1-34 0-64 3-91 3-28 13-53 30-66 12-9 28-10 41-8" fill="none" filter="url(#soft)" stroke="#f0f5ff" stroke-opacity=".19" stroke-width="4"/>
+    <path d="m105 278c9 11 18 12 29 7 17-9 42-32 65-49" fill="none" filter="url(#fineSoft)" stroke="url(#lowerLeftBevel)" stroke-width="3.5"/>
+  </g>
+  <g clip-path="url(#clipRibbon)">
+    <use fill="url(#ribbonPaint)" xlink:href="#ribbon"/>
+    <use fill="url(#ribbonBlue)" xlink:href="#ribbon"/>
+    <use fill="url(#ribbonSheen)" xlink:href="#ribbon"/>
+    <ellipse cx="197" cy="167" rx="160" ry="160" fill="url(#mixBloom)"/>
+    <path d="m198.5 235.1 42.6 37.2c10.8 9.3 19.1 14.5 27.3 12.7" fill="none" filter="url(#soft)" stroke="url(#lowerRightBevel)" stroke-width="3"/>
+  </g>
+  <g clip-path="url(#clipRight)">
+    <use fill="url(#rightPaint)" xlink:href="#rightFrame"/>
+    <use fill="url(#rightAcross)" xlink:href="#rightFrame"/>
+    <use fill="url(#rightCrown)" xlink:href="#rightFrame"/>
+    <path d="m269 55c15 4 27 26 32 48 7 33 6 71 6 98 0 29-6 50-14 66-7 13-15 20-26 21" fill="none" filter="url(#soft)" stroke="url(#rightInnerShade)" stroke-width="5"/>
+    <path d="m358.2 236.8c-3.4 22.2-16 44.3-34.9 54.8-6.5 3.7-12.6 5.7-16.5 6.1 14.5 1.3 30.3-10.8 39.7-25.8 7-11.1 10.3-21.5 11.7-35.1z" fill="#fff3f7" fill-opacity=".43" filter="url(#soft)"/>
+  </g>
+</svg>

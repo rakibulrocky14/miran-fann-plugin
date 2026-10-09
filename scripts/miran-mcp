@@ -1,0 +1,83 @@
+#!/bin/sh
+# Starts the Miran Fann MCP server for Claude.
+#
+# The engine is a native binary for Apple Silicon Macs. The first time this
+# runs on a Mac without it, it downloads the engine package from the npm
+# registry, checks it against the SHA-512 pinned below, and installs the one
+# binary inside it to ~/.miran/bin/miran. Every later start uses that file.
+# An engine you installed yourself (`npx miran-fann setup`) is used as is.
+#
+# KINETIC_BIN overrides the binary; MIRAN_WORKSPACE the folder films are made in.
+set -u
+
+ENGINE_VERSION="0.1.3"
+ENGINE_SHA512="69e06962e62316bd541b1a7163ce48a2343c9cf6562f4a64468e6516532a632f54dc3e87a0a5a330d638c2ab9e91eb7b72f47f21ea9cdcfcba491b5a6633c2a7"
+ENGINE_URL="https://registry.npmjs.org/miran-darwin-arm64/-/miran-darwin-arm64-$ENGINE_VERSION.tgz"
+MIRAN_HOME="$HOME/.miran"
+INSTALLED="$MIRAN_HOME/bin/miran"
+tmp=""
+lock=""
+
+fail() {
+  echo "miran: $*" >&2
+  exit 1
+}
+
+cleanup() {
+  [ -n "$tmp" ] && rm -rf "$tmp"
+  [ -n "$lock" ] && rmdir "$lock" 2>/dev/null
+  return 0
+}
+trap cleanup EXIT
+
+install_engine() {
+  [ "$(uname -s)" = "Darwin" ] && [ "$(uname -m)" = "arm64" ] ||
+    fail "Miran Fann runs on Apple Silicon Macs for now (this is $(uname -s) $(uname -m))."
+  mkdir -p "$MIRAN_HOME/bin" "$MIRAN_HOME/cache" || fail "could not create $MIRAN_HOME"
+  # One download at a time: a second start waits for the first.
+  waited=0
+  until mkdir "$MIRAN_HOME/cache/engine-install.lock" 2>/dev/null; do
+    [ -x "$INSTALLED" ] && return 0
+    waited=$((waited + 1))
+    if [ "$waited" -gt 300 ]; then
+      rmdir "$MIRAN_HOME/cache/engine-install.lock" 2>/dev/null
+      waited=0
+    fi
+    sleep 1
+  done
+  lock="$MIRAN_HOME/cache/engine-install.lock"
+  [ -x "$INSTALLED" ] && return 0
+  tmp="$(mktemp -d "$MIRAN_HOME/cache/engine.XXXXXX")" || fail "could not create a temporary folder"
+  echo "miran: downloading the Miran Fann engine $ENGINE_VERSION from the npm registry (about 20 MB, once)" >&2
+  curl -fsSL --retry 3 -o "$tmp/engine.tgz" "$ENGINE_URL" ||
+    fail "could not download the engine from $ENGINE_URL"
+  got="$(shasum -a 512 "$tmp/engine.tgz" | cut -d ' ' -f 1)"
+  [ "$got" = "$ENGINE_SHA512" ] ||
+    fail "the downloaded engine does not match the SHA-512 pinned in this plugin; nothing was installed"
+  tar -xzf "$tmp/engine.tgz" -C "$tmp" package/bin/miran || fail "could not unpack the engine"
+  chmod 755 "$tmp/package/bin/miran"
+  mv -f "$tmp/package/bin/miran" "$INSTALLED" || fail "could not install the engine to $INSTALLED"
+  echo "miran: installed the engine to $INSTALLED" >&2
+}
+
+ENGINE=""
+for candidate in "${KINETIC_BIN:-}" "$INSTALLED" "$HOME/.cargo/bin/kinetic"; do
+  if [ -n "$candidate" ] && [ -x "$candidate" ]; then
+    ENGINE="$candidate"
+    break
+  fi
+done
+if [ -z "$ENGINE" ]; then
+  install_engine
+  ENGINE="$INSTALLED"
+fi
+cleanup
+trap - EXIT
+
+# Films are made in the project folder; a chat with no project uses ~/miran-work.
+WS="${MIRAN_WORKSPACE:-${CLAUDE_PROJECT_DIR:-$PWD}}"
+if [ "$WS" = "/" ] || [ ! -w "$WS" ]; then
+  WS="$HOME/miran-work"
+  mkdir -p "$WS"
+fi
+exec "$ENGINE" mcp --workspace "$WS" "$@"

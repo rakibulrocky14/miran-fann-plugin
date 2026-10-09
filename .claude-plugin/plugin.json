@@ -1,0 +1,19 @@
+{
+  "name": "miran",
+  "displayName": "Miran Fann",
+  "version": "0.1.3",
+  "description": "Motion graphics, directed by your agent: the Miran Fann GPU engine on your Mac (scenes, motion, 3D camera, sound, voice, critique and render tools, plus a live viewer) and eight skills that teach Claude to direct and make finished films.",
+  "author": {
+    "name": "rakibulrocky14"
+  },
+  "homepage": "https://miranfann.com",
+  "repository": "https://github.com/rakibulrocky14/miran-fann-plugin",
+  "keywords": [
+    "motion-graphics",
+    "animation",
+    "render",
+    "mcp",
+    "design"
+  ],
+  "mcpServers": "./.mcp.json"
+}
