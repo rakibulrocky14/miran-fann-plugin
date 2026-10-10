@@ -4,7 +4,8 @@
       "command": "${CLAUDE_PLUGIN_ROOT}/scripts/miran-mcp",
       "args": [],
       "env": {
-        "MIRAN_TOOLS_DEFAULT": "full"
+        "MIRAN_TOOLS_DEFAULT": "full",
+        "MIRAN_PLUGIN_VERSION": "0.1.4"
       }
     }
   }

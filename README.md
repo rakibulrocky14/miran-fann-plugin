@@ -29,21 +29,45 @@ from there.
 - A Mac with Apple Silicon (M1 or later). Windows and Linux are not supported yet.
 - A Google account. The engine asks you to sign in once, in your browser.
 
+## Install
+
+This repo is also the `miran` plugin marketplace.
+
+- **Claude Code**: `/plugin marketplace add rakibulrocky14/miran-fann-plugin`, then
+  `/plugin install miran@miran`.
+- **Codex**: `codex plugin marketplace add rakibulrocky14/miran-fann-plugin`, then
+  `codex plugin add miran@miran`.
+- **ZCode**: add the marketplace `rakibulrocky14/miran-fann-plugin` in its plugin
+  settings and install Miran Fann.
+- **Everything at once**: `npx miran-fann setup` installs the engine and adds the
+  plugin to each of those apps it finds.
+
+Start a new session afterwards.
+
+## Updates
+
+Use your app's plugin Update button (Claude Code: `/plugin`, then the `miran`
+marketplace). The next session's launcher sees that the plugin is newer than the
+engine and installs the matching engine. The engine also updates itself every
+few hours (see below).
+
 ## What it installs and runs
 
 The plugin starts `scripts/miran-mcp`. That script looks for the engine at
-`~/.miran/bin/miran`. If you already installed it with `npx miran-fann setup`,
-it uses that copy.
+`~/.miran/bin/miran`.
 
-If the engine is missing, the script:
+If the engine is missing, or older than the version this plugin was released
+with (0.1.4), the script:
 
-1. Downloads the npm package `miran-darwin-arm64@0.1.3` from
-   `https://registry.npmjs.org` (about 20 MB, once).
+1. Downloads the npm package `miran-darwin-arm64@0.1.4` from
+   `https://registry.npmjs.org` (about 20 MB).
 2. Checks the download against the SHA-512 written in the script.
 3. Installs the one binary inside it to `~/.miran/bin/miran`.
 
-It installs nothing else. Films and project files are written to your project
-folder, or to `~/miran-work` when there is no project.
+A newer engine is used as it is. If the download fails, an engine already on
+your Mac starts instead. The script installs nothing else. Films and project
+files are written to your project folder, or to `~/miran-work` when there is
+no project.
 
 ## What it sends and fetches
 
@@ -57,7 +81,8 @@ folder, or to `~/miran-work` when there is no project.
   first, and reports are kept for 3 days. To turn this off, run
   `npx miran-fann feedback off`, or set `MIRAN_FEEDBACK=off` or `DO_NOT_TRACK=1`.
 - **Updates**: every few hours, the engine checks the npm registry for a newer
-  version and installs it. To turn this off, set `MIRAN_AUTO_UPDATE=off`.
+  version and installs it (with `npx miran-fann setup`, which also refreshes the
+  plugin in your apps from this repo). To turn this off, set `MIRAN_AUTO_UPDATE=off`.
 
 Everything else happens only when you or Claude ask for it:
 

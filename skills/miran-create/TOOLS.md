@@ -33,11 +33,11 @@ Open a project JSON file from the workspace, or the autosave of the last session
 - family: `project` · mutating: `true` · transport: CLI `kinetic tool openProject` only — rebases history, so it is rejected inside `batch`; MCP `tools/call {name: "openProject"}` is a single call and is fine
 - history: creates an undo step
 - lean tool list: listed (a direct call) · inside runScript: none
-- signature: `openProject {autosave?: bool = false, path?: string}`
+- signature: `openProject {autosave?: boolean|string, path?: string}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `autosave` | boolean | optional default=false | — Restore this workspace's autosave instead of a file |
+| `autosave` | boolean\|string | optional | — true: restore the autosave instead of a file; "previous": the one before this session's first change |
 | `path` | string | optional | — Workspace-relative .json path |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -250,19 +250,19 @@ Add a layer (shape, text, solid, null, image, video, nested, particle, adjustmen
 | `opacity` | number | optional | (min=0, max=1) — 0..1 (default 1) |
 | `params` | object | optional | — Procedural params for kind=procedural (name -> number), e.g. {"scale": 6.0} |
 | `path` | string | optional | — image/video: a workspace file to import |
-| `position` | array | optional | — Layer origin in world units (px at scale 1), center-anchored, +x right, +y UP; optional 3rd element is z depth (3D layers) |
+| `position` | array | optional | — Layer centre in px, +x right, +y UP; a 3rd element is z depth (3D layers) |
 | `proc` | string | optional | — Procedural kind for kind=procedural: linear_gradient, radial_gradient, angular_gradient, mesh_gradient, grid, dot_grid, noise, contours, turbulence, stripes, wave_field, sdf_shape, checker, scanlines (default noise) |
 | `radius` | number | optional | — Corner radius in px for shape=rounded (default 8); radius for shape=circle (default width/2) |
 | `seed` | integer | optional | (min=0) — Deterministic seed for kind=procedural (default 1) |
 | `shape` | enum["rect"|"rounded"|"circle"|"ellipse"|"star"|"polygon"] | optional | — Shape geometry (default rect) |
 | `specular_angle` | number | optional | (min=0, max=360) — Micro-chamfer light angle in degrees (default 45) |
-| `specular_intensity` | number | optional | (min=0, max=1) — Micro-chamfer highlight strength: 0 matte, 1 full specular sweep (default 0.5) |
+| `specular_intensity` | number | optional | (min=0, max=1) — Micro-chamfer highlight: 0 matte, 1 full sweep (default 0.5) |
 | `speed` | number | optional | — video: playback rate (1) |
 | `src_in` | number | optional | — video: clip seconds to start at |
 | `src_out` | number | optional | — video: clip seconds to stop at |
-| `start_frame` | number | optional | — video: timeline frame it starts on |
-| `stroke_color` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
-| `stroke_width` | number | optional | (min=0) — Stroke width in layer units; omit for no stroke (kind=shape only) |
+| `start_frame` | number | optional | — video/nested: timeline frame it starts on |
+| `stroke_color` | string\|array | optional | — as fill |
+| `stroke_width` | number | optional | (min=0) — Stroke width; omit for no stroke (shape) |
 | `target` | string | optional | — Composition id for nested layers |
 | `text` | string | optional | — Text content for kind=text (default "Text"); \n breaks lines. Style it with setTextStyle |
 | `tracking` | number | optional | — text: em letter-spacing |
@@ -350,7 +350,7 @@ CLI: `kinetic tool createLayer --params '<json>' --workspace ./out`
 
 ## setLayerField
 
-Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur_enabled, position, scale, rotation, anchor), motion: follow (overlap, follow-through), squash (stretch with speed), speed (speed ramp), time_remap, posterize (on twos), echo (trails), 3D: light, material, extrude, model, or puppet (pins that bend the artwork), ik (a limb reaches a target).
+Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur_enabled, position, scale, rotation, anchor; intended: true exempts it from critiqueMotion), motion: follow (overlap, follow-through), squash (stretch with speed), speed (speed ramp), time_remap, posterize (on twos), echo (trails), 3D: light, material, extrude, model, or puppet (pins that bend the artwork), ik (a limb reaches a target).
 
 - family: `scene` · mutating: `true` · transport: CLI `kinetic tool setLayerField` / SDK `batch([{tool: "setLayerField"}])` / MCP `tools/call {name: "setLayerField"}`
 - history: creates an undo step
@@ -362,7 +362,7 @@ Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur
 | `composition` | string\|integer | optional | |
 | `field` | string | required | — Which base field to set; see value for each field's format |
 | `layer` | string\|integer | required | |
-| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...]. posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
+| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. intended: bool (true: critiqueMotion leaves this layer's motion out; false clears it). name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...] (frame in this composition; source_frame in the nested composition's own frames). posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1024,17 +1024,17 @@ CLI: `kinetic tool setParticles --params '<json>' --workspace ./out`
 
 ## parentLayer
 
-Set/clear a layer's parent (cycle-checked). Position stays local (a child at [0,0] sits on the parent's origin) unless keep_world: true keeps it where it is on screen.
+Set/clear a layer's parent (cycle-checked). Position stays local (a child at [0,0] sits on the parent's origin) unless keep_world: true keeps it where it is on screen (at its resting pose; frame measures another).
 
 - family: `scene` · mutating: `true` · transport: CLI `kinetic tool parentLayer` / SDK `batch([{tool: "parentLayer"}])` / MCP `tools/call {name: "parentLayer"}`
 - history: creates an undo step
 - lean tool list: not listed: call it as `miran.parentLayer(...)` in runScript · inside runScript: yes
-- signature: `parentLayer {layer: string|int, frame?: number [frame], keep_world?: bool = false, parent?: string|null|int}`
+- signature: `parentLayer {layer: string|int, frame?: number|string, keep_world?: bool = false, parent?: string|null|int}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `frame` | number | optional | — keep_world measures the poses at this frame (default: the resting poses, no moves) |
+| `frame` | number\|string | optional | — keep_world: measure at this frame or "in" (the layer's in point); default the resting poses |
 | `keep_world` | boolean | optional default=false | — Keep the layer where it is on screen (its position and moves shift into the parent's space) |
 | `layer` | string\|integer | required | |
 | `parent` | string\|null\|integer | optional | — Parent layer id/name, or null to clear |

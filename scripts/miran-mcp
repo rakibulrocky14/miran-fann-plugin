@@ -1,40 +1,69 @@
 #!/bin/sh
-# Starts the Miran Fann MCP server for Claude.
+# Starts the Miran Fann MCP server (Claude Code, Cowork, Codex, ZCode).
 #
-# The engine is a native binary for Apple Silicon Macs. The first time this
-# runs on a Mac without it, it downloads the engine package from the npm
-# registry, checks it against the SHA-512 pinned below, and installs the one
-# binary inside it to ~/.miran/bin/miran. Every later start uses that file.
-# An engine you installed yourself (`npx miran-fann setup`) is used as is.
+# The engine is a native binary for Apple Silicon Macs, installed at
+# ~/.miran/bin/miran. When it is missing, or older than the version this
+# plugin was released with, this downloads that version's engine package from
+# the npm registry, checks it against the SHA-512 pinned below, and installs
+# the one binary inside it there; so updating the plugin in your app updates
+# the engine too. A newer engine (it updates itself) is used as it is. If a
+# download fails and an older engine is installed, that one starts.
 #
 # KINETIC_BIN overrides the binary; MIRAN_WORKSPACE the folder films are made in.
 set -u
 
-ENGINE_VERSION="0.1.3"
-ENGINE_SHA512="69e06962e62316bd541b1a7163ce48a2343c9cf6562f4a64468e6516532a632f54dc3e87a0a5a330d638c2ab9e91eb7b72f47f21ea9cdcfcba491b5a6633c2a7"
+ENGINE_VERSION="0.1.4"
+ENGINE_SHA512="6813ba21fbe86e1141a024ac0daae7e3088b169b4c7b16be2137a150285ca9b3adfdd483f2a2cf7fb94d057a072762c8b39f926ef67f84013630cb67c1b87035"
 ENGINE_URL="https://registry.npmjs.org/miran-darwin-arm64/-/miran-darwin-arm64-$ENGINE_VERSION.tgz"
 MIRAN_HOME="$HOME/.miran"
 INSTALLED="$MIRAN_HOME/bin/miran"
 tmp=""
 lock=""
 
-fail() {
+say() {
   echo "miran: $*" >&2
-  exit 1
 }
 
 cleanup() {
   [ -n "$tmp" ] && rm -rf "$tmp"
   [ -n "$lock" ] && rmdir "$lock" 2>/dev/null
+  tmp=""
+  lock=""
   return 0
 }
 trap cleanup EXIT
 
+# The version an engine reports ("Miran Fann 0.1.4"), or nothing.
+version_of() {
+  "$1" --version 2>/dev/null | awk 'NR == 1 { print $NF }'
+}
+
+# True when version $1 is older than $2 (numbers, X.Y.Z).
+older() {
+  awk -v a="$1" -v b="$2" 'BEGIN {
+    split(a, x, "."); split(b, y, ".")
+    for (i = 1; i <= 3; i++) { if (x[i] + 0 < y[i] + 0) exit 0; if (x[i] + 0 > y[i] + 0) exit 1 }
+    exit 1
+  }'
+}
+
+# The installed engine is missing or older than this plugin's.
+needs_engine() {
+  [ -x "$INSTALLED" ] || return 0
+  have="$(version_of "$INSTALLED")"
+  [ -z "$have" ] || older "$have" "$ENGINE_VERSION"
+}
+
+# Download, check and install this plugin's engine. Returns non-zero (and
+# installs nothing) when any step fails.
 install_engine() {
-  [ "$(uname -s)" = "Darwin" ] && [ "$(uname -m)" = "arm64" ] ||
-    fail "Miran Fann runs on Apple Silicon Macs for now (this is $(uname -s) $(uname -m))."
-  mkdir -p "$MIRAN_HOME/bin" "$MIRAN_HOME/cache" || fail "could not create $MIRAN_HOME"
-  # One download at a time: a second start waits for the first.
+  if [ "$(uname -s)" != "Darwin" ] || [ "$(uname -m)" != "arm64" ]; then
+    say "Miran Fann runs on Apple Silicon Macs for now (this is $(uname -s) $(uname -m))."
+    return 1
+  fi
+  mkdir -p "$MIRAN_HOME/bin" "$MIRAN_HOME/cache" || { say "could not create $MIRAN_HOME"; return 1; }
+  # One download at a time: a second start waits for the first (or, with an
+  # engine already there, starts that one).
   waited=0
   until mkdir "$MIRAN_HOME/cache/engine-install.lock" 2>/dev/null; do
     [ -x "$INSTALLED" ] && return 0
@@ -46,30 +75,47 @@ install_engine() {
     sleep 1
   done
   lock="$MIRAN_HOME/cache/engine-install.lock"
-  [ -x "$INSTALLED" ] && return 0
-  tmp="$(mktemp -d "$MIRAN_HOME/cache/engine.XXXXXX")" || fail "could not create a temporary folder"
-  echo "miran: downloading the Miran Fann engine $ENGINE_VERSION from the npm registry (about 20 MB, once)" >&2
-  curl -fsSL --retry 3 -o "$tmp/engine.tgz" "$ENGINE_URL" ||
-    fail "could not download the engine from $ENGINE_URL"
+  needs_engine || { cleanup; return 0; }
+  tmp="$(mktemp -d "$MIRAN_HOME/cache/engine.XXXXXX")" || { say "could not create a temporary folder"; cleanup; return 1; }
+  say "downloading the Miran Fann engine $ENGINE_VERSION from the npm registry (about 20 MB)"
+  if ! curl -fsSL --retry 3 --connect-timeout 15 -o "$tmp/engine.tgz" "$ENGINE_URL"; then
+    say "could not download the engine from $ENGINE_URL"
+    cleanup
+    return 1
+  fi
   got="$(shasum -a 512 "$tmp/engine.tgz" | cut -d ' ' -f 1)"
-  [ "$got" = "$ENGINE_SHA512" ] ||
-    fail "the downloaded engine does not match the SHA-512 pinned in this plugin; nothing was installed"
-  tar -xzf "$tmp/engine.tgz" -C "$tmp" package/bin/miran || fail "could not unpack the engine"
+  if [ "$got" != "$ENGINE_SHA512" ]; then
+    say "the downloaded engine does not match the SHA-512 pinned in this plugin; nothing was installed"
+    cleanup
+    return 1
+  fi
+  if ! tar -xzf "$tmp/engine.tgz" -C "$tmp" package/bin/miran; then
+    say "could not unpack the engine"
+    cleanup
+    return 1
+  fi
   chmod 755 "$tmp/package/bin/miran"
-  mv -f "$tmp/package/bin/miran" "$INSTALLED" || fail "could not install the engine to $INSTALLED"
-  echo "miran: installed the engine to $INSTALLED" >&2
+  # A rename: sessions running the old engine keep their copy.
+  if ! mv -f "$tmp/package/bin/miran" "$INSTALLED"; then
+    say "could not install the engine to $INSTALLED"
+    cleanup
+    return 1
+  fi
+  say "installed the engine $ENGINE_VERSION to $INSTALLED"
+  cleanup
+  return 0
 }
 
 ENGINE=""
-for candidate in "${KINETIC_BIN:-}" "$INSTALLED" "$HOME/.cargo/bin/kinetic"; do
-  if [ -n "$candidate" ] && [ -x "$candidate" ]; then
-    ENGINE="$candidate"
-    break
+if [ -n "${KINETIC_BIN:-}" ] && [ -x "$KINETIC_BIN" ]; then
+  ENGINE="$KINETIC_BIN"
+elif [ -x "$INSTALLED" ] || [ ! -x "$HOME/.cargo/bin/kinetic" ]; then
+  if needs_engine; then
+    install_engine || [ -x "$INSTALLED" ] || exit 1
   fi
-done
-if [ -z "$ENGINE" ]; then
-  install_engine
   ENGINE="$INSTALLED"
+else
+  ENGINE="$HOME/.cargo/bin/kinetic"
 fi
 cleanup
 trap - EXIT

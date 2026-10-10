@@ -1,0 +1,20 @@
+{
+  "name": "miran",
+  "owner": {
+    "name": "Miran Fann",
+    "email": "mdrirocky08@gmail.com"
+  },
+  "metadata": {
+    "description": "Miran Fann: motion graphics, directed by your agent."
+  },
+  "plugins": [
+    {
+      "name": "miran",
+      "source": "./",
+      "version": "0.1.4",
+      "description": "Motion graphics, directed by your agent: the Miran Fann GPU engine on your Mac (scenes, motion, 3D camera, sound, voice, critique and render tools, plus a live viewer) and eight skills that teach your agent to direct and make finished films.",
+      "category": "creativity",
+      "homepage": "https://miranfann.com"
+    }
+  ]
+}

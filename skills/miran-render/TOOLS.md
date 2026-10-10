@@ -850,12 +850,12 @@ CLI: `kinetic tool setAudioPan --params '<json>' --workspace ./out`
 
 ## setAudioTiming
 
-Set an audio layer's timeline window (in/out frames), source offset, and playback stretch. Commits.
+Set an audio layer's timeline window (in/out frames, or start_frame to move the whole clip), source offset, and playback stretch. Commits.
 
 - family: `audio` · mutating: `true` · transport: CLI `kinetic tool setAudioTiming` / SDK `batch([{tool: "setAudioTiming"}])` / MCP `tools/call {name: "setAudioTiming"}`
 - history: creates an undo step
 - lean tool list: not listed: call it as `miran.setAudioTiming(...)` in runScript · inside runScript: yes
-- signature: `setAudioTiming {layer: string|int, in_frame?: number [frame], out_frame?: number [frame], start_time?: number [s], time_stretch?: number}`
+- signature: `setAudioTiming {layer: string|int, in_frame?: number [frame], out_frame?: number [frame], start_frame?: number, start_time?: number [s], time_stretch?: number}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
@@ -863,6 +863,7 @@ Set an audio layer's timeline window (in/out frames), source offset, and playbac
 | `in_frame` | number | optional | — Composition frame the audio starts |
 | `layer` | string\|integer | required | |
 | `out_frame` | number | optional | — Composition frame the audio stops (exclusive) |
+| `start_frame` | number | optional | — Move the clip to start on this frame: length, volume moves and the words keep with it (not with in_frame) |
 | `start_time` | number | optional | — Seconds into the source |
 | `time_stretch` | number | optional | — >1 plays slower |
 
@@ -872,6 +873,12 @@ Examples (they run as written on the starter scene from `guide {topic:"start"}`)
 
   ```json
   {"layer":"Music","in_frame":15,"out_frame":150}
+  ```
+
+- Move the whole clip to start on frame 48
+
+  ```json
+  {"layer":"Music","start_frame":48}
   ```
 
 CLI: `kinetic tool setAudioTiming --params '<json>' --workspace ./out`

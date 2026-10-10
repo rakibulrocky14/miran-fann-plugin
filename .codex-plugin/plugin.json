@@ -1,0 +1,34 @@
+{
+  "name": "miran",
+  "version": "0.1.4",
+  "description": "Motion graphics, directed by your agent: the Miran Fann GPU engine on your Mac (scenes, motion, 3D camera, sound, voice, critique and render tools, plus a live viewer) and eight skills that teach your agent to direct and make finished films.",
+  "author": {
+    "name": "rakibulrocky14"
+  },
+  "skills": "./skills-codex/",
+  "mcpServers": "./.codex-mcp.json",
+  "interface": {
+    "displayName": "Miran Fann",
+    "shortDescription": "Design, animate and render motion graphics with Miran Fann.",
+    "longDescription": "Miran Fann is a GPU motion-graphics engine driven by tool calls: compositions of layers with keyframed transforms, text, shapes, generators, particles, effects, masks, a 3D camera and audio, rendered to PNG and MP4/HEVC/ProRes. Build a scene beat by beat with runScript (JavaScript calling the tools), look at contact sheets returned as images, and export. toolCatalog, describeTool and guide document every tool and convention.",
+    "developerName": "rakibulrocky14",
+    "category": "Creativity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Make a 10-second product teaser with Miran Fann.",
+      "Animate this headline with a premium kinetic-type entrance in Miran.",
+      "Render my Miran composition to a high-quality MP4.",
+      "Open the Miran Fann live viewer so I can watch the timeline while you build."
+    ],
+    "brandColor": "#DD6694",
+    "logo": "./assets/logo.png",
+    "composerIcon": "./assets/composer-icon.png",
+    "websiteURL": "https://miranfann.com",
+    "privacyPolicyURL": "https://miranfann.com/privacy.html"
+  },
+  "homepage": "https://miranfann.com",
+  "repository": "https://github.com/rakibulrocky14/miran-fann-plugin"
+}

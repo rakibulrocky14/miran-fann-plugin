@@ -775,16 +775,17 @@ CLI: `kinetic tool morphShape --params '<json>' --workspace ./out`
 
 ## convertTextToShapes
 
-Create Shapes from Text: a vector layer with one path per letter (char-0, char-1, ...) where the text was, for letter morphs and per-letter edits; the text layer is disabled.
+Create Shapes from Text: a vector layer with one path per letter (char-0, char-1, ...) in one group per line (line-0, ...) where the text was, for letter morphs and per-letter or per-line edits; the text layer is disabled.
 
 - family: `vector` · mutating: `true` · transport: CLI `kinetic tool convertTextToShapes` / SDK `batch([{tool: "convertTextToShapes"}])` / MCP `tools/call {name: "convertTextToShapes"}`
 - history: creates an undo step
 - lean tool list: not listed: call it as `miran.convertTextToShapes(...)` in runScript · inside runScript: yes
-- signature: `convertTextToShapes {layer: string|int, keep_text?: bool = false}`
+- signature: `convertTextToShapes {layer: string|int, frame?: number [frame], keep_text?: bool = false}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
+| `frame` | number | optional | — Frame whose text, size and wrap to outline (default: the layer's first frame) |
 | `keep_text` | boolean | optional default=false | — Leave the text layer enabled too |
 | `layer` | string\|integer | required | — The text layer |
 

@@ -1,0 +1,20 @@
+{
+  "name": "miran",
+  "interface": {
+    "displayName": "Miran Fann"
+  },
+  "plugins": [
+    {
+      "name": "miran",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Creativity"
+    }
+  ]
+}

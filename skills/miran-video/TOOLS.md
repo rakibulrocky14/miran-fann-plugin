@@ -74,11 +74,13 @@ Start the live Miran Viewer and return its link: a timeline of every layer, keyf
 - family: `project` · mutating: `false` · transport: CLI `kinetic tool openViewer` / SDK `batch([{tool: "openViewer"}])` / MCP `tools/call {name: "openViewer"}`
 - history: read-only, no history entry
 - lean tool list: listed (a direct call) · inside runScript: none
-- signature: `openViewer {browser?: bool = false, port?: int}`
+- signature: `openViewer {browser?: bool = false, frame?: number [frame], port?: int}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `browser` | boolean | optional default=false | — Also open the link in the computer's default web browser |
+| `composition` | string\|integer | optional | — Open on this composition (id or name) |
+| `frame` | number | optional | (min=0) — Open at this frame (link end #frame=N seeks) |
 | `port` | integer | optional | (min=1024, max=65535) — Preferred port; the next free one is used when it is taken (default 47800) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -228,7 +230,7 @@ Tips:
 
 - Findings come from the moves themselves (channels, paths, follows), so it runs in milliseconds; each gives the layer, frames and a concrete fix.
 - Scenery (backgrounds, rigs, adjustment layers) may drift at constant speed; subjects should not.
-- Reveals are not judged: the source of a track matte, a layer that never shows, a plate painted in the colour of what is behind it (a typing wipe's cover), and mask-path or trim-path animation. not_judged in the result names them. For anything else that is meant, pass ignore: [layer names or ids]; a name that is no layer is an error.
+- Reveals are not judged: the source of a track matte, a layer that never shows, a plate painted in the colour of what is behind it (a typing wipe's cover), and mask-path or trim-path animation. not_judged in the result names them. For anything else that is meant, pass ignore: [layer names or ids] (a name that is no layer is an error), or mark the layer once with setLayerField {field: "intended", value: true}. Its exit is not read time: text leaving with its shot is not flagged, and letters used as texture (ghost type, a wall of glyphs, faint ink) are not text.
 
 Related: `animateProperty`, `setLayerField`, `critiqueLayout`, `inspectMotionActivity`
 

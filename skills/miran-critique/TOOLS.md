@@ -156,7 +156,7 @@ Tips:
 
 - Findings come from the moves themselves (channels, paths, follows), so it runs in milliseconds; each gives the layer, frames and a concrete fix.
 - Scenery (backgrounds, rigs, adjustment layers) may drift at constant speed; subjects should not.
-- Reveals are not judged: the source of a track matte, a layer that never shows, a plate painted in the colour of what is behind it (a typing wipe's cover), and mask-path or trim-path animation. not_judged in the result names them. For anything else that is meant, pass ignore: [layer names or ids]; a name that is no layer is an error.
+- Reveals are not judged: the source of a track matte, a layer that never shows, a plate painted in the colour of what is behind it (a typing wipe's cover), and mask-path or trim-path animation. not_judged in the result names them. For anything else that is meant, pass ignore: [layer names or ids] (a name that is no layer is an error), or mark the layer once with setLayerField {field: "intended", value: true}. Its exit is not read time: text leaving with its shot is not flagged, and letters used as texture (ghost type, a wall of glyphs, faint ink) are not text.
 
 Related: `animateProperty`, `setLayerField`, `critiqueLayout`, `inspectMotionActivity`
 

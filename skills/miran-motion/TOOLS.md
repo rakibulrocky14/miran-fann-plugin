@@ -137,13 +137,13 @@ Animate one property from A to B with an ease or spring. Almost everything anima
 | param | type | required/default | notes |
 |---|---|---|---|
 | `arc` | number | optional | — position: bow the move into an arc, as a fraction of its length (0.15-0.3 reads natural; + bows left of travel, - right) |
-| `by` | any | optional | — Instead of to: move relative to the value at start_frame (number, or [dx, dy] for position) |
+| `by` | any | optional | — Instead of to: move relative to the value at start_frame (number, or [dx, dy] for position; camera: one number) |
 | `composition` | string\|integer | optional | |
 | `duration_frames` | number | optional | — Move length in frames (e.g. 18 = 0.6 s at 30 fps) |
-| `ease` | string | optional | — Easing name (alias of interp given as a string): smooth, snap, standard, emphasized-decelerate, expressive, linear, spring:snappy, ... See guide topic=motion |
+| `ease` | string | optional | — Easing name (alias of interp given as a string): smooth, snap, standard, emphasized-decelerate, expressive, linear, spring:snappy, ... Default linear (constant speed). smooth is a strong expo-out (90% of the move in the first third), made for landings, not drifts: for a gentle drift use ease-in-out or standard, or linear. See guide topic=motion |
 | `from` | any | optional | — Start value in the property's units (px, degrees, 1 = 100%, 0..1 opacity, em tracking); "#RRGGBB" for colours, [x, y] for offsets. Omit to start from the current value |
 | `interp` | string\|object | optional | — Easing. A name ("smooth", "snap", "standard", "emphasized-decelerate", "expressive", "linear", "spring:snappy", ...), or {"bezier":[x1,y1,x2,y2]} (CSS cubic-bezier), or {"spring":"bouncy"|{"duration":0.5,"bounce":0.2}}. Default linear. A named spring preset settles over duration_frames with the preset's bounce; an explicit {duration, bounce} spring keeps its own duration |
-| `keyframes` | array | optional | — Instead of from/to/start_frame/duration_frames: [{frame, value, ease}] or [[frame, value], ...]; chained as one move per pair (ease of the earlier key). setPropertyDriver keyframes for holds and loops |
+| `keyframes` | array | optional | — Instead of from/to/start_frame/duration_frames: [{frame, value, ease}] or [[frame, value], ...]; chained as one move per pair (ease of the earlier key; none = standard, so ease linear for measured curves). setPropertyDriver keyframes for holds and loops (default linear) |
 | `layer` | string\|integer | required | — Layer name/id, or "camera" for comp camera |
 | `orient` | boolean\|number | optional | — position: turn the layer along the path (true, or an extra angle in degrees) |
 | `property` | string | required | — position (to:[x,y], on a curve), position.x|y|z (px, y up), rotation, scale, opacity; fill.color, stroke.color, stroke.width, shape.width|height|radius, text.size|tracking|weight, effect.<effect>.<param> (blur, glow shortcuts); op.<type>.<param> (shape operators); puppet.<pin>.x|y|rotation|scale (puppet pins); trim.end, text.value; procedural.<param>; camera: dolly.x|y|z, crane.pitch|yaw|roll, focal_length |
@@ -318,7 +318,7 @@ CLI: `kinetic tool clearAnimation --params '<json>' --workspace ./out`
 
 ## editKeyframes
 
-Move, change, add or delete one property's keys in place: animateProperty moves (keys = each move's ends) and keyframe drivers. Edits name a key by frame: {frame,to} moves, {frame,value} sets, {frame,delete:true}, {frame,add:true} (splits a move, keeping the motion).
+Move, change, add or delete one property's keys in place: animateProperty moves (keys = each move's ends), curved position moves (property position: keys = ends) and keyframe drivers. Edits name a key by frame: {frame,to} moves, {frame,value} sets, {frame,delete:true}, {frame,add:true} (splits a move, keeping the motion).
 
 - family: `props` · mutating: `true` · transport: CLI `kinetic tool editKeyframes` / SDK `batch([{tool: "editKeyframes"}])` / MCP `tools/call {name: "editKeyframes"}`
 - history: creates an undo step
@@ -645,7 +645,7 @@ Tips:
 
 - Findings come from the moves themselves (channels, paths, follows), so it runs in milliseconds; each gives the layer, frames and a concrete fix.
 - Scenery (backgrounds, rigs, adjustment layers) may drift at constant speed; subjects should not.
-- Reveals are not judged: the source of a track matte, a layer that never shows, a plate painted in the colour of what is behind it (a typing wipe's cover), and mask-path or trim-path animation. not_judged in the result names them. For anything else that is meant, pass ignore: [layer names or ids]; a name that is no layer is an error.
+- Reveals are not judged: the source of a track matte, a layer that never shows, a plate painted in the colour of what is behind it (a typing wipe's cover), and mask-path or trim-path animation. not_judged in the result names them. For anything else that is meant, pass ignore: [layer names or ids] (a name that is no layer is an error), or mark the layer once with setLayerField {field: "intended", value: true}. Its exit is not read time: text leaving with its shot is not flagged, and letters used as texture (ghost type, a wall of glyphs, faint ink) are not text.
 
 Related: `animateProperty`, `setLayerField`, `critiqueLayout`, `inspectMotionActivity`
 
@@ -799,7 +799,7 @@ CLI: `kinetic tool setCompositionField --params '<json>' --workspace ./out`
 
 ## setLayerField
 
-Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur_enabled, position, scale, rotation, anchor), motion: follow (overlap, follow-through), squash (stretch with speed), speed (speed ramp), time_remap, posterize (on twos), echo (trails), 3D: light, material, extrude, model, or puppet (pins that bend the artwork), ik (a limb reaches a target).
+Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur_enabled, position, scale, rotation, anchor; intended: true exempts it from critiqueMotion), motion: follow (overlap, follow-through), squash (stretch with speed), speed (speed ramp), time_remap, posterize (on twos), echo (trails), 3D: light, material, extrude, model, or puppet (pins that bend the artwork), ik (a limb reaches a target).
 
 - family: `scene` · mutating: `true` · transport: CLI `kinetic tool setLayerField` / SDK `batch([{tool: "setLayerField"}])` / MCP `tools/call {name: "setLayerField"}`
 - history: creates an undo step
@@ -811,7 +811,7 @@ Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur
 | `composition` | string\|integer | optional | |
 | `field` | string | required | — Which base field to set; see value for each field's format |
 | `layer` | string\|integer | required | |
-| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...]. posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
+| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. intended: bool (true: critiqueMotion leaves this layer's motion out; false clears it). name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...] (frame in this composition; source_frame in the nested composition's own frames). posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 

@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "miran": {
+      "command": "/bin/sh",
+      "args": [
+        "-c",
+        "C=\"${CODEX_HOME:-$HOME/.codex}/plugins/cache\"; for L in \"$C/miran/miran/0.1.4\" \"$C\"/*/miran/0.1.4; do [ -f \"$L/scripts/miran-mcp\" ] && exec /bin/sh \"$L/scripts/miran-mcp\"; done; echo \"miran: the Miran Fann plugin files are missing; reinstall the plugin\" >&2; exit 1"
+      ],
+      "env_vars": [
+        "CODEX_HOME",
+        "MIRAN_WORKSPACE",
+        "KINETIC_BIN",
+        "MIRAN_TOOLS",
+        "MIRAN_HTTP_FIXTURES"
+      ],
+      "enabled": true,
+      "startup_timeout_sec": 120,
+      "tool_timeout_sec": 120,
+      "env": {
+        "MIRAN_TOOLS_DEFAULT": "full",
+        "MIRAN_PLUGIN_VERSION": "0.1.4"
+      }
+    }
+  }
+}

@@ -1,0 +1,272 @@
+---
+name: miran-critique
+description: Measures and reviews Miran Fann work instead of guessing - contact sheets returned as images, critiqueLayout collision, safe-area and frozen-hold checks, critiqueMotion (arcs, eases, lockstep, follow-through), a creative-director review checklist, an independent-reviewer loop, critiqueDesign findings with suggested repairs, validateFinalDesign pass/fail, pixel diffs, text and camera coverage checks, and SVG fidelity verification. Use before claiming anything in Miran looks right, and after every change.
+---
+
+# Measure and look
+
+> **Lean tool list:** a call written below as `name {params}` is `miran.name({params})` inside `runScript` (or `query` when it only looks) unless `name` is in your tool list; exports, jobs, voiceover, downloads and panels stay direct calls.
+
+Miran's advantage is not that it renders — it is that it can **tell you what
+is wrong** with numbers and evidence, and show you the frame. Guessing is the
+alternative, and it loses.
+
+Build with **miran-create**, animate with **miran-motion**, move the camera
+with **miran-camera**, export with **miran-render**.
+
+## Guardrails
+
+- **Never claim it looks right without looking.** `renderContactSheet` returns
+  the grid as an image part: you have eyes on the output. Use them.
+- **Never claim it measures right without measuring.** "Probably fine" is not
+  a state this engine produces; the critics below are.
+- Critique tools are read-only (they never commit), so run them as often as
+  they are useful.
+
+## The loop
+
+```
+renderContactSheet → LOOK → critiqueLayout + critiqueMotion → read findings
+                   → fix one thing → re-render → re-critique → …
+                   → inspectMotionActivity → export
+```
+
+(A design spec from **miran-design** takes `critiqueDesign` and ends in
+`validateFinalDesign`.) One fix per iteration. The findings name what they
+found; changing three things at once makes the next critique unreadable.
+
+## What to look for on every sheet
+
+```
+- [ ] One obvious hero per frame; everything else clearly secondary
+- [ ] Text readable at a glance (>= 28 px body at 1080p), held long enough and still while it is read (`read_in_motion` names words that travel during their read)
+- [ ] No empty frames between scenes (`dead_frame`): the next scene overlaps the last one's exit
+- [ ] Margins consistent (5-8% of the frame); every block of type on one ink edge or centre, `misaligned` at 0; on 9:16 no empty half and type inside `kit.safe({platform})`
+- [ ] Specific to this product (another brand could not reuse the frame) and bold enough to screenshot
+- [ ] The pace the style asked for (the pacing table in **miran-direct**: a launch film changes something every 1-2 s, a calm explainer holds a read longer); a drift is not a change; type alone on a field is a breath, not most of the film; several different devices, not one fade-and-rise
+- [ ] The brand's palette, written with its source in the plan (one accent for calm styles; colour fields for bold ones); not a house look (navy glow, cream-ink-orange, black-and-orange) unless that is the brand
+- [ ] The subject fills its shot: no small window or lone line in a big empty field, no frame of flat colour with nothing on it
+- [ ] Mid-motion frames intentional: no collisions, nothing half-offscreen by accident
+- [ ] Pushes and tilts land clean: no half-word or half-card at the four edges (unless the crop is the design); in a tilt every row stays on its panel, and the UI is read face-on
+- [ ] Motion language consistent: same eases, same stagger, exits faster than entrances
+- [ ] Moves on arcs, eased, staggered, with follow-through somewhere (`critiqueMotion` 85+)
+- [ ] No clip-art primitives (giant circles, default blobs: `critiquePrimitives`), no effect soup
+- [ ] Launch films: the arc readable from six frames, the reveal on the music drop, shot sizes alternating, every camera move motivated, the director's review scored
+```
+
+Name what is wrong in words before fixing it; **miran-direct** section 8 is
+the director's review (ten scores; fix the two lowest before exporting).
+`frames: "auto"` picks the key poses for you: the middle of every scene, a
+few frames either side of each cut and the last frame (scenes come from the
+`Scene N` nulls `kit.scene` makes; without them, 12 evenly spaced frames).
+Every cell is labelled with its frame and time, so a finding names a moment
+you can go back to. Add frames by hand for each push and tilt landing (full
+size with `renderFrame`: a thumbnail hides slivers).
+
+## Contact sheets: the eyes
+
+```json
+{"tool":"renderContactSheet","arguments":{"out":"qa/draft.png","frames":"auto"}}
+```
+
+Returns `{"out":"qa.png","width":…,"frames":3,…}` **plus an image part** — the
+PNG itself, base64, `mimeType image/png`. You are looking at the actual
+rendered frames, including everything that only shows up in pixels: text
+overflow, the wrong font fallback, a matte eating the wrong layer, a chamfer
+that is too hot.
+
+`renderFrame` also returns an image part for single frames. Prefer the sheet:
+four to six beats of the film in one look.
+
+The sheet result also carries `layout`: landed collisions and text past
+the safe area in those frames, measured from geometry (thumbnails hide
+them; `platform` checks it against an app's zones). Fix each one before
+moving on.
+
+## critiqueLayout: the whole film
+
+`critiqueLayout {}` samples every few frames and reports, with frame ranges
+and layer names: text colliding with art or other text (`text-collision`,
+`text-overlap`; a plain shape under the text, like a highlight bar or a
+panel, is design, not a collision), lines through letters
+(`stroke-through-text`: burst rays, rings or connectors crossing a word,
+even while they play; never "intentional", shorten them or tuck them
+under the card), art painted over text (`text-hidden`),
+text on a surface of nearly its own colour, with the contrast ratio
+(`text-low-contrast`: ivory type crossing a white card vanishes), text past the safe
+area (`outside-safe`; on a 9:16 Reels, TikTok or Shorts piece pass `platform:
+"reels"` / `"tiktok"` / `"shorts"` and text under the app's top bar, caption
+block or button column is reported too; `safe` takes a margin fraction or
+`{left, top, right, bottom}`), text under ~2% of the frame height (`tiny-text`,
+about 22 px at 1080p, so 28 px body text is still yours to check), stacked
+lines of one block that share no left edge, right edge or centre (`misaligned`,
+with the offset in px: a must-fix, not a style choice; rebuild the block with
+`kit.lockup`, or give the lines one `at.x`),
+nearly empty frames or one big empty block (`sparse`, `empty-area`, with the
+block's position so you can fill it), and nothing moving for 1.5 s or more
+(`frozen`). Only layers that have landed count, so overlaps while things fly
+in are fine, and a layer in fast transit (a card flung out in a whip) is not
+held to the safe area. On a push's hold `outside-safe` names text layers the
+frame edge cuts or crowds, but words inside imported SVG artwork (a UI mockup)
+are art to it: check those by eye. Run it after the last beat and before
+every export; `sparse` and `empty-area` are notes when calm space is the idea.
+
+## Motion activity: the timing
+
+A sheet cannot show time. `inspectMotionActivity {}` renders the range and
+reports how much of the frame visibly changes each second, the still holds,
+and findings with frame ranges:
+
+- a still hold over ~1 s (add secondary motion or shorten it),
+- a weak opening (the first 2 s calmer than the rest: open on your strongest
+  motion),
+- a frozen ending (keep a slow push or drift on the end card).
+
+Lively work mostly sits at 5-25% activity; above ~35% sustained is frantic.
+Run it on every draft before the final export.
+
+## critiqueMotion: how things move
+
+`critiqueMotion {}` reads the moves themselves (channels, curved paths,
+follows) like an animation director and returns a score, findings with
+layer and frames, and a concrete fix for each:
+
+- `straight_diagonal`: x and y moved as a straight line (move on an arc:
+  `animateProperty {property:"position", to, arc:0.2}`; a path starting on
+  the same frame takes over both axes),
+- `linear_ease`: constant speed on a move that starts or stops on screen,
+- `entrance_accelerates` / `exit_decelerates`: the ease faces the wrong way,
+- `lockstep`: three or more layers starting together with identical timing
+  (a radial burst, ring of dots or petals is one gesture and passes),
+- `uniform_timing`: one duration for almost everything,
+- `no_follow_through`: nothing overshoots, settles or drags behind,
+- `teleport`: a jump too fast to read without motion blur,
+- `empty_opening`: frame 0 shows only the background,
+- `dead_frame`: a stretch mid-film where nothing but the background shows
+  (the gap between one scene's exit and the next entrance; overlap them),
+- `read_in_motion`: words still sliding, swinging or zooming while they are
+  read (land them and hold still for the read; move the camera or the art
+  around them instead; a slow push is fine),
+- `held_before_move`: a layer shows its first move's start value (a flash
+  at 85%, a spark at 2x, full-strength aberration) from its in point until
+  the move begins; set its `in_frame` to the move's start.
+
+It does not judge reveals (a track-matte source, a layer that never shows, a
+cover plate in the colour behind it such as a typing wipe, mask or trim
+animation). A move you chose on purpose, like a constant-speed scroll, goes in
+`ignore: [layer names or ids]` (`renderContactSheet` takes it too); the
+result's `not_judged` lists what was left out. Moves overridden by a later move
+on the same frame are skipped: the critic judges what plays. Retime with `replace: true` or `clearAnimation` so the
+project matches what you see. Aim for 85+. Contact sheet results also carry the findings near their
+frames (`motion`).
+
+## Independent review: builder is not judge
+
+The builder is the worst judge of its own work. When your environment can
+start a fresh agent (a subagent), give it only the rendered film or frames,
+the brief (and the user's own words) and the bar, never your reasoning or what
+you fixed. Ask for a verdict (ship / one more pass), defects ranked by severity
+with timestamps and screen regions (holds, empty space, type cut at the frame
+edge, collisions, transitions, pacing, sound landing on events) and the three
+highest-value fixes, concrete enough to implement. Fix the biggest gap first,
+re-render, and give the next round to a new reviewer that checks each prior item
+as fixed, partly or still present and looks for regressions. Stop when what is
+left is cosmetic.
+
+## critiqueDesign: the numbers
+
+```json
+{"tool":"critiqueDesign","arguments":{"spec":{…},"frame":30}}
+```
+
+Returns:
+
+```json
+{"critique":{"findings":[
+  {"code":"fullscreen-circle","severity":"warning","confidence":0.7,
+   "elements":["frame"],
+   "evidence":"content spans 0,0–1919,1079 (100% of frame) at 0.69 fill: reads as one giant disc",
+   "metrics":{"bbox_fraction":1.0,"fill":0.69},
+   "suggested_repair":"break the disc: crop, mask, or scale below half-frame"}],
+ "inspected_layers":4,"inspected_regions":2},
+ "errors":0,"warnings":1,"score":1}
+```
+
+How to read it:
+
+- `findings[].code` is the machine name; `evidence` is the human reason with
+  the actual measurements; `suggested_repair` is the fix to apply.
+- `errors` must reach **zero**; `warnings` must be *understood* — a warning you
+  can explain is a decision, one you cannot is a defect.
+- Pass `"frame"` to include the pixel lens at that frame — static structure
+  plus what the pixels actually do.
+- Related: `critiquePrimitives` flags dominant full-frame circle/ellipse
+  primitives without an explicit reason (the "AI drew one giant blob" check),
+  and `compareDesigns` diffs two specs at a frame.
+
+## validateFinalDesign: the gate
+
+`validateFinalDesign {spec, frame}` returns `{pass, errors, warnings,
+findings}` — pass requires zero errors. Run it once at the end, after the
+loop converges. Passing does not mean good; it means nothing measured is
+broken. Your judgement on top of a passing gate is the deliverable.
+
+## Pixel diffs: did my change do anything?
+
+```json
+{"tool":"compareImages","arguments":{"a":"before.png","b":"after.png"}}
+```
+
+Returns `fraction` (pixels differing), `edge_mean_norm`, `frac_over_8`,
+`frac_over_32`, and `geometry_edge_confined`. The last one matters: a chamfer
+tweak should be **edge-confined**; if changing the stroke recoloured the
+interior, something else moved. `inspectImage` gives dims, mean colour and
+alpha coverage for one PNG.
+
+After any "small change", diff before/after. If `fraction` is 0, your change
+did nothing and you should find out why before moving on — this is exactly how
+silent parameter no-ops get caught.
+
+## The exported file
+
+`renderVideo` checks what it wrote (`check: true` by default): it decodes the
+file, measures loudness and true peak, size and bitrate, and returns a strip
+of eight frames from the encoded video with its verdict. Look at that strip:
+it is the film as the viewer gets it (a black frame, a frozen tail, banding,
+a missing layer that only the encoder path shows). Fix every `problem` it
+names (silent or very quiet sound, clipping peaks, a file far too big) and
+export again. `checkExport {path}` runs the same check on any file.
+
+## Camera QA
+
+`inspectCameraTrajectory` (the exact renderer pose per frame: ground truth when
+a move renders differently than intended), `inspectCameraCoverage` (focal layers
+off-frame, per frame) and `validateCameraMove` (flips, spikes, margins, focal
+jumps, conflicts). Push rules and tilt limits: **miran-camera**.
+
+## Other gates
+
+- `compareSvgFidelity` — renders the resvg reference against the native
+  vector layer/block and reports PASS/FAIL with metrics. Run it on imported
+  artwork before building on top of it.
+- `validateProtectedSettle` — pixel-verifies protected brand artwork at its
+  settle frame.
+- `validateProject` — validation profiles over the whole project.
+- `inspectTextCoverage` — which fonts were actually used and which glyphs are
+  missing (a fallback changes the look silently).
+- `motionSummary` — channels and drivers per layer; confirms the animation you
+  think exists does.
+
+## Failures you will hit
+
+- **Everything passes and it still looks wrong** — the gates measure structure
+  and pixels, not taste. Name what is wrong in words, translate it into a
+  constraint (`required_elements`, `prohibited_elements`, brand rules), and
+  re-run so the machine can hold that line too.
+- **Score got worse after a repair** — repairs are proposals, not verdicts;
+  `applyRepair` is checkpointed, so restore and take the other finding first.
+
+## Tool reference (generated)
+
+`TOOLS.md` in this folder lists every QA tool with its exact parameters,
+generated from the runtime registry.
