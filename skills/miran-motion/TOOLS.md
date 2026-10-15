@@ -1,7 +1,7 @@
 # Animation and timing — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-18 of 165 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+18 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## setProperty
 
@@ -61,9 +61,9 @@ Install/replace a property driver (keyframes, expression, link, spring, noise).
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `driver` | object | required | — Exactly ONE of these keys. keyframes: multi-key animation. spring: physical settle from `from` to the property's static value. noise: organic wobble. expression: math on time/other properties. link: copy another property. relative: offset an inner driver. static: remove animation |
 | `layer` | string\|integer | required | |
 | `path` | string | required | — transform.position.x|y|z, transform.rotation.x|y|z, transform.scale.x|y|z, transform.opacity, transform.anchor.x|y; fill.color, stroke.color, stroke.width, shape.width|height|radius, text.size|tracking|line_height|weight, effect.<effect>.<param>; trim.start|end|offset; text.value; text.source (the words, for expressions). Short forms (position.x, color, blur) work; expressions also take AE vectors (transform.position, scale, anchorPoint) on both axes |
+| `driver` | object | required | — Exactly ONE of these keys. keyframes: multi-key animation. spring: physical settle from `from` to the property's static value. noise: organic wobble. expression: math on time/other properties. link: copy another property. relative: offset an inner driver. static: remove animation |
 | `replace` | boolean | optional default=false | — Replace a different active driver |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -132,25 +132,25 @@ Animate one property from A to B with an ease or spring. Almost everything anima
 - family: `props` · mutating: `true` · transport: CLI `kinetic tool animateProperty` / SDK `batch([{tool: "animateProperty"}])` / MCP `tools/call {name: "animateProperty"}`
 - history: creates an undo step
 - lean tool list: not listed: call it as `miran.animateProperty(...)` in runScript · inside runScript: yes
-- signature: `animateProperty {layer: string|int, property: string, arc?: number, by?: any, duration_frames?: number [frames], ease?: linear|smooth|camera|snap|ease-in|ease-out|ease-in-out|standard|…, from?: any, interp?: string|object, keyframes?: any[], orient?: boolean|number, replace?: bool = false, start_frame?: number = 0 [frame], to?: any, via?: any[]}`
+- signature: `animateProperty {layer: string|int, property: string, arc?: number, by?: any, duration_frames?: number [frames], ease?: linear|smooth|camera|snap|ease-in|ease-out|ease-in-out|standard|…, from?: any, interp?: string|object, keyframes?: any[], orient?: boolean|number, replace?: bool = false, start_frame?: number = 0 [frame], to?: any, via?: number[][]}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `arc` | number | optional | — position: bow the move into an arc, as a fraction of its length (0.15-0.3 reads natural; + bows left of travel, - right) |
-| `by` | any | optional | — Instead of to: move relative to the value at start_frame (number, or [dx, dy] for position; camera: one number) |
 | `composition` | string\|integer | optional | |
-| `duration_frames` | number | optional | — Move length in frames (e.g. 18 = 0.6 s at 30 fps) |
-| `ease` | string | optional | — Easing name (alias of interp given as a string): smooth, snap, standard, emphasized-decelerate, expressive, linear, spring:snappy, ... Default linear (constant speed). smooth is a strong expo-out (90% of the move in the first third), made for landings, not drifts: for a gentle drift use ease-in-out or standard, or linear. See guide topic=motion |
-| `from` | any | optional | — Start value in the property's units (px, degrees, 1 = 100%, 0..1 opacity, em tracking); "#RRGGBB" for colours, [x, y] for offsets. Omit to start from the current value |
-| `interp` | string\|object | optional | — Easing. A name ("smooth", "snap", "standard", "emphasized-decelerate", "expressive", "linear", "spring:snappy", ...), or {"bezier":[x1,y1,x2,y2]} (CSS cubic-bezier), or {"spring":"bouncy"|{"duration":0.5,"bounce":0.2}}. Default linear. A named spring preset settles over duration_frames with the preset's bounce; an explicit {duration, bounce} spring keeps its own duration |
-| `keyframes` | array | optional | — Instead of from/to/start_frame/duration_frames: [{frame, value, ease}] or [[frame, value], ...]; chained as one move per pair (ease of the earlier key; none = standard, so ease linear for measured curves). setPropertyDriver keyframes for holds and loops (default linear) |
 | `layer` | string\|integer | required | — Layer name/id, or "camera" for comp camera |
-| `orient` | boolean\|number | optional | — position: turn the layer along the path (true, or an extra angle in degrees) |
 | `property` | string | required | — position (to:[x,y], on a curve), position.x|y|z (px, y up), rotation, scale, opacity; fill.color, stroke.color, stroke.width, shape.width|height|radius, text.size|tracking|weight, effect.<effect>.<param> (blur, glow shortcuts); op.<type>.<param> (shape operators); puppet.<pin>.x|y|rotation|scale (puppet pins); trim.end, text.value; procedural.<param>; camera: dolly.x|y|z, crane.pitch|yaw|roll, focal_length |
-| `replace` | boolean | optional default=false | — Remove this property's moves that overlap the new one (retime without clearAnimation) |
-| `start_frame` | number | optional default=0 | — Frame the move starts (default 0); before it the layer holds `from` of the earliest move |
+| `from` | any | optional | — Start value in the property's units (px, degrees, 1 = 100%, 0..1 opacity, em tracking); "#RRGGBB" for colours, [x, y] for offsets. Omit to start from the current value |
 | `to` | any | optional | — End value, same units as from |
+| `by` | any | optional | — Instead of to: move relative to the value at start_frame (number, or [dx, dy] for position; camera: one number) |
+| `arc` | number | optional | — position: bow the move into an arc, as a fraction of its length (0.15-0.3 reads natural; + bows left of travel, - right) |
 | `via` | array | optional | — position: [[x,y], ...] points the move curves through |
+| `orient` | boolean\|number | optional | — position: turn the layer along the path (true, or an extra angle in degrees) |
+| `start_frame` | number | optional default=0 | — Frame the move starts (default 0); before it the layer holds `from` of the earliest move |
+| `duration_frames` | number | optional | — Move length in frames (e.g. 18 = 0.6 s at 30 fps) |
+| `interp` | string\|object | optional | — Easing. A name ("smooth", "snap", "standard", "emphasized-decelerate", "expressive", "linear", "spring:snappy", ...), or {"bezier":[x1,y1,x2,y2]} (CSS cubic-bezier), or {"spring":"bouncy"|{"duration":0.5,"bounce":0.2}}. Default linear. A named spring preset settles over duration_frames with the preset's bounce; an explicit {duration, bounce} spring keeps its own duration |
+| `replace` | boolean | optional default=false | — Remove this property's moves that overlap the new one (retime without clearAnimation) |
+| `keyframes` | array | optional | — Instead of from/to/start_frame/duration_frames: [{frame, value, ease}] or [[frame, value], ...]; chained as one move per pair (ease of the earlier key; none = standard, so ease linear for measured curves). setPropertyDriver keyframes for holds and loops (default linear) |
+| `ease` | string | optional | — Easing name (alias of interp given as a string): smooth, snap, standard, emphasized-decelerate, expressive, linear, spring:snappy, ... Default linear (constant speed). smooth is a strong expo-out (90% of the move in the first third), made for landings, not drifts: for a gentle drift use ease-in-out or standard, or linear. See guide topic=motion |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -293,9 +293,9 @@ Remove moves (animateProperty channels and curved paths) and drivers from a laye
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `from_frame` | number | optional | — Only moves starting at or after this frame |
 | `layer` | string\|integer | required | — Layer name/id, or "camera" |
 | `property` | string | optional | — Omit for every property. A group clears its parts: position (x, y, z and paths), scale, rotation, fill.color |
+| `from_frame` | number | optional | — Only moves starting at or after this frame |
 | `to_frame` | number | optional | — Only moves starting before this frame |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -328,9 +328,9 @@ Move, change, add or delete one property's keys in place: animateProperty moves 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `edits` | array | required | — Edits applied in order, each naming a key by its frame |
 | `layer` | string\|integer | required | — Layer name/id, or "camera" |
 | `property` | string | required | — As inspectLayer names it: transform.position.x, opacity, fill.color (parts move together), ... |
+| `edits` | array | required | — Edits applied in order, each naming a key by its frame |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -368,8 +368,8 @@ Move a layer in time, keys and all: in/out, moves, keyframes, mask keys, text an
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `frames` | number | required | — Frames to move by (negative = earlier) |
 | `layer` | string\|integer | required | |
+| `frames` | number | required | — Frames to move by (negative = earlier) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -395,9 +395,9 @@ Static value, driver, and sampled value at a frame.
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `frame` | number | optional default=0 | — Frame to sample at (default 0) |
 | `layer` | string\|integer | required | |
 | `path` | string | required | — transform.position.x, fill.color, ...; transform.position (or scale, rotation, anchor) gives [x, y, z] |
+| `frame` | number | optional default=0 | — Frame to sample at (default 0) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -434,9 +434,9 @@ Append a range animator (full RangeAnimator JSON).
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `animator` | object | required | — Per-character, per-word or per-line entrance (After Effects' range selector). Friendly form: every unit starts at `from` and springs to its resting pose, staggered left to right. Example: {"from":{"y":-40,"opacity":0},"start_frame":10,"stagger_frames":2,"spring":"snappy"}; add "by":"words" to move whole words. (The native RangeAnimator JSON with offset_* fields and based_on is also accepted.) |
 | `composition` | string\|integer | optional | |
 | `layer` | string\|integer | required | |
+| `animator` | object | required | — Per-character, per-word or per-line entrance (After Effects' range selector). Friendly form: every unit starts at `from` and springs to its resting pose, staggered left to right. Example: {"from":{"y":-40,"opacity":0},"start_frame":10,"stagger_frames":2,"spring":"snappy"}; add "by":"words" to move whole words. (The native RangeAnimator JSON with offset_* fields and based_on is also accepted.) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -483,12 +483,12 @@ Run JavaScript that calls any tool as miran.<toolName>(params) with loops, math 
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `dry_run` | boolean | optional default=false | — Run everything, report the result, then roll the project back (test a script without keeping it) |
-| `images` | boolean | optional default=true | — false: PNGs the script renders stay files (listed under files), not inline images |
-| `label` | string | optional | — Name for the undo step, e.g. "beat 2: stats reveal" (default: first line of the script) |
 | `source` | string | required | — JavaScript function body. Call tools as miran.createLayer({...}) (returns the tool's result, throws on error with .code and .hint); kit.* has ready-made motion-design pieces (kit.title, kit.words, kit.counter, kit.line, kit.ring, kit.card, kit.bars, kit.cursor, kit.wipe, kit.finish, ...; guide {topic:"kit"}); log(...) collects debug lines; range(n), lerp(a,b,t), clamp(x,lo,hi) are available; `return` a value to get it back. No file/network access. |
-| `strict` | boolean | optional | — A misspelled param fails the call (and rolls back) instead of being ignored (default true) |
+| `label` | string | optional | — Name for the undo step, e.g. "beat 2: stats reveal" (default: first line of the script) |
+| `dry_run` | boolean | optional default=false | — Run everything, report the result, then roll the project back (test a script without keeping it) |
 | `timeout_seconds` | number | optional default=45 | (min=1, max=600) — Wall-clock budget (max 50 over MCP so the call returns before the host times out) |
+| `strict` | boolean | optional | — A misspelled param fails the call (and rolls back) instead of being ignored (default true) |
+| `images` | boolean | optional default=true | — false: PNGs the script renders stay files (listed under files), not inline images |
 | `verbose` | boolean | optional default=false | — changes lists every layer touched (default: counts and the first 8 of each list, to keep results short) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -531,13 +531,13 @@ Cut-out characters from SVG: cast (a starter character: ava, ben, kit, pip), rig
 | param | type | required/default | notes |
 |---|---|---|---|
 | `action` | enum["cast"|"rig"|"parts"|"lipsync"] | optional default="rig" | — cast a starter (none: list them with each one's voice and personality), rig an imported SVG character, list its parts, or lip sync it |
-| `at` | array | optional | — cast: where its feet stand (px, y up) |
-| `audio` | string\|integer\|array | optional | — lipsync: voice layer(s); default every line whose speaker is the character |
 | `character` | string | optional | — The name given to importSvg (its layers are <character>/<part>) |
+| `starter` | enum["ava"|"ben"|"kit"|"pip"] | optional | — cast: a starter character to import and rig |
+| `at` | array | optional | — cast: where its feet stand (px, y up) |
+| `height` | number | optional default=600 | — cast: px tall |
 | `composition` | string\|integer | optional | |
 | `frame` | number | optional default=0 | — rig: the rest pose's frame; parts: where pivots are |
-| `height` | number | optional default=600 | — cast: px tall |
-| `starter` | enum["ava"|"ben"|"kit"|"pip"] | optional | — cast: a starter character to import and rig |
+| `audio` | string\|integer\|array | optional | — lipsync: voice layer(s); default every line whose speaker is the character |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -662,11 +662,11 @@ Measure how much the picture moves over time: renders the range and reports, per
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto (default) renders on the GPU when an adapter exists and falls back to the CPU reference otherwise |
 | `composition` | string\|integer | optional | |
-| `end` | integer | optional | — End frame, exclusive (default: the composition duration) |
 | `start` | integer | optional default=0 | — First frame (default 0) |
+| `end` | integer | optional | — End frame, exclusive (default: the composition duration) |
 | `step` | integer | optional default=1 | (min=1) — Sample every Nth frame (1 = every frame; 2 halves the cost on long pieces) |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto (default) renders on the GPU when an adapter exists and falls back to the CPU reference otherwise |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -727,12 +727,12 @@ Parse an expression (syntax + dependency refs); with layer and path also run it 
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `ae_units` | boolean | optional default=false | — Read and write After Effects units |
+| `source` | string | required | — Expression source to parse, e.g. "sin(time * 2) * 40" |
 | `composition` | string\|integer | optional | — Current comp id for bare refs (default main) |
-| `frame` | number | optional default=0 | — Frame to evaluate at (default 0) |
 | `layer` | string\|integer | optional | — Evaluate on this layer |
 | `path` | string | optional | — Property it would drive (transform.position.x, or AE's transform.position / scale for both axes) |
-| `source` | string | required | — Expression source to parse, e.g. "sin(time * 2) * 40" |
+| `frame` | number | optional default=0 | — Frame to evaluate at (default 0) |
+| `ae_units` | boolean | optional default=false | — Read and write After Effects units |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -799,7 +799,7 @@ CLI: `kinetic tool setCompositionField --params '<json>' --workspace ./out`
 
 ## setLayerField
 
-Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur_enabled, position, scale, rotation, anchor; intended: true exempts it from critiqueMotion), motion: follow (overlap, follow-through), squash (stretch with speed), speed (speed ramp), time_remap, posterize (on twos), echo (trails), 3D: light, material, extrude, model, or puppet (pins that bend the artwork), ik (a limb reaches a target).
+Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur_enabled, position, scale, rotation, anchor; intended: true exempts it from critiqueMotion; behind: the cutout a text sits behind, which critiqueLayout keeps it under), motion: follow (overlap, follow-through), squash (stretch with speed), speed (speed ramp), time_remap, posterize (on twos), echo (trails), 3D: light, material, extrude, model, depth (an image layer + a gray depth map = a 3D photo: {asset, scale_px?, near?, far?}), or puppet (pins that bend the artwork), ik (a limb reaches a target).
 
 - family: `scene` · mutating: `true` · transport: CLI `kinetic tool setLayerField` / SDK `batch([{tool: "setLayerField"}])` / MCP `tools/call {name: "setLayerField"}`
 - history: creates an undo step
@@ -809,9 +809,9 @@ Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `field` | string | required | — Which base field to set; see value for each field's format |
 | `layer` | string\|integer | required | |
-| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. intended: bool (true: critiqueMotion leaves this layer's motion out; false clears it). name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...] (frame in this composition; source_frame in the nested composition's own frames). posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
+| `field` | string | required | — Which base field to set; see value for each field's format |
+| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. intended: bool (true: critiqueMotion leaves this layer's motion out; false clears it). behind: the cutout layer (id or name) a text sits behind (kit.textBehind sets it; critiqueLayout reports the text if it paints over that cutout); null clears. depth (an image layer, a 3D photo): {asset: gray map, white near, scale_px: 120, near: 1, far: 0} or the asset name; null clears. name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...] (frame in this composition; source_frame in the nested composition's own frames). posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -956,18 +956,18 @@ Replace a shape layer's geometry/style; add After Effects shape operators (ops: 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `fill` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
-| `geometry` | any | optional | — One of: {"Rect":{width,height}}, {"RoundedRect":{width,height,radius}}, {"Circle":{radius}}, {"Ellipse":{radius_x,radius_y}}, {"Polygon":{sides,radius}}, {"Star":{points,outer_radius,inner_radius}}, {"Path":{points:[{pos:[x,y],in_tangent:[dx,dy],out_tangent:[dx,dy]}],closed}}, {"Polyline":{points:[...]}}. px, y up, centred on the layer origin; tangents are offsets from pos |
-| `gradient` | object\|null | optional | — Gradient fill: {colors:[...], angle} (0 = left to right, 90 = bottom to top), or {stops:[[offset, colour]...], from:[x,y], to:[x,y]}; type radial: center, radius. null removes |
 | `layer` | string\|integer | required | |
-| `ops` | array | optional | — Operators in order, replacing the current list ([] removes): {type:repeater, copies, position:[x,y], rotation, scale, anchor, start_opacity, end_opacity}, {type:offset, amount, copies, copy_offset, join}, {type:wiggle, size, detail, speed, seed, smooth, boil_fps, temporal_phase, spatial_phase}, {type:wiggle_transform, position, rotation, scale, speed}, {type:zig_zag, size, ridges, smooth, per_segment}, {type:pucker_bloat, amount}, {type:twist, angle, center}, {type:round_corners, radius}, {type:path, geometry, position} then {type:merge, mode: union|subtract|intersect|exclude}. Animate params as op.<type>.<param> |
+| `geometry` | any | optional | — One of: {"Rect":{width,height}}, {"RoundedRect":{width,height,radius}}, {"Circle":{radius}}, {"Ellipse":{radius_x,radius_y}}, {"Polygon":{sides,radius}}, {"Star":{points,outer_radius,inner_radius}}, {"Path":{points:[{pos:[x,y],in_tangent:[dx,dy],out_tangent:[dx,dy]}],closed}}, {"Polyline":{points:[...]}}. px, y up, centred on the layer origin; tangents are offsets from pos |
+| `fill` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
+| `stroke_width` | number | optional | (min=0) — Stroke width in layer units; omit for no stroke (kind=shape only) |
+| `stroke_color` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
 | `specular_angle` | number | optional | (min=0, max=360) — Micro-chamfer light angle in degrees (default 45) |
 | `specular_intensity` | number | optional | (min=0, max=1) — Micro-chamfer highlight strength: 0 matte, 1 full specular sweep (default 0.5) |
-| `stroke_color` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
+| `trim` | object | optional | — Resting stroke trim (After Effects Trim Paths): start/end are fractions 0..1 of the outline (closed shapes start at the top centre and run clockwise); offset turns the range around closed shapes (1 = one loop). Draw a stroke on with animateProperty {property:"trim.end", from:0, to:1}. A trimmed shape draws only its stroke. |
+| `ops` | array | optional | — Operators in order, replacing the current list ([] removes): {type:repeater, copies, position:[x,y], rotation, scale, anchor, start_opacity, end_opacity}, {type:offset, amount, copies, copy_offset, join}, {type:wiggle, size, detail, speed, seed, smooth, boil_fps, temporal_phase, spatial_phase}, {type:wiggle_transform, position, rotation, scale, speed}, {type:zig_zag, size, ridges, smooth, per_segment}, {type:pucker_bloat, amount}, {type:twist, angle, center}, {type:round_corners, radius}, {type:path, geometry, position} then {type:merge, mode: union|subtract|intersect|exclude}. Animate params as op.<type>.<param> |
+| `gradient` | object\|null | optional | — Gradient fill: {colors:[...], angle} (0 = left to right, 90 = bottom to top), or {stops:[[offset, colour]...], from:[x,y], to:[x,y]}; type radial: center, radius. null removes |
 | `stroke_gradient` | object\|null | optional | — Gradient stroke, same form as gradient |
 | `stroke_style` | object | optional | — {cap: butt|round|square, join: miter|round|bevel, dash:[on, off, ...] px, dash_offset, taper:{start, end (fractions of the length), start_width, end_width, ease, wave, wavelength, phase}} |
-| `stroke_width` | number | optional | (min=0) — Stroke width in layer units; omit for no stroke (kind=shape only) |
-| `trim` | object | optional | — Resting stroke trim (After Effects Trim Paths): start/end are fractions 0..1 of the outline (closed shapes start at the top centre and run clockwise); offset turns the range around closed shapes (1 = one loop). Draw a stroke on with animateProperty {property:"trim.end", from:0, to:1}. A trimmed shape draws only its stroke. |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 

@@ -1,6 +1,6 @@
 ---
 name: miran-create
-description: Builds and edits Miran Fann scenes - projects, compositions, layers (text, shape, solid, procedural gradients and patterns, image, nested, particle, null, adjustment, audio), typography, fills, strokes and micro-chamfer edges, effects, masks, track mattes, parenting, assets, and runScript for building many layers in one call. Use when creating or modifying a Miran scene or when you need exact parameter shapes for scene tools.
+description: Builds and edits Miran Fann scenes - projects, compositions, layers (text, shape, solid, procedural gradients and patterns, image, nested, particle, null, adjustment, audio), cutout comps from footage, 3D photos, particle matte collision, typography, strokes and micro-chamfer edges, effects, masks, mattes, parenting, assets, and runScript. Use when creating or modifying a Miran scene or when you need exact parameter shapes for scene tools.
 ---
 
 # Building scenes in Miran Fann
@@ -51,28 +51,25 @@ const cards = ["Fast", "Precise", "Beautiful"].map((label, i) => {
 return miran.renderFrame({out: "qa/cards.png"});
 ```
 
-Inside scripts, `kit.*` builds finished pieces from the same tools:
-kinetic words, mask reveals, typing, blur-ins, counters, draw-on lines and
-rings, UI cards, a clicking cursor, charts, colour shifts, glows, SVG parts,
-camera moves on a scene's group (drift, punch, zoom, parallax), transitions
-between scenes and a finishing grade (`guide {topic:"kit"}`;
-`miran.help("kit.name")` lists one piece's options).
+Inside scripts, `kit.*` builds finished pieces from the same tools: kinetic
+words, mask reveals, typing, counters, draw-on lines, UI cards, a clicking
+cursor, charts, glows, SVG parts, camera moves on a scene's group, transitions
+and a finishing grade (`guide {topic:"kit"}`; `miran.help("kit.name")` lists one
+piece's options).
 
 ## Draw in SVG, animate anything
 
-- Anything with detail (icons, illustrations, UI mockups, badges, whole
-  layouts) is best written as SVG markup: `importSvg {svg, name}` (or
-  `kit.svg(markup, opts)`). `viewBox` = composition size maps SVG px 1:1;
-  each top-level `<g id="x">` becomes the layer `<name>/x`, pivoting on its
-  own centre. `trim.end` 0 -> 1 on a layer draws its strokes on
-  (`guide {topic:"svg"}`). Drop shadows and blurs in SVG render natively;
-  read `warnings` in the result for filters kept as a raster.
+- Anything with detail (icons, illustrations, UI mockups, whole layouts) is
+  best written as SVG markup: `importSvg {svg, name}` (or `kit.svg(markup,
+  opts)`). `viewBox` = composition size maps SVG px 1:1; each top-level `<g
+  id="x">` becomes the layer `<name>/x`, pivoting on its own centre. `trim.end`
+  0 -> 1 draws strokes on (`guide {topic:"svg"}`). Read `warnings` for filters
+  kept as a raster.
 - A UI for `kit.screen3d` (the tilted hero shot): one `<g id>` per panel,
-  inset from the screen's edge. Keep a panel's rows and items inside its group,
-  or as their own `<g id>` declared after it and inside it (they ride it), so
-  nothing slides off its card. Draw 1440x900 (face-on it shows at ~0.96x) with
-  UI text at 32 px or more: a tilted wide shot is for shape, not reading.
-  Captions are 2D layers above it, never in the SVG.
+  inset from the screen's edge, its rows and items inside its group (or their
+  own `<g id>` inside it) so nothing slides off its card. Draw 1440x900 with UI
+  text at 32 px or more: a tilted wide shot is for shape, not reading. Captions
+  are 2D layers above it, never in the SVG.
 - `animateProperty` animates the look like CSS: `fill.color` / `stroke.color`
   (hex from/to), `stroke.width`, `fill.opacity`, `shape.width`,
   `shape.height`, `shape.radius`, `text.size`, `text.tracking`,
@@ -85,19 +82,15 @@ between scenes and a finishing grade (`guide {topic:"kit"}`;
 `setShapes {layer, ops, gradient, stroke_gradient, stroke_style}` turns one
 shape into most motion-design graphics (`guide {topic:"shapes"}`):
 
-- `ops` (in order): `repeater` (copies with a cumulative transform and an
-  opacity ramp: rings of dots, bursts, trails), `offset` (grow, shrink,
-  concentric rings), `wiggle` (organic or hand-drawn boiling edges),
-  `zig_zag` (seals, sound waves), `pucker_bloat`, `twist`,
-  `round_corners`, `path` + `merge` (union, subtract, intersect, exclude:
-  cut-outs and rings). Every numeric param animates as
-  `op.<type>.<param>` (`op.repeater.copies`, `op.offset.amount`).
+- `ops` (in order): `repeater` (rings of dots, bursts, trails), `offset`
+  (grow, shrink, concentric rings), `wiggle` (boiling edges), `zig_zag` (seals,
+  sound waves), `pucker_bloat`, `twist`, `round_corners`, `path` + `merge`
+  (union, subtract, intersect, exclude). Every numeric param animates as
+  `op.<type>.<param>` (`op.repeater.copies`).
 - `gradient` / `stroke_gradient`: `{colors, angle}` or `{stops, from, to}`,
   `type: "radial"`. Gradient text: the `gradient_overlay` effect.
-- `stroke_style`: caps, joins, dashes, and `taper` (brush-like strokes
-  that thin toward the ends, optionally rippling).
-- Ready-made: `kit.burst`, `kit.ripple`, `kit.loader`, `kit.blob`,
-  `kit.sketch`.
+- `stroke_style`: caps, joins, dashes, and `taper` (brush-like strokes).
+- Ready-made: `kit.burst`, `kit.ripple`, `kit.loader`, `kit.blob`, `kit.sketch`.
 
 ## Text boxes, draw-on strokes, counters
 
@@ -105,12 +98,11 @@ shape into most motion-design graphics (`guide {topic:"shapes"}`):
   the size plus a box per line and per word, in layer and composition px:
   place pills, underlines, cursors or per-word layers exactly on the text.
 - Any stroked shape draws on with `animateProperty` on `trim.end` (0 -> 1);
-  `trim.start` erases, `trim.offset` spins the drawn part around. Give it a
-  transparent fill (`#00000000`); `setShapes {trim:{end:0.7}}` leaves it part
-  drawn (a gauge).
+  `trim.start` erases, `trim.offset` spins the drawn part. Give it a transparent
+  fill (`#00000000`); `setShapes {trim:{end:0.7}}` leaves it part drawn.
 - `setTextContent {layer, counter:{to, from, duration_frames, suffix, prefix, decimals, thousands}}`
-  makes a text layer count; add `style: "duration", pattern: "m:ss"` (or `mm:ss`,
-  `h:mm:ss`, `words`) to count seconds as a clock or "14 min 10 s".
+  makes a text layer count; `style: "duration", pattern: "m:ss"` counts seconds
+  as a clock.
 
 ## Layer kinds
 
@@ -124,27 +116,23 @@ composition), `particle` (`setParticles`), `null`
 (parent/controller), `adjustment` (its effects apply to everything below),
 `audio`.
 
-Good backgrounds: a `radial_gradient` from a slightly lifted centre into
-near-black, low-contrast; never a saturated full-frame rainbow or a giant
-default circle (`critiquePrimitives` flags the circle).
+Good backgrounds are low-contrast; never a saturated full-frame rainbow or a
+giant default circle (`critiquePrimitives` flags the circle).
 
 ## Typography (1080p video)
 
 Choose the family for the brand and style, not by habit: `guide
 {topic:"fonts"}` lists the macOS families that render well by mood, with
-pairings and sizes. Headlines 96-140 px (display statements
-160-400) at weight 700 with tracking -0.02..-0.04 em; subheads about a
-third of the headline (40-48 px); body, UI text, labels and captions 28-36
-px (never under 28 in a 1080p frame); small uppercase labels with
-+0.1..+0.2 em. `tracking` is **em**, not
-px. Check the font actually used with `measureText` (`families_used`):
-missing families fall back, and the `warnings` of the text calls name them
-and any glyph the font lacks (a star in SF Mono draws as a gap). Installed
-families need no network (`importFont {list: true, query: "rounded"}`); any
-Google font loads by name: `importFont {family: "Inter Tight 600"}` (cached, licence
-recorded), then `setTextStyle {font_family: "Inter Tight", font_weight:
-600}`. Variable fonts (SF Pro, New York, most Google fonts) take any
-weight 100-900, and `text.weight` animates. Colour single characters (an
+pairings and sizes. Headlines 96-140 px (display statements 160-400) at weight
+700 with tracking -0.02..-0.04 em; subheads about a third of the headline;
+body, UI text, labels and captions 28-36 px (never under 28 in a 1080p frame);
+small uppercase labels with +0.1..+0.2 em. `tracking` is **em**, not px. Check
+the font actually used with `measureText` (`families_used`): missing families
+fall back, and the `warnings` of the text calls name them and any glyph the font
+lacks. Installed families need no network (`importFont {list: true, query:
+"rounded"}`); any Google font loads by name: `importFont {family: "Inter Tight
+600"}`, then `setTextStyle {font_family: "Inter Tight", font_weight: 600}`.
+Variable fonts take any weight 100-900, and `text.weight` animates. Colour single characters (an
 accent full stop, one word) with `setTextStyle {layer, colors: [{match:
 ".", color}]}` instead of extra layers.
 
@@ -174,17 +162,15 @@ on `kind:"shape"` (text: `setTextStyle`; SVG nodes: `setVectorStroke`).
   (not opacity); its position becomes relative to the parent, so it jumps
   unless `keep_world: true`.
 - `setLayout {layer, children, direction, gap, padding, align, justify,
-  wrap, width, height}`: auto layout (flexbox, like Figma). A null, shape
-  or solid places its children in a row, column or grid every frame; text
-  is measured, so longer copy re-flows and a card background hugs its
-  content. Children's positions become offsets on their slots (entrances
-  still work); `layout.gap` / `layout.padding` / `layout.order` animate.
-  `setLayoutItem` takes a child out of the flow or lets it grow. In
-  scripts: `kit.stack`, `kit.row`, `kit.grid` (`guide {topic:"layers"}`).
-- `precompose {layers, name}`: moves layers into a new composition placed
-  as one layer (the frame stays identical); parents, mattes and
-  expression targets they need come along. `move_attributes: false`
-  nests one layer's content and keeps its transform, effects and masks
+  wrap, width, height}`: auto layout (flexbox, like Figma). A null, shape or
+  solid places its children in a row, column or grid every frame; text is
+  measured, so longer copy re-flows and a card background hugs its content.
+  `layout.gap` / `layout.padding` / `layout.order` animate; `setLayoutItem`
+  takes a child out of the flow or lets it grow. In scripts: `kit.stack`,
+  `kit.row`, `kit.grid` (`guide {topic:"layers"}`).
+- `precompose {layers, name}`: moves layers into a new composition placed as
+  one layer (the frame stays identical); parents, mattes and expression targets
+  come along. `move_attributes: false` keeps the transform, effects and masks
   outside (`guide {topic:"layers"}`).
 - `sceneGraph` prints parenting and matte edges.
 
@@ -195,14 +181,15 @@ on `kind:"shape"` (text: `setTextStyle`; SVG nodes: `setVectorStroke`).
   height}` imports the file and sizes it to the box. A video layer also
   takes `start_frame` (where it starts), `src_in` / `src_out` (trim, in
   seconds) and `speed`; it ends with its clip.
-- Product screens: write them as HTML and `importHtml {html, width,
-  height}`: Chrome lays them out (real fonts, flexbox, grid, shadows) and
-  each element with an `id` comes back as its own layer, ready to animate.
-  A public site: `captureSite {url, place: true}` photographs it and reads
-  its palette, fonts and logo. `guide {topic:"ui"}` has both.
+- Product screens: write them as HTML and `importHtml {html, width, height}`:
+  Chrome lays them out and each element with an `id` comes back as its own
+  layer. A public site: `captureSite {url, place: true}` photographs it and
+  reads its palette, fonts and logo. `guide {topic:"ui"}` has both.
 - Art the engine cannot draw (a painted plate, an illustration, a texture):
   `generateImage {prompt, aspect, svg}` saves an image, and its SVG trace,
-  in the film folder with the user's OpenRouter key (`guide {topic:"ui"}`).
+  in the film folder with the user's OpenRouter key (`guide {topic:"ui"}`). The
+  generation keys are OpenRouter, fal and Replicate; on `no-key` the user adds
+  one in Miran Settings (`openSettings`), never in chat.
 - Code: `kit.code(src, {lang, file, numbers, reveal, highlight})` builds an
   editor panel with token colours that reveals by line or types.
 - Diagrams: `kit.arrow(a, b, {label, curve})` connects two layers edge to
@@ -211,10 +198,24 @@ on `kind:"shape"` (text: `setTextStyle`; SVG nodes: `setVectorStroke`).
   id; `importAssetFolder` / `inferAssetRoles` for brand folders; SVG artwork
   as editable vectors via `importSvg` (**miran-design**).
 
+## Layers made from footage and images
+
+- **Cutout comps.** `cutout` (a direct call, **miran-edit**) lifts a person or
+  subject off a clip and places it as a nested comp layer named `<clip> cutout`
+  or `<clip> subject`: picture and matte together, so moving it moves both. A
+  layer between the clip and the cutout sits behind the person.
+- **3D photo.** An image layer with a depth map is a 3D photo: `cutout {action:
+  "depth", layer}` on the image, or `setLayerField {field: "depth", value:
+  {asset, scale_px, near, far}}` (white is near). `kit.parallax3d` moves the
+  camera over it; keep the move small.
+- **Matte collision.** `setParticles {collide: {matte: "<clip> cutout"}}` makes
+  particles bounce off, stick to or die on a layer's real outline (a person, a
+  logo, text, SVG); `threshold`, `bounce`, `friction`, `on_hit`. A hidden layer
+  still collides.
+
 ## Guardrails
 
-- Preserve user changes: `listLayers` / `inspectProject` before restructuring;
-  never delete to "clean up".
+- Preserve user changes: `listLayers` / `inspectProject` before restructuring.
 - `createCheckpoint` before risky sweeps; `batch` and `runScript` are atomic.
 - Paths stay inside the workspace.
 - Do not claim a scene looks right without rendering and looking at it.

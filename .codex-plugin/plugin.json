@@ -1,7 +1,7 @@
 {
   "name": "miran",
-  "version": "0.1.4",
-  "description": "Motion graphics, directed by your agent: the Miran Fann GPU engine on your Mac (scenes, motion, 3D camera, sound, voice, critique and render tools, plus a live viewer) and eight skills that teach your agent to direct and make finished films.",
+  "version": "0.1.5",
+  "description": "Motion graphics, directed by your agent: the Miran Fann GPU engine on your Mac (scenes, motion, 3D camera, sound, voice, critique and render tools, plus a live viewer) and nine skills that teach your agent to direct and make finished films.",
   "author": {
     "name": "rakibulrocky14"
   },

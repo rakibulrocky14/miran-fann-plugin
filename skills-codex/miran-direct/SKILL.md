@@ -76,22 +76,19 @@ Board (frames | part | size | picture | camera and reason | device | join out):
   840-900  end      -       the dot becomes the mark; wordmark, line, url        a sheen once              kit.endcard    -
 ```
 
-The recipe in section 7 builds these blocks as seven scenes to stay short;
-split yours into the board's shots.
+The recipe in section 7 builds these as seven scenes; split yours into shots.
 
-Research means real material. Find the product's or story's facts, its
-real interface, its real words and numbers, its brand colours, type and
-logo: `captureSite {url}` photographs a public site and reads its palette,
-fonts, logo and headline; `brand {action: "capture", url}` saves them as a
-brand. Write each screen the film needs as HTML and CSS (`importHtml`, one
-`id` per part that moves): Chrome lays it out with real fonts and shadows,
-which positioned SVG never matches. An app everyone knows (a chat, a phone's
-settings, a feed) is judged against the real one: copy its layout, spacing,
-icons and type at its real size (a phone screen is 390 x 844 points). The
-user's screen recordings are the best material of all (`createLayer {kind:
-"video"}`, `kit.zoomFollow`). Show the interface itself, big, and push into
-it: a laptop or phone drawn from shapes around it looks cheap next to real
-UI (`kit.screen3d {bezel}` gives a clean device edge). AI products show the
+Research means real material: the product's or story's facts, its real
+interface, words and numbers, brand colours, type and logo (`captureSite
+{url}` reads a public site's palette, fonts, logo and headline; `brand {action:
+"capture", url}` saves them). Write each screen as HTML and CSS (`importHtml`,
+one `id` per part that moves): Chrome lays it out with real fonts and shadows,
+which positioned SVG never matches. An app everyone knows is judged against the
+real one: copy its layout, spacing, icons and type at real size (a phone screen
+is 390 x 844 points). The user's screen recordings are the best material of all
+(`createLayer {kind: "video"}`, `kit.zoomFollow`). Show the interface itself,
+big, and push into it; a laptop or phone drawn from shapes looks cheap next to
+real UI (`kit.screen3d {bezel}` gives a clean device edge). AI products show the
 task, the steps and the result, never brains, robots, swirls or circuit
 boards. Material you could not get is designed in the product's style and
 listed as invented in the final report.
@@ -113,12 +110,11 @@ Wide to tight says "this matters"; tight to wide is a reveal (context,
 scale). A feature or an action reads wide (where), close (what), macro
 (the moment), medium (the result).
 
-**Composition.** One focal point per frame, sitting on a third, not dead
-centre, unless the shot is about symmetry (a logo, a keynote title).
-Leave lead room in the direction something moves or looks. Build depth in
-three planes (foreground, subject, background) and move them at different
-speeds (parallax). Big against small: a 300 px word beside a 40 px label,
-a macro detail against a wide.
+**Composition.** One focal point per frame, on a third, not dead centre,
+unless the shot is about symmetry (a logo, a keynote title). Leave lead room in
+the direction something moves or looks. Build depth in three planes and move
+them at different speeds (parallax). Big against small: a 300 px word beside a
+40 px label, a macro against a wide.
 
 **Camera: every move has a reason**, starts on the action that motivates
 it (a click, a cut, a beat, a line of dialogue) and eases into its landing:
@@ -142,6 +138,16 @@ drifts are for holds only, never the hero move.
 and B on the right looks left in every shot (the 180-degree line);
 `kit.dialogue` keeps it.
 
+**Editing grammar.** Cut on action: hide the cut inside a movement (a hand
+rising, a head turn, a click) and the eye never sees it. Cut where the eye is
+going: the next shot's subject sits where the last shot's gaze ended, so the
+viewer does not hunt (`critiqueEdit` checks the eye trace). Let sound cross
+the cut: a J cut brings the next shot's sound in first, an L cut lets a line
+finish over the reaction (`edit jl`, `kit.transition {lead}`). Pace is varied
+length: a cut is a beat, a hold a breath; cut faster as energy rises, let the
+payoff breathe, and never cut every shot to one length (a metronome).
+Footage work: **miran-edit**.
+
 **Joining shots.** An editor's default is the hard cut, on a beat: most
 joins in a good film are cuts. A transition is an event, so it goes where
 the idea changes, and what the two shots share picks it:
@@ -158,10 +164,9 @@ the idea changes, and what the two shots share picks it:
 
 Carry motion through the cut: the outgoing move's direction and speed
 continue in the next shot, or the cut lands on a stop, on purpose. Give the
-film one transition language: one or two of these, travelling one way, and
-one special join kept for the reveal or the payoff. A background
-colour changes with the chapter, not with every shot, and the join brings
-it in.
+film one transition language (one or two of these, travelling one way) and one
+special join kept for the reveal. A background colour changes with the
+chapter, not every shot, and the join brings it in.
 
 ## 3. Structure by kind of film
 
@@ -182,13 +187,13 @@ A 15 s cut keeps the cold open, the reveal, one feature and the end card.
 A teaser that does not show the product yet builds the motif toward the
 name instead of a demonstration.
 
-**Explainer or product demo.** Hook (the problem in one image, 0-3 s);
-how it works in three steps, one idea each, 3-5 s per step, cause and
-effect on screen; the result (the before and after, or the number); the
-call to action. The voice leads: write and record it first, land every
-picture change 2-4 frames before its word (`kit.when("word")`). The
-cursor is an actor: it travels on an arc, slows before its target, pauses
-4-6 frames, clicks (`kit.cursor`). Typing is edited, never real time.
+**Explainer or product demo.** Hook (the problem in one image, 0-3 s); how it
+works in three steps, one idea each, 3-5 s per step, cause and effect on
+screen; the result (the before and after, or the number); the call to action.
+The voice leads: record it first, land every picture change 2-4 frames before
+its word (`kit.when("word")`). The cursor is an actor: it travels on an arc,
+slows before its target, pauses, clicks (`kit.cursor`). Typing is edited, never
+real time.
 
 **Dialogue cartoon or character piece.** Establish (a wide of who and
 where, 2-3 s); the want or the problem; escalation in three beats, each
@@ -206,21 +211,18 @@ after the punchline, with its sound); the end card. Acting sells it:
   55-75% of the frame height in dialogue shots, `kit.life` under everything
   so nobody freezes.
 
-**Social short (9:16).** The hook in the first second (motion and a
-claim, never a logo), a payoff every 3-5 s, captions on every spoken word
-(three words a phrase, below the centre), the full height composed (art in
-the lower third, type in tiers; `kit.safe({platform: "reels"})`), an
-ending that loops into the start.
+**Social short (9:16).** The hook in the first second (motion and a claim,
+never a logo), a payoff every 3-5 s, captions on every spoken word (three words
+a phrase, below the centre), the full height composed (`kit.safe({platform:
+"reels"})`), an ending that loops into the start.
 
-**Brand film or title sequence.** One motif transforming through the
-whole piece (a line becoming the logo, a shape morphing per beat), the
-music leading every cut, type used as image (huge, cropped, masked), the
-name revealed slowly and last.
+**Brand film or title sequence.** One motif transforming through the piece (a
+line becoming the logo), the music leading every cut, type used as image (huge,
+cropped, masked), the name revealed slowly and last.
 
 **Data story.** One number per shot, huge, landing on a beat; the chart
-building is the drama (bars racing, a line drawing on); before then
-after; the annotation arrives with the hit; the source in small type on
-the frame that shows it.
+building is the drama (bars racing, a line drawing on); before then after; the
+source in small type on the frame that shows it.
 
 **Pacing.** The one table every other skill points to:
 
@@ -231,8 +233,7 @@ the frame that shows it.
 | Keynote reveal | one idea per beat, 2-3 s holds | a slow push, a light sweep, one motif carried through |
 | Dialogue cartoon | the joke's timing: silence before the punchline | acting, reactions, cutting between shots |
 
-A drift alone does not keep a hold alive. Vary shot lengths: a film
-breathes when they differ.
+A drift alone does not keep a hold alive.
 
 ## 4. Timing spine: music or voice first
 
@@ -253,21 +254,18 @@ build, stop, drop, ending as `[start, end]` frames), `bar_frames`,
 | `ending` | the end card, the last chord ringing out | 4 beats or more |
 
 Section changes cut on downbeats, cuts inside a section on beats:
-`kit.snap(frame, m, {to: "bar"})` moves a frame you chose onto the grid.
-A transition's `at` goes on the grid too (its sound peaks on the cut).
-Sound leads picture: `kit.transition({at, lead: 6})` starts the next
+`kit.snap(frame, m, {to: "bar"})` moves a frame onto the grid, a transition's
+`at` too. Sound leads picture: `kit.transition({at, lead: 6})` starts the next
 scene's sounds 6 frames early (a J-cut).
 
 **Voice.** Explainers and cartoons are timed by the words: `voiceover
 {script}` or `kit.dialogue(lines, {dry: true})` first, then every beat on
-`kit.when("word")`. Size the composition to the dialogue's `end` plus an
-ending beat of 2-4 s. The words set the length: a brief's "2 minutes" aims
-the script, and a voice that runs longer makes a longer film. Shorten it by
-cutting words and voicing again, never by speeding the narration up or
-cutting a line before its last word.
+`kit.when("word")`. Size the composition to the dialogue's `end` plus an ending
+beat of 2-4 s. The words set the length: a brief's "2 minutes" aims the script,
+and a longer voice makes a longer film. Shorten by cutting words and voicing
+again, never by speeding the narration up or cutting a line before its last word.
 
-Once the board's blocks are in, export a `draft` and watch the pacing
-before polishing anything.
+Once the blocks are in, export a `draft` and watch the pacing before polishing.
 
 ## 5. Design system: decide in numbers, once
 
@@ -287,14 +285,12 @@ before polishing anything.
   (a serif headline with a sans, a heavy sans with a mono for data); at most
   about seven words on screen outside the UI. These numbers are the ones
   every other skill and guide uses.
-- **Grid and alignment**: 8-9% safe margins. One alignment axis per shot:
-  a left block's lines share one ink edge, a centred block one centre, a
-  label sits on its headline's edge (never under its middle), icons and
-  marks align to the cap height. Build every block of type with
-  `kit.lockup` (end cards `kit.endcard`): it measures the ink, so lines
-  line up exactly; titles placed one by one miss by 15-200 px.
-  `critiqueLayout` reports a block that almost lines up as `misaligned`.
-  Art stays out of the text column.
+- **Grid and alignment**: 8-9% safe margins. One alignment axis per shot: a
+  left block's lines share one ink edge, a centred block one centre, a label
+  sits on its headline's edge, icons and marks align to the cap height. Build
+  every block of type with `kit.lockup` (end cards `kit.endcard`): it measures
+  the ink; titles placed one by one miss by 15-200 px (`critiqueLayout` reports
+  `misaligned`). Art stays out of the text column.
 - **Light**: one direction for the whole film (gradients, glows and
   shadows agree), a soft light behind the hero (`kit.spot`), a sweep across
   it at the payoff (`kit.sheen`), depth behind the subject (a faint grid,
@@ -304,21 +300,19 @@ before polishing anything.
   durations (8-12 frames small, 18-24 normal, 30-36 the hero), entrances
   staggered 2-4 frames, moves on arcs (`kit.move {arc}`), overlap and
   follow-through (`kit.follow`, `kit.inertia`).
-- **Cartoons**: one character size on the set, one line weight, a set
-  drawn 1.2x the frame (bleed) so close-ups never show an edge.
+- **Cartoons**: one character size, one line weight, a set drawn 1.2x the
+  frame so close-ups never show an edge.
 
 ## 6. Styleframes before animation
 
-Build the three key frames as finished stills before animating anything:
-the opening, the signature shot and the end card. Render them
-(`renderFrame`) and judge each as a poster: one hero, the committed
+Build the opening, the signature shot and the end card as finished stills
+before animating anything. Render them (`renderFrame`) and judge each as a poster: one hero, the committed
 palette, the real product or character on screen, type sized and aligned
 (no `misaligned`), light and depth behind the subject, a frame no other
 brand could use. Then say which of your usual defaults showed up (centred
 text fading in, one ease, a glow and a gradient, the default sans,
 identical cards) and change each one that is not deliberate for this
-subject. Fix the frames until they hold up; they set the bar for every
-other shot. Then animate.
+subject. Fix them until they hold up; they set the bar for every other shot. Then animate.
 
 ## 7. Recipes: the shots films are made of
 
@@ -409,8 +403,8 @@ kit.transition({at: 540, style: "push", dir: "left", lead: 6});
 return miran.renderContactSheet({frames: [40, 150, 262, 300, 370, 480, 600, 700, 885], columns: 3, out: "qa/board.png", scale: 0.5});
 ```
 
-A dialogue beat is staged and timed with `kit.dialogue` (miran-video "Dialogue
-cartoons"; `guide {topic:"characters"}` has a whole runnable two-hander).
+A dialogue beat is staged and timed with `kit.dialogue` (`guide
+{topic:"characters"}` has a runnable two-hander).
 
 ## 8. The director's review
 
@@ -439,6 +433,6 @@ lowest and look once more (one pass, not a loop):
 10. **Motif, payoff and ending**: the motif pays off in the signature
     shot; the end card is alive and the music resolves.
 
-Then look at the sheet with the notes in miran-video ("Review") and run
-the lazy-defaults check ("Craft as tests"). `guide {topic:"directing"}` and `guide {topic:"characters"}` go
-deeper on launch films and character animation.
+Then look at the sheet with the notes in miran-video ("Review") and run the
+lazy-defaults check ("Craft as tests"). `guide {topic:"directing"}` and
+`guide {topic:"characters"}` go deeper.

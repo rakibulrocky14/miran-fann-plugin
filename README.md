@@ -11,8 +11,9 @@ effects and a voice, reviews its own frames, and exports MP4, HEVC or ProRes.
 
 - **The Miran Fann MCP server**: tools for scenes, motion, camera, design,
   critique, sound and render, plus a live timeline viewer in your browser.
-- **Eight skills** that teach Claude how to direct:
+- **Nine skills** that teach Claude how to direct and edit:
   - `miran-video` makes a whole film, from brief to export.
+  - `miran-edit` edits real footage, from logging to delivery.
   - `miran-direct` covers concept, board, pacing, cutting and review.
   - `miran-create` builds layers, type and effects.
   - `miran-motion` animates like an animator.
@@ -26,7 +27,12 @@ from there.
 
 ## Requirements
 
-- A Mac with Apple Silicon (M1 or later). Windows and Linux are not supported yet.
+- A Mac with Apple Silicon (M1 or later) on macOS 14 or later (stable), or Linux (x64
+  or arm64, glibc 2.35+; in beta). On Windows (in alpha), install with `npx miran-fann setup` instead of
+  this plugin. Tell us what breaks: [issues](https://github.com/rakibulrocky14/miran-fann-plugin/issues).
+- Some features need a newer macOS: slow motion 15.4, transcripts, translation,
+  describing footage and learned upscale and denoise 26. `record` (macOS 15)
+  asks for Screen Recording permission for the app that runs Claude.
 - A Google account. The engine asks you to sign in once, in your browser.
 
 ## Install
@@ -37,8 +43,11 @@ This repo is also the `miran` plugin marketplace.
   `/plugin install miran@miran`.
 - **Codex**: `codex plugin marketplace add rakibulrocky14/miran-fann-plugin`, then
   `codex plugin add miran@miran`.
-- **ZCode**: add the marketplace `rakibulrocky14/miran-fann-plugin` in its plugin
-  settings and install Miran Fann.
+- **Muse Code**: `muse plugins marketplace add miran https://github.com/rakibulrocky14/miran-fann-plugin.git`,
+  then `muse plugins install miran@miran` and `muse plugins approve plugin:miran:mcp_server:miran`
+  (Muse asks you to trust a plugin's MCP server once).
+- **ZCode**: use `npx miran-fann setup`. ZCode 0.16 accepts a GitHub marketplace
+  without adding it, so setup installs its own copy.
 - **Everything at once**: `npx miran-fann setup` installs the engine and adds the
   plugin to each of those apps it finds.
 
@@ -57,9 +66,9 @@ The plugin starts `scripts/miran-mcp`. That script looks for the engine at
 `~/.miran/bin/miran`.
 
 If the engine is missing, or older than the version this plugin was released
-with (0.1.4), the script:
+with (0.1.5), the script:
 
-1. Downloads the npm package `miran-darwin-arm64@0.1.4` from
+1. Downloads the npm package `miran-darwin-arm64@0.1.5` from
    `https://registry.npmjs.org` (about 20 MB).
 2. Checks the download against the SHA-512 written in the script.
 3. Installs the one binary inside it to `~/.miran/bin/miran`.
@@ -86,11 +95,23 @@ no project.
 
 Everything else happens only when you or Claude ask for it:
 
-- the built-in voice model (Hugging Face, GitHub);
-- cloud voices and generated images with your own keys (Google Gemini,
-  ElevenLabs, OpenRouter);
+- models downloaded the first time a feature needs them, pinned and checked:
+  the built-in voice (about 350 MB; Hugging Face, GitHub), subject cutouts
+  (about 94 MB) and depth (about 50 MB; Hugging Face), and voice cleanup
+  (about 8 MB; GitHub);
+- generated images, video, music and edits with your own keys (OpenRouter, fal,
+  Replicate): the prompt and the files Claude passes go straight to that one
+  provider and are billed to your account;
+- cloud voices with your own keys (Google Gemini, ElevenLabs);
 - icon and animation search (Iconify, LottieFiles) and web fonts (Google Fonts);
 - websites you ask it to capture.
+
+Footage is read on your Mac and leaves it only inside a generate call it is
+passed to. Screen recordings stay on your Mac, and so does the key that signs
+content credentials (it is kept in your Keychain). Every outbound request is
+listed in `~/.miran/network.jsonl` and in Miran Settings (time, tool, host and
+path, bytes, status; never a key or a prompt). The **Local only** switch in
+Settings stops all of them except sign-in, feedback and the update check.
 
 API keys you add are kept in your macOS Keychain.
 

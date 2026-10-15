@@ -1,7 +1,7 @@
 # Building scenes — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-51 of 165 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+51 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## newProject
 
@@ -37,8 +37,8 @@ Open a project JSON file from the workspace, or the autosave of the last session
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `autosave` | boolean\|string | optional | — true: restore the autosave instead of a file; "previous": the one before this session's first change |
 | `path` | string | optional | — Workspace-relative .json path |
+| `autosave` | boolean\|string | optional | — true: restore the autosave instead of a file; "previous": the one before this session's first change |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -126,17 +126,17 @@ Add a composition (rational fps supported).
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `background` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
-| `duration` | number | optional | — Length in seconds (when duration_frames is not given); setCompositionField changes it later |
-| `duration_frames` | integer | optional | (min=1) — Length in frames (default 60; e.g. 300 = 10 s at 30 fps) |
-| `fps` | number | optional | — Float fps; ignored when fps_num given |
-| `fps_den` | integer | optional | — Rational denominator, e.g. 1001 |
-| `fps_num` | integer | optional | — Rational numerator, e.g. 30000 |
-| `height` | integer | required | (min=1) — Frame height in px (even numbers for video export; 1080 for 1080p, 1920 for a 9:16 vertical) |
 | `id` | string | optional | — Unique id (default comp_N) |
 | `name` | string | optional | — Display name (tools also accept it as a selector) |
-| `transparent` | boolean | optional | — Alpha output: no background fill (default false) |
 | `width` | integer | required | (min=1) — Frame width in px (even numbers for video export; 1920 for 1080p, 3840 for 4K) |
+| `height` | integer | required | (min=1) — Frame height in px (even numbers for video export; 1080 for 1080p, 1920 for a 9:16 vertical) |
+| `fps` | number | optional | — Float fps; ignored when fps_num given |
+| `fps_num` | integer | optional | — Rational numerator, e.g. 30000 |
+| `fps_den` | integer | optional | — Rational denominator, e.g. 1001 |
+| `duration_frames` | integer | optional | (min=1) — Length in frames (default 60; e.g. 300 = 10 s at 30 fps) |
+| `duration` | number | optional | — Length in seconds (when duration_frames is not given); setCompositionField changes it later |
+| `background` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
+| `transparent` | boolean | optional | — Alpha output: no background fill (default false) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -229,44 +229,44 @@ Add a layer (shape, text, solid, null, image, video, nested, particle, adjustmen
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `align` | string | optional | — text: left, center or right |
-| `asset` | string | optional | — Asset id or name for image, video, audio and model layers |
 | `composition` | string\|integer | optional | — Comp id, name, or index (default 0) |
-| `fill` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
-| `fit` | enum["contain"|"cover"|"stretch"|"crop"] | optional | — image/video: in its box (contain) |
-| `font` | string | optional | — text: font_family |
-| `font_family` | string | optional | — text: family |
-| `font_size` | number | optional | — Font size in px for kind=text (default 32) |
-| `font_style` | string | optional | — text: normal or italic |
-| `font_weight` | number | optional | — text: 100-900 |
-| `gradient` | object | optional | — shape: a gradient fill (as setShapes) |
-| `height` | number | optional | — Height in px for shape rect/rounded/ellipse and solid (default 100) |
-| `kind` | string | required | — shape (vector geometry), text, solid (flat rect), null (invisible parent/controller), image (needs asset), nested (another composition, needs target), particle, adjustment (applies its effects to everything below), procedural (gradient/noise/pattern generator, see proc), audio (needs asset) |
-| `light` | object | optional | — kind=light: {type: point|spot|parallel|ambient, color, intensity, target [x,y,z], cone_angle, cone_feather, falloff, radius, casts_shadows, shadow_darkness, shadow_diffusion} |
-| `line_height` | number | optional | — text: multiplier of size |
-| `max_width` | number | optional | — text: wrap width in px |
-| `model` | object | optional | — kind=model: {size (px of its largest side, default 400), animation (name or index; "none" holds the rest pose; default the first), speed, loop, offset (s)} |
 | `name` | string | required | — Layer name; give every layer a unique, descriptive name ("Headline", "Card BG") and address it by name later |
-| `opacity` | number | optional | (min=0, max=1) — 0..1 (default 1) |
-| `params` | object | optional | — Procedural params for kind=procedural (name -> number), e.g. {"scale": 6.0} |
-| `path` | string | optional | — image/video: a workspace file to import |
-| `position` | array | optional | — Layer centre in px, +x right, +y UP; a 3rd element is z depth (3D layers) |
-| `proc` | string | optional | — Procedural kind for kind=procedural: linear_gradient, radial_gradient, angular_gradient, mesh_gradient, grid, dot_grid, noise, contours, turbulence, stripes, wave_field, sdf_shape, checker, scanlines (default noise) |
-| `radius` | number | optional | — Corner radius in px for shape=rounded (default 8); radius for shape=circle (default width/2) |
-| `seed` | integer | optional | (min=0) — Deterministic seed for kind=procedural (default 1) |
-| `shape` | enum["rect"|"rounded"|"circle"|"ellipse"|"star"|"polygon"] | optional | — Shape geometry (default rect) |
-| `specular_angle` | number | optional | (min=0, max=360) — Micro-chamfer light angle in degrees (default 45) |
-| `specular_intensity` | number | optional | (min=0, max=1) — Micro-chamfer highlight: 0 matte, 1 full sweep (default 0.5) |
-| `speed` | number | optional | — video: playback rate (1) |
+| `kind` | string | required | — shape (vector geometry), text, solid (flat rect), null (invisible parent/controller), image (needs asset), nested (another composition, needs target), particle, adjustment (applies its effects to everything below), procedural (gradient/noise/pattern generator, see proc), audio (needs asset) |
+| `path` | string | optional | — image/video/audio: a workspace file to import |
 | `src_in` | number | optional | — video: clip seconds to start at |
 | `src_out` | number | optional | — video: clip seconds to stop at |
+| `speed` | number | optional | — video: playback rate (1) |
 | `start_frame` | number | optional | — video/nested: timeline frame it starts on |
-| `stroke_color` | string\|array | optional | — as fill |
-| `stroke_width` | number | optional | (min=0) — Stroke width; omit for no stroke (shape) |
-| `target` | string | optional | — Composition id for nested layers |
-| `text` | string | optional | — Text content for kind=text (default "Text"); \n breaks lines. Style it with setTextStyle |
-| `tracking` | number | optional | — text: em letter-spacing |
+| `fit` | enum["contain"|"cover"|"stretch"|"crop"] | optional | — image/video: how it fills its box (contain); with no width/height the box is the composition, so cover fills the frame |
+| `model` | object | optional | — kind=model: {size (px of its largest side, default 400), animation (name or index; "none" holds the rest pose; default the first), speed, loop, offset (s)} |
+| `light` | object | optional | — kind=light: {type: point|spot|parallel|ambient, color, intensity, target [x,y,z], cone_angle, cone_feather, falloff, radius, casts_shadows, shadow_darkness, shadow_diffusion} |
+| `shape` | enum["rect"|"rounded"|"circle"|"ellipse"|"star"|"polygon"] | optional | — Shape geometry (default rect) |
 | `width` | number | optional | — Width in px: shape/solid size (default 100); circle diameter; star/polygon outer diameter |
+| `height` | number | optional | — Height in px for shape rect/rounded/ellipse and solid (default 100) |
+| `radius` | number | optional | — Corner radius in px for shape=rounded (default 8); radius for shape=circle (default width/2) |
+| `fill` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
+| `stroke_width` | number | optional | (min=0) — Stroke width; omit for no stroke (shape) |
+| `stroke_color` | string\|array | optional | — as fill |
+| `specular_angle` | number | optional | (min=0, max=360) — Micro-chamfer light angle in degrees (default 45) |
+| `specular_intensity` | number | optional | (min=0, max=1) — Micro-chamfer highlight: 0 matte, 1 full sweep (default 0.5) |
+| `gradient` | object | optional | — shape: a gradient fill (as setShapes) |
+| `text` | string | optional | — Text content for kind=text (default "Text"); \n breaks lines. Style it with setTextStyle |
+| `font_size` | number | optional | — Font size in px for kind=text (default 32) |
+| `font_family` | string | optional | — text: family |
+| `font` | string | optional | — text: font_family |
+| `font_weight` | number | optional | — text: 100-900 |
+| `font_style` | string | optional | — text: normal or italic |
+| `align` | string | optional | — text: left, center or right |
+| `tracking` | number | optional | — text: em letter-spacing |
+| `line_height` | number | optional | — text: multiplier of size |
+| `max_width` | number | optional | — text: wrap width in px |
+| `asset` | string | optional | — Asset id or name for image, video, audio and model layers |
+| `target` | string | optional | — Composition id for nested layers |
+| `proc` | string | optional | — Procedural kind for kind=procedural: linear_gradient, radial_gradient, angular_gradient, mesh_gradient, grid, dot_grid, noise, contours, turbulence, stripes, wave_field, sdf_shape, checker, scanlines (default noise) |
+| `seed` | integer | optional | (min=0) — Deterministic seed for kind=procedural (default 1) |
+| `params` | object | optional | — Procedural params for kind=procedural (name -> number), e.g. {"scale": 6.0} |
+| `position` | array | optional | — Layer centre in px, +x right, +y UP; a 3rd element is z depth (3D layers) |
+| `opacity` | number | optional | (min=0, max=1) — 0..1 (default 1) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -350,7 +350,7 @@ CLI: `kinetic tool createLayer --params '<json>' --workspace ./out`
 
 ## setLayerField
 
-Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur_enabled, position, scale, rotation, anchor; intended: true exempts it from critiqueMotion), motion: follow (overlap, follow-through), squash (stretch with speed), speed (speed ramp), time_remap, posterize (on twos), echo (trails), 3D: light, material, extrude, model, or puppet (pins that bend the artwork), ik (a limb reaches a target).
+Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur_enabled, position, scale, rotation, anchor; intended: true exempts it from critiqueMotion; behind: the cutout a text sits behind, which critiqueLayout keeps it under), motion: follow (overlap, follow-through), squash (stretch with speed), speed (speed ramp), time_remap, posterize (on twos), echo (trails), 3D: light, material, extrude, model, depth (an image layer + a gray depth map = a 3D photo: {asset, scale_px?, near?, far?}), or puppet (pins that bend the artwork), ik (a limb reaches a target).
 
 - family: `scene` · mutating: `true` · transport: CLI `kinetic tool setLayerField` / SDK `batch([{tool: "setLayerField"}])` / MCP `tools/call {name: "setLayerField"}`
 - history: creates an undo step
@@ -360,9 +360,9 @@ Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `field` | string | required | — Which base field to set; see value for each field's format |
 | `layer` | string\|integer | required | |
-| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. intended: bool (true: critiqueMotion leaves this layer's motion out; false clears it). name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...] (frame in this composition; source_frame in the nested composition's own frames). posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
+| `field` | string | required | — Which base field to set; see value for each field's format |
+| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. intended: bool (true: critiqueMotion leaves this layer's motion out; false clears it). behind: the cutout layer (id or name) a text sits behind (kit.textBehind sets it; critiqueLayout reports the text if it paints over that cutout); null clears. depth (an image layer, a 3D photo): {asset: gray map, white near, scale_px: 120, near: 1, far: 0} or the asset name; null clears. name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...] (frame in this composition; source_frame in the nested composition's own frames). posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -507,18 +507,18 @@ Replace a shape layer's geometry/style; add After Effects shape operators (ops: 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `fill` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
-| `geometry` | any | optional | — One of: {"Rect":{width,height}}, {"RoundedRect":{width,height,radius}}, {"Circle":{radius}}, {"Ellipse":{radius_x,radius_y}}, {"Polygon":{sides,radius}}, {"Star":{points,outer_radius,inner_radius}}, {"Path":{points:[{pos:[x,y],in_tangent:[dx,dy],out_tangent:[dx,dy]}],closed}}, {"Polyline":{points:[...]}}. px, y up, centred on the layer origin; tangents are offsets from pos |
-| `gradient` | object\|null | optional | — Gradient fill: {colors:[...], angle} (0 = left to right, 90 = bottom to top), or {stops:[[offset, colour]...], from:[x,y], to:[x,y]}; type radial: center, radius. null removes |
 | `layer` | string\|integer | required | |
-| `ops` | array | optional | — Operators in order, replacing the current list ([] removes): {type:repeater, copies, position:[x,y], rotation, scale, anchor, start_opacity, end_opacity}, {type:offset, amount, copies, copy_offset, join}, {type:wiggle, size, detail, speed, seed, smooth, boil_fps, temporal_phase, spatial_phase}, {type:wiggle_transform, position, rotation, scale, speed}, {type:zig_zag, size, ridges, smooth, per_segment}, {type:pucker_bloat, amount}, {type:twist, angle, center}, {type:round_corners, radius}, {type:path, geometry, position} then {type:merge, mode: union|subtract|intersect|exclude}. Animate params as op.<type>.<param> |
+| `geometry` | any | optional | — One of: {"Rect":{width,height}}, {"RoundedRect":{width,height,radius}}, {"Circle":{radius}}, {"Ellipse":{radius_x,radius_y}}, {"Polygon":{sides,radius}}, {"Star":{points,outer_radius,inner_radius}}, {"Path":{points:[{pos:[x,y],in_tangent:[dx,dy],out_tangent:[dx,dy]}],closed}}, {"Polyline":{points:[...]}}. px, y up, centred on the layer origin; tangents are offsets from pos |
+| `fill` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
+| `stroke_width` | number | optional | (min=0) — Stroke width in layer units; omit for no stroke (kind=shape only) |
+| `stroke_color` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
 | `specular_angle` | number | optional | (min=0, max=360) — Micro-chamfer light angle in degrees (default 45) |
 | `specular_intensity` | number | optional | (min=0, max=1) — Micro-chamfer highlight strength: 0 matte, 1 full specular sweep (default 0.5) |
-| `stroke_color` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
+| `trim` | object | optional | — Resting stroke trim (After Effects Trim Paths): start/end are fractions 0..1 of the outline (closed shapes start at the top centre and run clockwise); offset turns the range around closed shapes (1 = one loop). Draw a stroke on with animateProperty {property:"trim.end", from:0, to:1}. A trimmed shape draws only its stroke. |
+| `ops` | array | optional | — Operators in order, replacing the current list ([] removes): {type:repeater, copies, position:[x,y], rotation, scale, anchor, start_opacity, end_opacity}, {type:offset, amount, copies, copy_offset, join}, {type:wiggle, size, detail, speed, seed, smooth, boil_fps, temporal_phase, spatial_phase}, {type:wiggle_transform, position, rotation, scale, speed}, {type:zig_zag, size, ridges, smooth, per_segment}, {type:pucker_bloat, amount}, {type:twist, angle, center}, {type:round_corners, radius}, {type:path, geometry, position} then {type:merge, mode: union|subtract|intersect|exclude}. Animate params as op.<type>.<param> |
+| `gradient` | object\|null | optional | — Gradient fill: {colors:[...], angle} (0 = left to right, 90 = bottom to top), or {stops:[[offset, colour]...], from:[x,y], to:[x,y]}; type radial: center, radius. null removes |
 | `stroke_gradient` | object\|null | optional | — Gradient stroke, same form as gradient |
 | `stroke_style` | object | optional | — {cap: butt|round|square, join: miter|round|bevel, dash:[on, off, ...] px, dash_offset, taper:{start, end (fractions of the length), start_width, end_width, ease, wave, wavelength, phase}} |
-| `stroke_width` | number | optional | (min=0) — Stroke width in layer units; omit for no stroke (kind=shape only) |
-| `trim` | object | optional | — Resting stroke trim (After Effects Trim Paths): start/end are fractions 0..1 of the outline (closed shapes start at the top centre and run clockwise); offset turns the range around closed shapes (1 = one loop). Draw a stroke on with animateProperty {property:"trim.end", from:0, to:1}. A trimmed shape draws only its stroke. |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -589,10 +589,10 @@ Set a text layer's string (keeps style), or make it a counter: counter {from, to
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `counter` | object | optional | — Count a number: {from (default 0), to, start_frame (default 0), duration_frames (default 45), ease (default emphasized-decelerate), decimals, prefix, suffix, thousands}. Adds an animateProperty move on text.value (chain more with animateProperty property text.value). |
 | `layer` | string\|integer | required | |
-| `number_format` | object | optional | — How an animated text.value is written: the counter's format keys |
 | `text` | string | optional | — New string (style is kept); \n breaks lines |
+| `counter` | object | optional | — Count a number: {from (default 0), to, start_frame (default 0), duration_frames (default 45), ease (default emphasized-decelerate), decimals, prefix, suffix, thousands}. Adds an animateProperty move on text.value (chain more with animateProperty property text.value). |
+| `number_format` | object | optional | — How an animated text.value is written: the counter's format keys |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -647,19 +647,19 @@ Set font family, size, weight, style, tracking, alignment, line height, wrap wid
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `align` | enum["left"|"center"|"right"] | optional | — Paragraph alignment about the layer origin |
-| `axes` | object | optional | — Variable font axes, e.g. {"wdth": 80, "opsz": 32}; wght follows font_weight (any 100-900, not only named weights) |
-| `color` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
-| `colors` | array | optional | — Per-character colour, replacing earlier ones ([] clears): {match:".", color} (every occurrence; nth: 1 for only the first) or {start, end, color} (character indices, end exclusive) |
 | `composition` | string\|integer | optional | |
-| `font_family` | string | optional | — Installed family, or one added with importFont |
-| `font_size` | number | optional | — Glyph size in px |
-| `font_style` | enum["normal"|"italic"] | optional | — normal or italic |
-| `font_weight` | integer | optional | (min=100, max=900) — CSS weight 100..900 (400 regular, 700 bold); the nearest installed face is used |
 | `layer` | string\|integer | required | |
+| `font_family` | string | optional | — Installed family, or one added with importFont |
+| `axes` | object | optional | — Variable font axes, e.g. {"wdth": 80, "opsz": 32}; wght follows font_weight (any 100-900, not only named weights) |
+| `font_size` | number | optional | — Glyph size in px |
+| `tracking` | number | optional | — Letter-spacing in em (fraction of font size, e.g. 0.1); range [-2, 2] |
+| `font_weight` | integer | optional | (min=100, max=900) — CSS weight 100..900 (400 regular, 700 bold); the nearest installed face is used |
+| `font_style` | enum["normal"|"italic"] | optional | — normal or italic |
+| `align` | enum["left"|"center"|"right"] | optional | — Paragraph alignment about the layer origin |
 | `line_height` | number | optional | (min=0) — Line-height multiplier of font size; 0 = automatic (1.2) |
 | `max_width` | number | optional | (min=0) — Wrap width in px; 0 disables wrapping |
-| `tracking` | number | optional | — Letter-spacing in em (fraction of font size, e.g. 0.1); range [-2, 2] |
+| `color` | string\|array | optional | — "#rrggbb" (#rgb, #rrggbbaa) or [r,g,b,a] 0..1 |
+| `colors` | array | optional | — Per-character colour, replacing earlier ones ([] clears): {match:".", color} (every occurrence; nth: 1 for only the first) or {start, end, color} (character indices, end exclusive) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -707,19 +707,19 @@ Text on a path (AE Path Options): letters ride a shape's outline, a circle or a 
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `align` | enum["left"|"center"|"right"] | optional | — On the path (closed paths centre on the start) |
-| `circle` | number | optional | — Or: circle radius around the layer origin (starts on top, clockwise) |
-| `closed` | boolean | optional default=false | — points: loop |
 | `composition` | string\|integer | optional | |
-| `frame` | number | optional default=0 | — Frame to read the path layer at |
 | `layer` | string\|integer | required | — The text layer |
-| `offset` | number | optional default=0 | — px along the path (text.path.offset) |
 | `path` | string\|integer | optional | — Shape layer to follow |
-| `perpendicular` | boolean | optional default=true | — Letters turn with the path |
+| `circle` | number | optional | — Or: circle radius around the layer origin (starts on top, clockwise) |
 | `points` | array | optional | — Or: [x, y] points in layer space |
-| `remove` | boolean | optional default=false | — Back to a straight line |
-| `reverse` | boolean | optional default=false | — Run the other way (bottom of a circle) |
 | `smooth` | boolean | optional default=true | — points: smooth curve |
+| `closed` | boolean | optional default=false | — points: loop |
+| `offset` | number | optional default=0 | — px along the path (text.path.offset) |
+| `align` | enum["left"|"center"|"right"] | optional | — On the path (closed paths centre on the start) |
+| `perpendicular` | boolean | optional default=true | — Letters turn with the path |
+| `reverse` | boolean | optional default=false | — Run the other way (bottom of a circle) |
+| `frame` | number | optional default=0 | — Frame to read the path layer at |
+| `remove` | boolean | optional default=false | — Back to a straight line |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -762,17 +762,17 @@ Measure a text layer (or a string in a given style) exactly as it renders: overa
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `align` | enum["left"|"center"|"right"] | optional | — Alignment about the layer origin |
 | `composition` | string\|integer | optional | |
+| `layer` | string\|integer | optional | — Text layer to measure (its current string and style); other fields override it |
+| `text` | string | optional | — String to measure (required without layer) |
 | `font_family` | string | optional | — Font family (default Helvetica Neue, or the layer's) |
 | `font_size` | number | optional | — Size in px |
-| `font_style` | enum["normal"|"italic"] | optional | — normal or italic |
 | `font_weight` | integer | optional | (min=100, max=900) — 100..900 |
-| `layer` | string\|integer | optional | — Text layer to measure (its current string and style); other fields override it |
+| `font_style` | enum["normal"|"italic"] | optional | — normal or italic |
+| `tracking` | number | optional | — Letter spacing in em |
 | `line_height` | number | optional | — Line-height multiplier (0 = automatic) |
 | `max_width` | number | optional | — Wrap width in px (0 = no wrap) |
-| `text` | string | optional | — String to measure (required without layer) |
-| `tracking` | number | optional | — Letter spacing in em |
+| `align` | enum["left"|"center"|"right"] | optional | — Alignment about the layer origin |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -808,9 +808,9 @@ Append a range animator (full RangeAnimator JSON).
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `animator` | object | required | — Per-character, per-word or per-line entrance (After Effects' range selector). Friendly form: every unit starts at `from` and springs to its resting pose, staggered left to right. Example: {"from":{"y":-40,"opacity":0},"start_frame":10,"stagger_frames":2,"spring":"snappy"}; add "by":"words" to move whole words. (The native RangeAnimator JSON with offset_* fields and based_on is also accepted.) |
 | `composition` | string\|integer | optional | |
 | `layer` | string\|integer | required | |
+| `animator` | object | required | — Per-character, per-word or per-line entrance (After Effects' range selector). Friendly form: every unit starts at `from` and springs to its resting pose, staggered left to right. Example: {"from":{"y":-40,"opacity":0},"start_frame":10,"stagger_frames":2,"spring":"snappy"}; add "by":"words" to move whole words. (The native RangeAnimator JSON with offset_* fields and based_on is also accepted.) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -858,10 +858,10 @@ Push a validated effect (params filled from defaults).
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `effect` | string | required | — Effect id from listRenderCapabilities |
-| `enabled` | boolean | optional default=true | — Effect on/off (default true) |
 | `layer` | string\|integer | required | |
+| `effect` | string | required | — Effect id from listRenderCapabilities |
 | `params` | object | optional | — Effect parameters, name -> value: numbers, booleans, hex colors ("#FFB300"), or [x, y] arrays; unspecified params keep their defaults. guide {topic:"effects"} lists every effect's params with units and ranges |
+| `enabled` | boolean | optional default=true | — Effect on/off (default true) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -910,20 +910,20 @@ Add a polygon mask.
 - family: `content` · mutating: `true` · transport: CLI `kinetic tool addMask` / SDK `batch([{tool: "addMask"}])` / MCP `tools/call {name: "addMask"}`
 - history: creates an undo step
 - lean tool list: not listed: call it as `miran.addMask(...)` in runScript · inside runScript: yes
-- signature: `addMask {layer: string|int, points: any[], closed?: bool = true, expansion?: number = 0 [px], feather?: number = 0 [px], inverted?: bool = false, mode?: add|subtract|intersect|difference, name?: string, opacity?: number = 1}`
+- signature: `addMask {layer: string|int, points: number[][], closed?: bool = true, expansion?: number = 0 [px], feather?: number = 0 [px], inverted?: bool = false, mode?: add|subtract|intersect|difference, name?: string, opacity?: number = 1}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `closed` | boolean | optional default=true | — Close the polygon (default true) |
 | `composition` | string\|integer | optional | |
-| `expansion` | number | optional default=0 | — Grow (+) or shrink (-) the mask outline in px (default 0) |
-| `feather` | number | optional default=0 | — Edge softness in px (default 0 = hard edge) |
-| `inverted` | boolean | optional default=false | — Keep the outside instead of the inside (default false) |
 | `layer` | string\|integer | required | |
-| `mode` | enum["add"|"subtract"|"intersect"|"difference"] | optional | — How the mask combines with earlier masks: add (default), subtract, intersect, difference |
 | `name` | string | optional | — Mask name |
-| `opacity` | number | optional default=1 | — Mask strength 0..1 (default 1) |
+| `mode` | enum["add"|"subtract"|"intersect"|"difference"] | optional | — How the mask combines with earlier masks: add (default), subtract, intersect, difference |
 | `points` | array | required | — 3+ [x,y] vertices, layer-local |
+| `closed` | boolean | optional default=true | — Close the polygon (default true) |
+| `inverted` | boolean | optional default=false | — Keep the outside instead of the inside (default false) |
+| `opacity` | number | optional default=1 | — Mask strength 0..1 (default 1) |
+| `feather` | number | optional default=0 | — Edge softness in px (default 0 = hard edge) |
+| `expansion` | number | optional default=0 | — Grow (+) or shrink (-) the mask outline in px (default 0) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -978,13 +978,14 @@ Set a particle layer's system: emit from shapes or a layer's art (dissolves), fo
 - family: `content` · mutating: `true` · transport: CLI `kinetic tool setParticles` / SDK `batch([{tool: "setParticles"}])` / MCP `tools/call {name: "setParticles"}`
 - history: creates an undo step
 - lean tool list: not listed: call it as `miran.setParticles(...)` in runScript · inside runScript: yes
-- signature: `setParticles {layer: string|int, system: object}`
+- signature: `setParticles {layer: string|int, system: object, collide?: object}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
 | `layer` | string\|integer | required | |
 | `system` | object | required | — All optional. px, layer seconds, degrees (0 right, 90 up). guide particles |
+| `collide` | object | optional | — Particles hit a layer's alpha (a person's cutout, a logo, any art): {matte: layer, threshold?: 0.5, bounce?: 0.35, friction?: 0.4, on_hit?: bounce|stick|die}. The layer is drawn alone each frame, opacity ignored (a hidden one still collides), so a cutout's nested layer works. Same as one more entry in system.colliders: [{matte: layer, ...}]. |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1012,6 +1013,12 @@ Examples (they run as written on the starter scene from `guide {topic:"start"}`)
   {"layer":"Sparks","system":{"birth_rate":8,"lifetime":2,"speed":400,"direction_deg":30,"spread_deg":20,"gravity":[0,-200],"size":8,"trail":{"length":0.3,"segments":10},"colors":["#FFFFFF","#7DD3FC"]}}
   ```
 
+- Rain that runs off a shape: collide with any layer's alpha (a cutout's layer: rain on the person)
+
+  ```json
+  {"layer":"Sparks","system":{"emitter":{"line":{"length":1200,"angle_deg":0}},"birth_rate":120,"lifetime":2,"speed":600,"direction_deg":-90,"spread_deg":4,"size":3,"colors":["#BFD8FF"]},"collide":{"matte":"Card","bounce":0.2,"friction":0.6}}
+  ```
+
 - Rising stars, pulled into a swirl
 
   ```json
@@ -1034,10 +1041,10 @@ Set/clear a layer's parent (cycle-checked). Position stays local (a child at [0,
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `frame` | number\|string | optional | — keep_world: measure at this frame or "in" (the layer's in point); default the resting poses |
-| `keep_world` | boolean | optional default=false | — Keep the layer where it is on screen (its position and moves shift into the parent's space) |
 | `layer` | string\|integer | required | |
 | `parent` | string\|null\|integer | optional | — Parent layer id/name, or null to clear |
+| `keep_world` | boolean | optional default=false | — Keep the layer where it is on screen (its position and moves shift into the parent's space) |
+| `frame` | number\|string | optional | — keep_world: measure at this frame or "in" (the layer's in point); default the resting poses |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1066,12 +1073,12 @@ Change a layer's paint order (index 0 = bottom, highest = top): give one of inde
 
 | param | type | required/default | notes |
 |---|---|---|---|
+| `composition` | string\|integer | optional | |
+| `layer` | string\|integer | required | |
+| `index` | integer | optional | (min=0) — 0 = bottom (painted first); past the end = top |
+| `to` | enum["top"|"bottom"|"front"|"back"] | optional | — top (front) or bottom (back) |
 | `above` | string\|integer | optional | — Directly over this layer |
 | `below` | string\|integer | optional | — Directly under this layer |
-| `composition` | string\|integer | optional | |
-| `index` | integer | optional | (min=0) — 0 = bottom (painted first); past the end = top |
-| `layer` | string\|integer | required | |
-| `to` | enum["top"|"bottom"|"front"|"back"] | optional | — top (front) or bottom (back) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1163,8 +1170,8 @@ AE Pre-compose: move layers into a new composition shown by one layer in their p
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
 | `layers` | array | required | — Layer ids or names to move |
-| `move_attributes` | boolean | optional default=true | — false: one layer's content moves in; its transform, effects, masks and matte stay outside (AE: leave all attributes) |
 | `name` | string | required | — Name of the new composition and its layer |
+| `move_attributes` | boolean | optional default=true | — false: one layer's content moves in; its transform, effects, masks and matte stay outside (AE: leave all attributes) |
 | `trim` | boolean | optional default=false | — Only as long as the layers |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -1196,21 +1203,21 @@ Auto layout (flexbox): a null, shape or solid places its children in a row, colu
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `align` | enum["start"|"center"|"end"|"stretch"] | optional default="center" | — Across the flow; stretch fills it (text wraps) |
-| `children` | array | optional | — Layers to place, in flow order (parented; their position moves become offsets from the slot) |
 | `composition` | string\|integer | optional | |
-| `direction` | enum["row"|"column"] | optional default="row" | — row: left to right; column: top down |
-| `frame` | number | optional default=0 | — Frame the result measures |
-| `gap` | number | optional | (min=0) — px between children (layout.gap) |
-| `height` | number\|null | optional | — Fixed px; null hugs |
-| `justify` | enum["start"|"center"|"end"|"space-between"|"space-around"|"space-evenly"] | optional default="start" | — Free space along a fixed size |
 | `layer` | string\|integer | required | — Container: null, shape or solid |
-| `line_gap` | number | optional | (min=0) — px between lines (default gap) |
+| `children` | array | optional | — Layers to place, in flow order (parented; their position moves become offsets from the slot) |
+| `direction` | enum["row"|"column"] | optional default="row" | — row: left to right; column: top down |
+| `gap` | number | optional | (min=0) — px between children (layout.gap) |
 | `padding` | any | optional | — px: n, [v, h] or [t, r, b, l] (layout.padding) |
-| `remove` | boolean | optional default=false | — Turn auto layout off |
-| `resize` | boolean | optional default=true | — Shape/solid container takes the box size |
-| `width` | number\|null | optional | — Fixed px; null hugs |
+| `align` | enum["start"|"center"|"end"|"stretch"] | optional default="center" | — Across the flow; stretch fills it (text wraps) |
+| `justify` | enum["start"|"center"|"end"|"space-between"|"space-around"|"space-evenly"] | optional default="start" | — Free space along a fixed size |
 | `wrap` | boolean | optional default=false | — Wrap into lines (a grid; needs a fixed size) |
+| `width` | number\|null | optional | — Fixed px; null hugs |
+| `height` | number\|null | optional | — Fixed px; null hugs |
+| `line_gap` | number | optional | (min=0) — px between lines (default gap) |
+| `resize` | boolean | optional default=true | — Shape/solid container takes the box size |
+| `frame` | number | optional default=0 | — Frame the result measures |
+| `remove` | boolean | optional default=false | — Turn auto layout off |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1253,14 +1260,14 @@ One auto layout child: out of the flow (absolute), a size to lay out with, grow,
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `absolute` | boolean | optional | — Placed by its own position |
-| `align` | enum["start"|"center"|"end"|"stretch"|null] | optional | — align-self (null: the container's) |
 | `composition` | string\|integer | optional | |
-| `frame` | number | optional default=0 | — Frame the result measures |
-| `grow` | number | optional | (min=0) — Share of free space (flex-grow) |
-| `height` | number\|null | optional | — px to lay out with (null: measured) |
 | `layer` | string\|integer | required | — A child of a setLayout container |
+| `absolute` | boolean | optional | — Placed by its own position |
 | `width` | number\|null | optional | — px to lay out with (null: measured) |
+| `height` | number\|null | optional | — px to lay out with (null: measured) |
+| `grow` | number | optional | (min=0) — Share of free space (flex-grow) |
+| `align` | enum["start"|"center"|"end"|"stretch"|null] | optional | — align-self (null: the container's) |
+| `frame` | number | optional default=0 | — Frame the result measures |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1315,8 +1322,8 @@ Full layer JSON (transform, content, anims, effects, masks), its paint index, an
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `frame` | number | optional | — Also report bounds at this frame |
 | `layer` | string\|integer | required | |
+| `frame` | number | optional | — Also report bounds at this frame |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1356,9 +1363,9 @@ Validate and register a workspace file as an asset (dedup by kind and fingerprin
 
 | param | type | required/default | notes |
 |---|---|---|---|
+| `path` | string | required | — Workspace-relative file |
 | `kind` | enum["image"|"video"|"audio"|"font"|"lut"|"vector"|"data"|"model"] | required | — image (png/jpg/webp), video, audio (wav/mp3/aac/flac), font (ttf/otf), lut (.cube), vector (svg), data (json), model (glTF 2.0: .glb, or .gltf with its files) |
 | `name` | string | optional | — Display name for the asset |
-| `path` | string | required | — Workspace-relative file |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1389,16 +1396,16 @@ Lay out a screen written as HTML + CSS in a local Chrome and import it: each ele
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `at` | array | optional | — [x, y] of the page centre (default [0, 0]) |
-| `composition` | string\|integer | optional | |
-| `dark` | boolean | optional | — Dark mode |
-| `height` | number | optional | — CSS px (default 900) |
 | `html` | string | optional | — A fragment or a whole document; give the parts that move an id |
-| `name` | string | optional | — Layer name prefix (default "Screen") |
-| `parts` | boolean | optional default=true | — false: one flat image of the page |
 | `path` | string | optional | — Instead of html: a workspace .html file |
-| `scale` | number | optional | (min=1, max=4) — Pixels per CSS px (2; 3 for deep pushes) |
+| `name` | string | optional | — Layer name prefix (default "Screen") |
 | `width` | number | optional | — CSS px (default 1440) |
+| `height` | number | optional | — CSS px (default 900) |
+| `at` | array | optional | — [x, y] of the page centre (default [0, 0]) |
+| `scale` | number | optional | (min=1, max=4) — Pixels per CSS px (2; 3 for deep pushes) |
+| `parts` | boolean | optional default=true | — false: one flat image of the page |
+| `dark` | boolean | optional | — Dark mode |
+| `composition` | string\|integer | optional | |
 
 Example: `{}`
 
@@ -1415,18 +1422,18 @@ Screenshot a public web page in local Chrome; read its colours, fonts, logo, hea
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `at` | array | optional | — [x, y] of its centre |
-| `composition` | string\|integer | optional | |
-| `dark` | boolean | optional | — Dark mode |
-| `fill` | number | optional | — Share of the frame width (0.8) |
-| `height` | number | optional | — CSS px (900) |
-| `name` | string | optional | — Default the host name |
-| `parts` | boolean | optional default=false | — Boxes as layers |
-| `place` | boolean | optional default=false | — Add it as a layer; boxes in comp px |
-| `scale` | number | optional | (min=1, max=3) — Pixels per CSS px (2) |
-| `scroll` | number | optional | — CSS px to scroll first |
 | `url` | string | required | — A public http(s) page |
 | `width` | number | optional | — CSS px (1440) |
+| `height` | number | optional | — CSS px (900) |
+| `scale` | number | optional | (min=1, max=3) — Pixels per CSS px (2) |
+| `dark` | boolean | optional | — Dark mode |
+| `scroll` | number | optional | — CSS px to scroll first |
+| `place` | boolean | optional default=false | — Add it as a layer; boxes in comp px |
+| `parts` | boolean | optional default=false | — Boxes as layers |
+| `fill` | number | optional | — Share of the frame width (0.8) |
+| `at` | array | optional | — [x, y] of its centre |
+| `name` | string | optional | — Default the host name |
+| `composition` | string\|integer | optional | |
 CLI: `kinetic tool captureSite --params '<json>' --workspace ./out`
 
 ## generateImage
@@ -1440,15 +1447,15 @@ Make an image with the user's OpenRouter key (Miran Settings): a plate, an illus
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `aspect` | string | optional | — "16:9", "9:16", "1:1"... (the composition's) |
-| `fresh` | boolean | optional | — New image, not the saved one |
-| `model` | string | optional | — OpenRouter model id (this call) |
-| `name` | string | optional | — File name |
 | `prompt` | string | required | — Subject in the film's look (palette, medium, light) |
-| `reference` | string\|array | optional | — Image path(s) to edit or match |
+| `aspect` | string | optional | — "16:9", "9:16", "1:1"... (the composition's) |
 | `size` | enum["1K"|"2K"|"4K"] | optional | — Resolution (2K) |
 | `svg` | boolean\|string | optional | — Also an SVG: true, "flat", "detailed", "lineart" |
 | `transparent` | boolean | optional | — Cut-out background where offered |
+| `reference` | string\|array | optional | — Image path(s), or {asset, time} frames, to edit or match |
+| `name` | string | optional | — File name |
+| `model` | string | optional | — OpenRouter model id (this call) |
+| `fresh` | boolean | optional | — New image, not the saved one |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1484,11 +1491,11 @@ Add a Google Fonts family by name ("Inter Tight 600"): cached in ~/.miran/fonts 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `family` | string | optional | — Family, optionally with a weight: "Inter Tight 600" (required unless list) |
+| `weights` | array | optional | — Default [400, 700] or the named weight |
 | `italic` | boolean | optional default=false | — Also the italics |
-| `limit` | integer | optional | (min=1, max=400) — With list: max names (60) |
 | `list` | boolean | optional default=false | — Name the installed families (offline) instead of importing |
 | `query` | string | optional | — With list: a name or style (rounded, mono, serif, condensed, script) |
-| `weights` | array | optional | — Default [400, 700] or the named weight |
+| `limit` | integer | optional | (min=1, max=400) — With list: max names (60) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1647,9 +1654,9 @@ Find project assets by tag, role, kind, name, or id substring (case-insensitive)
 
 | param | type | required/default | notes |
 |---|---|---|---|
+| `tag` | string | required | — Tag substring to match (case-insensitive) |
 | `kind` | string | optional | — Only assets of this kind (image, video, audio, font, lut, vector, data) |
 | `role` | string | optional | — Role filter (e.g. wordmark, background, product, music) |
-| `tag` | string | required | — Tag substring to match (case-insensitive) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1672,14 +1679,14 @@ Create a composition from a folder with editable SVG layers, role-ordered visual
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `duration_frames` | number | optional | — Composition length in frames |
-| `height` | number | optional | — Composition height in px |
-| `name` | string | optional | — Composition id |
 | `path` | string | required | — Workspace-relative folder |
+| `name` | string | optional | — Composition id |
+| `width` | number | optional | — Composition width in px (default: from the assets) |
+| `height` | number | optional | — Composition height in px |
+| `duration_frames` | number | optional | — Composition length in frames |
 | `recursive` | boolean | optional default=true | — Include subfolders (default true) |
 | `svg_mode` | string | optional default="explode_top_level_groups" | — SVG split mode; preserve_groups keeps one editable vector tree |
 | `text_policy` | string | optional default="keep_text" | — keep_text or outline for SVG text |
-| `width` | number | optional | — Composition width in px (default: from the assets) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1779,12 +1786,12 @@ Run JavaScript that calls any tool as miran.<toolName>(params) with loops, math 
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `dry_run` | boolean | optional default=false | — Run everything, report the result, then roll the project back (test a script without keeping it) |
-| `images` | boolean | optional default=true | — false: PNGs the script renders stay files (listed under files), not inline images |
-| `label` | string | optional | — Name for the undo step, e.g. "beat 2: stats reveal" (default: first line of the script) |
 | `source` | string | required | — JavaScript function body. Call tools as miran.createLayer({...}) (returns the tool's result, throws on error with .code and .hint); kit.* has ready-made motion-design pieces (kit.title, kit.words, kit.counter, kit.line, kit.ring, kit.card, kit.bars, kit.cursor, kit.wipe, kit.finish, ...; guide {topic:"kit"}); log(...) collects debug lines; range(n), lerp(a,b,t), clamp(x,lo,hi) are available; `return` a value to get it back. No file/network access. |
-| `strict` | boolean | optional | — A misspelled param fails the call (and rolls back) instead of being ignored (default true) |
+| `label` | string | optional | — Name for the undo step, e.g. "beat 2: stats reveal" (default: first line of the script) |
+| `dry_run` | boolean | optional default=false | — Run everything, report the result, then roll the project back (test a script without keeping it) |
 | `timeout_seconds` | number | optional default=45 | (min=1, max=600) — Wall-clock budget (max 50 over MCP so the call returns before the host times out) |
+| `strict` | boolean | optional | — A misspelled param fails the call (and rolls back) instead of being ignored (default true) |
+| `images` | boolean | optional default=true | — false: PNGs the script renders stay files (listed under files), not inline images |
 | `verbose` | boolean | optional default=false | — changes lists every layer touched (default: counts and the first 8 of each list, to keep results short) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -1826,7 +1833,7 @@ Compact map of every tool grouped by family (name, one-line purpose, required pa
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `family` | string | optional | — Only this family: project, scene, props, content, camera, vector, design, render, assets, audio, jobs, docs |
+| `family` | string | optional | — Only this family: project, scene, props, content, camera, vector, design, render, assets, footage, edit, vfx, audio, jobs, docs |
 | `query` | string | optional | — Case-insensitive search over tool names, descriptions, params, effect ids and kit functions, e.g. "blur", "caption", "export" |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -1856,9 +1863,9 @@ Everything about a tool: full parameter schema with units, worked examples that 
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `brief` | boolean | optional default=false | — Signature line (params, types, defaults, units) and purpose only |
 | `tool` | string | optional | — Tool name, e.g. "animateProperty" |
 | `tools` | array | optional | — Several tools at once |
+| `brief` | boolean | optional default=false | — Signature line (params, types, defaults, units) and purpose only |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1887,8 +1894,8 @@ Concept guides written for agents: conventions and units, layer kinds, typograph
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `section` | string | optional | — Only sections whose heading has this (kit "Charts") |
 | `topic` | string | optional | — Guide to read (omit to list topics) |
+| `section` | string | optional | — Only sections whose heading has this (kit "Charts") |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 

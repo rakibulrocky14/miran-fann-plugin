@@ -1,7 +1,7 @@
 # Measure and look — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-23 of 165 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+23 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## query
 
@@ -14,10 +14,10 @@ Read-only runScript: look at the scene and compute over it in one call (list, in
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `images` | boolean | optional default=true | — false: rendered PNGs stay files (listed under files) |
 | `source` | string | required | — JavaScript function body, as in runScript: miran.<tool>(params) for read-only tools, kit helpers that only look, log(...), `return` a value |
-| `strict` | boolean | optional | — Misspelled params fail instead of being ignored (default true) |
 | `timeout_seconds` | number | optional default=45 | (min=1, max=600) — Wall-clock budget (max 50 over MCP) |
+| `strict` | boolean | optional | — Misspelled params fail instead of being ignored (default true) |
+| `images` | boolean | optional default=true | — false: rendered PNGs stay files (listed under files) |
 CLI: `kinetic tool query --params '<json>' --workspace ./out`
 
 ## critiqueDesign
@@ -31,8 +31,8 @@ Static + temporal + (optional) pixel critique.
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `frame` | number | optional | — Include pixel lens at this frame |
 | `spec` | object | required | — DesignSpec from createDesignSpec / generateDesignCandidates |
+| `frame` | number | optional | — Include pixel lens at this frame |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -85,8 +85,8 @@ Where things land on screen: text hitting art or other text, art over text, stac
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
 | `frames` | array | optional | — Frames to check; default samples the whole composition |
-| `platform` | enum["reels"|"tiktok"|"shorts"] | optional | — 9:16 app UI zones (top bar, caption block, button column); kit.safe({platform}) gives the clear box |
 | `safe` | number\|string\|object | optional default=0.05 | — Margin as a fraction of the frame; or {left, top, right, bottom}; or a platform name |
+| `platform` | enum["reels"|"tiktok"|"shorts"] | optional | — 9:16 app UI zones (top bar, caption block, button column); kit.safe({platform}) gives the clear box |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -118,7 +118,7 @@ Tips:
 
 - Only landed layout counts: layers still flying in or fading are skipped, so overlaps during motion are fine. Text past the safe area is not reported while its layer (or the scene group it rides on) is in fast transit, faster than 0.6 frame widths a second (2% of the width per frame at 30 fps), such as a card flung out during a whip; collisions of slow or still layers stay flagged.
 - sparse and empty-area are notes, not errors: calm styles leave space on purpose. frozen means nothing moved: add kit.drift or kit.float, or cut sooner.
-- A 9:16 Reels, TikTok or Shorts teaser: platform: "reels" (or tiktok, shorts) checks against the app's own interface: about the top 220 px, the bottom 420 px and a 140 px column on the right of a 1080x1920 frame for reels, scaled to your size. The result's safe lists the margins in px; kit.safe({platform}) returns the same box to lay out in (guide design, guide kit).
+- A 9:16 Reels, TikTok or Shorts teaser: platform: "reels" (or tiktok, shorts) checks against the app's own interface: about the top 270 px, the bottom 420 px and a 140 px column on the right of a 1080x1920 frame for reels, scaled to your size. The result's safe lists the margins in px; kit.safe({platform}) returns the same box to lay out in (guide design, guide kit).
 
 Related: `measureText`, `renderContactSheet`, `inspectMotionActivity`, `reorderLayer`, `critiqueMotion`
 
@@ -173,8 +173,8 @@ Pass/fail: errors must be zero (frame renders pixel lens).
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `frame` | number | optional | — Frame for the pixel lens (omit for structural checks only) |
 | `spec` | object | required | — DesignSpec from createDesignSpec / generateDesignCandidates |
+| `frame` | number | optional | — Frame for the pixel lens (omit for structural checks only) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -199,11 +199,11 @@ Render two specs at a frame; diff stats.
 
 | param | type | required/default | notes |
 |---|---|---|---|
+| `spec_a` | object | required | — First DesignSpec |
+| `spec_b` | object | required | — Second DesignSpec |
 | `frame` | number | optional default=0 | — Frame to compare (default 0) |
 | `out_a` | string | optional | — Optional PNG path for spec_a's frame |
 | `out_b` | string | optional | — Optional PNG path for spec_b's frame |
-| `spec_a` | object | required | — First DesignSpec |
-| `spec_b` | object | required | — Second DesignSpec |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -228,14 +228,14 @@ Grid PNG of frames (QA artifact; GPU by default).
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
-| `columns` | integer | optional default=4 | (min=1, max=64) — Sheet columns, 1..=64 (the sheet buffer is frame_w*columns by frame_h*rows) |
 | `composition` | string\|integer | optional | |
 | `frames` | array\|string\|integer | required | — Frames to show: a list, a count (spread evenly), or "auto": each scene's middle, both sides of every cut and the last frame. Each cell is labelled with its frame and time |
-| `ignore` | array\|string\|integer | optional | — Layers whose motion is intended (names or ids) |
+| `columns` | integer | optional default=4 | (min=1, max=64) — Sheet columns, 1..=64 (the sheet buffer is frame_w*columns by frame_h*rows) |
 | `max_width` | integer | optional default=2400 | — Shrink the sheet to at most this many px wide so it comes back inline (0 = full size) |
-| `out` | string | required | — PNG output path; the sheet is returned inline to MCP clients |
+| `ignore` | array\|string\|integer | optional | — Layers whose motion is intended (names or ids) |
 | `platform` | enum["reels"|"tiktok"|"shorts"] | optional | — 9:16 app UI zones for the layout list |
+| `out` | string | required | — PNG output path; the sheet is returned inline to MCP clients |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
 | `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -272,10 +272,10 @@ Render one comp frame to PNG (GPU by default; backend=cpu for the reference).
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
 | `composition` | string\|integer | optional | |
 | `frame` | number | optional default=0 | — Frame to render (default 0) |
 | `out` | string | required | — PNG output path, workspace-relative; the image is returned inline to MCP clients |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
 | `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -350,9 +350,9 @@ Project focal layers over [start, end]; report bounds + off-frame violations.
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `end` | number | required | — End frame |
 | `layers` | array | optional | — Focal layers that must stay in frame (default: every visual layer) |
 | `start` | number | required | — Start frame |
+| `end` | number | required | — End frame |
 | `step` | number | optional default=1 | — Sample every `step` frames (default 1) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -377,12 +377,12 @@ Validate camera motion: flips, spikes, margins, focal jumps, discontinuities, co
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `end` | number | required | — End frame |
-| `profile` | enum["restrained"|"cinematic"|"energetic"|"handheld"|"legacy"] | optional | — Motion-style thresholds: restrained, cinematic, energetic, handheld (omit for the legacy defaults) |
 | `start` | number | required | — Start frame |
+| `end` | number | required | — End frame |
 | `step` | number | optional default=1 | — Sampling step in frames |
 | `story_event_frame` | number | optional | — Frame of the story beat the move must support (checks order) |
 | `story_event_name` | string | optional | — Label for that story beat in the report |
+| `profile` | enum["restrained"|"cinematic"|"energetic"|"handheld"|"legacy"] | optional | — Motion-style thresholds: restrained, cinematic, energetic, handheld (omit for the legacy defaults) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -406,11 +406,11 @@ resvg reference vs native source layer/block render + PASS/FAIL metrics.
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `frame` | number | optional default=0 | — Frame to compare (default 0) |
-| `height` | integer | optional | — Comparison raster height in px (default: document size) |
 | `layer` | string\|integer | required | |
-| `tolerance` | integer | optional default=2 | — Per-channel tolerance 0..255 (default 2) |
 | `width` | integer | optional | — Comparison raster width in px (default: document size) |
+| `height` | integer | optional | — Comparison raster height in px (default: document size) |
+| `tolerance` | integer | optional default=2 | — Per-channel tolerance 0..255 (default 2) |
+| `frame` | number | optional default=0 | — Frame to compare (default 0) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -434,10 +434,10 @@ Verify protected SVG artwork or a split source block at its settle frame (pixels
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `height` | integer | optional | — Comparison raster height in px (default: document size) |
 | `layer` | string\|integer | required | |
-| `tolerance` | integer | optional default=2 | — Per-channel tolerance 0..255 (default 2) |
 | `width` | integer | optional | — Comparison raster width in px (default: document size) |
+| `height` | integer | optional | — Comparison raster height in px (default: document size) |
+| `tolerance` | integer | optional default=2 | — Per-channel tolerance 0..255 (default 2) |
 CLI: `kinetic tool validateProtectedSettle --params '<json>' --workspace ./out`
 
 ## validateProject
@@ -528,11 +528,11 @@ Measure how much the picture moves over time: renders the range and reports, per
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto (default) renders on the GPU when an adapter exists and falls back to the CPU reference otherwise |
 | `composition` | string\|integer | optional | |
-| `end` | integer | optional | — End frame, exclusive (default: the composition duration) |
 | `start` | integer | optional default=0 | — First frame (default 0) |
+| `end` | integer | optional | — End frame, exclusive (default: the composition duration) |
 | `step` | integer | optional default=1 | (min=1) — Sample every Nth frame (1 = every frame; 2 halves the cost on long pieces) |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto (default) renders on the GPU when an adapter exists and falls back to the CPU reference otherwise |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -623,7 +623,7 @@ Open an exported video (or GIF) and check it: frames decoded from the file as a 
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `max_mb` | number | optional | — The size it had to fit, in MB |
 | `path` | string | required | — The file, workspace-relative (renderVideo's out) |
+| `max_mb` | number | optional | — The size it had to fit, in MB |
 CLI: `kinetic tool checkExport --params '<json>' --workspace ./out`
 

@@ -1,7 +1,7 @@
 # Exporting — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-27 of 165 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+27 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## renderFrame
 
@@ -14,10 +14,10 @@ Render one comp frame to PNG (GPU by default; backend=cpu for the reference).
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
 | `composition` | string\|integer | optional | |
 | `frame` | number | optional default=0 | — Frame to render (default 0) |
 | `out` | string | required | — PNG output path, workspace-relative; the image is returned inline to MCP clients |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
 | `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -43,12 +43,12 @@ Render frames start..end (exclusive) as PNG sequence (GPU by default).
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
 | `composition` | string\|integer | optional | |
-| `dir` | string | required | — Output folder for frame_NNNNN.png files, workspace-relative |
-| `end` | integer | required | — Stop frame, exclusive (end=90 renders frames 0..89); at most 3600 frames per call |
-| `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
 | `start` | integer | optional default=0 | — First frame (inclusive, default 0) |
+| `end` | integer | required | — Stop frame, exclusive (end=90 renders frames 0..89); at most 3600 frames per call |
+| `dir` | string | required | — Output folder for frame_NNNNN.png files, workspace-relative |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -71,21 +71,21 @@ Render a range and encode MP4 (FFmpeg); probes the result (GPU by default). Incl
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `audio` | boolean | optional | — Mix the comp's audio layers into the MP4 (default: true when it has any) |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
-| `cache` | boolean | optional default=true | — Re-export only what changed: the video is kept in 2 s pieces and a piece whose frames did not change since an earlier export (same quality and size) is reused as it is. Pictures are identical to a full export; sound is always mixed fresh. Grain exports render whole. false renders every frame |
-| `check` | boolean | optional | — Then open the exported file: frames decoded from it come back as a labelled sheet, with size, bitrate, audio and loudness (checkExport). Default on in agent sessions |
 | `composition` | string\|integer | optional | |
-| `dither` | enum["sierra"|"floyd_steinberg"|"bayer"|"none"] | optional | — GIF dithering (default sierra) |
-| `end` | integer | optional | — Stop frame, exclusive (default: the composition's duration) |
-| `fps` | integer | optional | — Animated images: frame rate (GIF 15, others up to 30); only those frames render |
-| `max_mb` | number | optional | — Aim the whole file (sound included) under this many MB, e.g. 25 for chat uploads: x264 from lossless frames, 2-pass if needed; the result's fit reports the size and the measured match. Default from Miran Settings; 0 = no limit |
-| `mix_rate` | integer | optional default=48000 | — Audio mix sample rate when audio=true |
-| `out` | string | required | — .mp4 or .mov; .gif, .webp or .apng make a looping animated image (640 px GIF, 1080 px otherwise; scale overrides; result's image reports size, fps, mb and match) |
-| `palette` | enum["scene"|"global"|"frame"] | optional | — GIF colours: one palette per scene (cuts and markers; default), one for all (smallest), or per frame (best colour, ~30% bigger) |
-| `quality` | enum["draft"|"standard"|"web"|"high"|"max"|"master"] | optional default="high" | — draft: fast preview at half size (H.264, motion blur capped at 4 samples). standard: H.264 High, smaller. web: x264 tuned for flat animation, about a third of high's size at 99.5% of its picture (software, slower). high (default): H.264 High at high constant quality, plays everywhere; very dark smooth gradients can band faintly (the result's encoding.tip says when). max: 10-bit HEVC Main10 from full RGB frames; gradients are dithered when rendered, so dark gradients and glows stay band-free. master: ProRes 422 HQ, 10-bit 4:2:2 (needs a .mov out path; ProRes 4444 with alpha when the composition is transparent). All tagged BT.709, hardware-encoded (VideoToolbox) on Apple Silicon with automatic software fallback. |
-| `scale` | number | optional | (min=0.1, max=1) — Render at this fraction of the size (default 1; 0.5 for draft) |
 | `start` | integer | optional default=0 | — First frame (inclusive, default 0) |
+| `end` | integer | optional | — Stop frame, exclusive (default: the composition's duration) |
+| `out` | string | required | — .mp4 or .mov; .gif, .webp or .apng make a looping animated image (640 px GIF, 1080 px otherwise; scale overrides; result's image reports size, fps, mb and match) |
+| `fps` | integer | optional | — Animated images: frame rate (GIF 15, others up to 30); only those frames render |
+| `palette` | enum["scene"|"global"|"frame"] | optional | — GIF colours: one palette per scene (cuts and markers; default), one for all (smallest), or per frame (best colour, ~30% bigger) |
+| `dither` | enum["sierra"|"floyd_steinberg"|"bayer"|"none"] | optional | — GIF dithering (default sierra) |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `audio` | boolean | optional | — Mix the comp's audio layers into the MP4 (default: true when it has any) |
+| `mix_rate` | integer | optional default=48000 | — Audio mix sample rate when audio=true |
+| `cache` | boolean | optional default=true | — Re-export only what changed: the video is kept in 2 s pieces and a piece whose frames did not change since an earlier export (same quality and size) is reused as it is. Pictures are identical to a full export; sound is always mixed fresh. Grain exports render whole. false renders every frame |
+| `scale` | number | optional | (min=0.1, max=1) — Render at this fraction of the size (default 1; 0.5 for draft) |
+| `check` | boolean | optional | — Then open the exported file: frames decoded from it come back as a labelled sheet, with size, bitrate, audio and loudness (checkExport). Default on in agent sessions |
+| `max_mb` | number | optional | — Aim the whole file (sound included) under this many MB, e.g. 25 for chat uploads: x264 from lossless frames, 2-pass if needed; the result's fit reports the size and the measured match. Default from Miran Settings; 0 = no limit |
+| `quality` | enum["draft"|"standard"|"web"|"high"|"max"|"master"] | optional default="high" | — draft: fast preview at half size (H.264, motion blur capped at 4 samples). standard: H.264 High, smaller. web: x264 tuned for flat animation, about a third of high's size at 99.5% of its picture (software, slower). high (default): H.264 High at high constant quality, plays everywhere; very dark smooth gradients can band faintly (the result's encoding.tip says when). max: 10-bit HEVC Main10 from full RGB frames; gradients are dithered when rendered, so dark gradients and glows stay band-free. master: ProRes 422 HQ, 10-bit 4:2:2 (needs a .mov out path; ProRes 4444 with alpha when the composition is transparent). All tagged BT.709, hardware-encoded (VideoToolbox) on Apple Silicon with automatic software fallback. |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -140,8 +140,8 @@ Open an exported video (or GIF) and check it: frames decoded from the file as a 
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `max_mb` | number | optional | — The size it had to fit, in MB |
 | `path` | string | required | — The file, workspace-relative (renderVideo's out) |
+| `max_mb` | number | optional | — The size it had to fit, in MB |
 CLI: `kinetic tool checkExport --params '<json>' --workspace ./out`
 
 ## renderVideoWithAudio
@@ -155,16 +155,16 @@ Render a range, mix composition audio, mux into the MP4, and verify. Fails loudl
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
-| `cache` | boolean | optional default=true | — See renderVideo.cache |
 | `composition` | string\|integer | optional | |
+| `start` | integer | optional default=0 | — First frame (inclusive, default 0) |
 | `end` | integer | optional | — Stop frame, exclusive (default: the composition's duration) |
-| `max_mb` | number | optional | — Size limit; see renderVideo.max_mb |
-| `mix_rate` | integer | optional default=48000 | — Audio sample rate in Hz (default 48000) |
 | `out` | string | required | — Path, workspace-relative: .mp4 (or .mov, required for quality=master); .gif, .webp or .apng make a looping animated image |
 | `quality` | enum["draft"|"standard"|"web"|"high"|"max"|"master"] | optional default="high" | — Delivery preset; see renderVideo.quality |
+| `max_mb` | number | optional | — Size limit; see renderVideo.max_mb |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `mix_rate` | integer | optional default=48000 | — Audio sample rate in Hz (default 48000) |
+| `cache` | boolean | optional default=true | — See renderVideo.cache |
 | `scale` | number | optional | (min=0.1, max=1) — Render at this fraction of the size (default 1; 0.5 for draft) |
-| `start` | integer | optional default=0 | — First frame (inclusive, default 0) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -189,14 +189,14 @@ Grid PNG of frames (QA artifact; GPU by default).
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
-| `columns` | integer | optional default=4 | (min=1, max=64) — Sheet columns, 1..=64 (the sheet buffer is frame_w*columns by frame_h*rows) |
 | `composition` | string\|integer | optional | |
 | `frames` | array\|string\|integer | required | — Frames to show: a list, a count (spread evenly), or "auto": each scene's middle, both sides of every cut and the last frame. Each cell is labelled with its frame and time |
-| `ignore` | array\|string\|integer | optional | — Layers whose motion is intended (names or ids) |
+| `columns` | integer | optional default=4 | (min=1, max=64) — Sheet columns, 1..=64 (the sheet buffer is frame_w*columns by frame_h*rows) |
 | `max_width` | integer | optional default=2400 | — Shrink the sheet to at most this many px wide so it comes back inline (0 = full size) |
-| `out` | string | required | — PNG output path; the sheet is returned inline to MCP clients |
+| `ignore` | array\|string\|integer | optional | — Layers whose motion is intended (names or ids) |
 | `platform` | enum["reels"|"tiktok"|"shorts"] | optional | — 9:16 app UI zones for the layout list |
+| `out` | string | required | — PNG output path; the sheet is returned inline to MCP clients |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
 | `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -233,12 +233,12 @@ Other aspect versions of a composition (16:9, 9:16, 1:1, 4:5...), built and expo
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `aspects` | array | optional | — "W:H" each, default ["16:9","9:16","1:1"]; the short edge stays the source's |
 | `composition` | string\|integer | optional | |
-| `export` | object | optional | — renderVideo params for every version (quality, max_mb, backend, audio, fps...) |
+| `aspects` | array | optional | — "W:H" each, default ["16:9","9:16","1:1"]; the short edge stays the source's |
 | `out` | string | optional | — Base path, e.g. renders/final.mp4 -> renders/final-9x16.mp4 (.gif/.webp/.apng too) |
-| `rebuild` | boolean | optional default=false | — Build again from the source a version that already exists (it keeps your edits otherwise) |
+| `export` | object | optional | — renderVideo params for every version (quality, max_mb, backend, audio, fps...) |
 | `render` | boolean | optional default=true | — false only builds the versions |
+| `rebuild` | boolean | optional default=false | — Build again from the source a version that already exists (it keeps your edits otherwise) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -274,10 +274,10 @@ Time evaluation + render over N frames (GPU by default).
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
 | `composition` | string\|integer | optional | |
 | `frames` | integer | optional default=8 | — Frames to time (default 8) |
 | `repeat` | integer | optional default=1 | — Timing passes (default 1) |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -405,8 +405,8 @@ Decode an audio asset/file to memory; report rate, channels, duration, peak. Opt
 | param | type | required/default | notes |
 |---|---|---|---|
 | `asset` | string | optional | — Audio asset id (or give path instead) |
-| `out` | string | optional | — Optional workspace-relative WAV output |
 | `path` | string | optional | — Workspace-relative audio file (or give asset instead) |
+| `out` | string | optional | — Optional workspace-relative WAV output |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -454,8 +454,8 @@ Min/max peaks + RMS envelope buckets for an audio asset/file.
 | param | type | required/default | notes |
 |---|---|---|---|
 | `asset` | string | optional | — Audio asset id (or give path instead) |
-| `buckets` | integer | optional default=128 | (min=8, max=4096) — Number of envelope buckets across the file (default 128) |
 | `path` | string | optional | — Workspace-relative audio file (or give asset instead) |
+| `buckets` | integer | optional default=128 | (min=8, max=4096) — Number of envelope buckets across the file (default 128) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -479,9 +479,9 @@ Energy-onset beat markers for an audio asset/file, in seconds (beats) and compos
 | param | type | required/default | notes |
 |---|---|---|---|
 | `asset` | string | optional | — Audio asset id (or give path instead) |
-| `composition` | string\|integer | optional | — Composition whose fps converts beats to beat_frames (default 0) |
-| `min_gap` | number | optional default=0.25 | — Minimum seconds between markers |
 | `path` | string | optional | — Workspace-relative audio file (or give asset instead) |
+| `min_gap` | number | optional default=0.25 | — Minimum seconds between markers |
+| `composition` | string\|integer | optional | — Composition whose fps converts beats to beat_frames (default 0) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -506,28 +506,28 @@ Add a sound effect as an audio layer, generated in-engine: a preset by name (who
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `align` | enum["hit"|"start"] | optional default="hit" | — hit: sync point on frame; start |
-| `auto` | boolean | optional | — Sounds for the motion already there (whooshes, pops, slams, typing, ticks), in from..to |
 | `composition` | string\|integer | optional | |
-| `count` | integer | optional | — Events (typing, ticks; honks, bites, gulps, scratch strokes) |
-| `duration_frames` | number | optional | — Length (presets) |
-| `for` | string\|integer\|array | optional | — Layer(s) this sound scores: deleting the last of them deletes the sound |
-| `frame` | number | optional default=0 | — Frame the hit lands on |
-| `from` | number | optional | — auto: first frame |
-| `gain_db` | number | optional default=0 | — dB on top of the mix-ready level |
-| `name` | string | optional | — Display name |
-| `note` | string | optional | — Root note, e.g. D2 |
-| `out` | string | optional | — WAV path |
-| `pan` | number | optional default=0 | — -1 left .. 1 right |
-| `patch` | object | optional | — Own synth patch {voices:[{osc,note|freq,env,filter,...}],fx} (guide sound) |
-| `pitch` | number | optional | — Semitones |
-| `place` | boolean | optional default=true | — false: only render the file (returns the preset patch to edit) |
-| `sample_rate` | integer | optional default=48000 | — Hz of samples |
-| `samples` | array | optional | — Raw audio: [s...] or [[left...],[right...]], -1..1 |
-| `seed` | integer | optional | — Variation |
 | `sound` | string | optional | — Preset name |
-| `to` | number | optional | — auto: end frame |
+| `patch` | object | optional | — Own synth patch {voices:[{osc,note|freq,env,filter,...}],fx} (guide sound) |
+| `samples` | array | optional | — Raw audio: [s...] or [[left...],[right...]], -1..1 |
+| `sample_rate` | integer | optional default=48000 | — Hz of samples |
+| `frame` | number | optional default=0 | — Frame the hit lands on |
+| `align` | enum["hit"|"start"] | optional default="hit" | — hit: sync point on frame; start |
+| `duration_frames` | number | optional | — Length (presets) |
+| `pitch` | number | optional | — Semitones |
 | `tone` | number | optional | — -1 dark .. 1 bright |
+| `count` | integer | optional | — Events (typing, ticks; honks, bites, gulps, scratch strokes) |
+| `note` | string | optional | — Root note, e.g. D2 |
+| `seed` | integer | optional | — Variation |
+| `gain_db` | number | optional default=0 | — dB on top of the mix-ready level |
+| `pan` | number | optional default=0 | — -1 left .. 1 right |
+| `name` | string | optional | — Display name |
+| `for` | string\|integer\|array | optional | — Layer(s) this sound scores: deleting the last of them deletes the sound |
+| `place` | boolean | optional default=true | — false: only render the file (returns the preset patch to edit) |
+| `auto` | boolean | optional | — Sounds for the motion already there (whooshes, pops, slams, typing, ticks), in from..to |
+| `from` | number | optional | — auto: first frame |
+| `to` | number | optional | — auto: end frame |
+| `out` | string | optional | — WAV path |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -604,26 +604,26 @@ Compose a backing track in-engine and add it as an audio layer: mood sets tempo,
 - family: `audio` · mutating: `true` · transport: CLI `kinetic tool addMusic` / SDK `batch([{tool: "addMusic"}])` / MCP `tools/call {name: "addMusic"}`
 - history: creates an undo step
 - lean tool list: not listed: call it as `miran.addMusic(...)` in runScript · inside runScript: yes
-- signature: `addMusic {bpm?: number, drop?: number [frame], drums?: bool, duck_db?: number = -9, end?: number, ending?: number [frame], energy?: number, gain_db?: number = 0 [dB], hits?: number[] [frames], key?: string, mood?: tech|corporate|uplifting|epic|hype|chill|ambient|dark|… = "tech", name?: string = "Music", seed?: int, start?: number = 0 [frame], stop?: bool}`
+- signature: `addMusic {bpm?: number, drop?: number [frame], drums?: bool, duck_db?: number = -9, end?: number, ending?: number [frame], energy?: number, gain_db?: number, hits?: number[] [frames], key?: string, mood?: tech|corporate|uplifting|epic|hype|chill|ambient|dark|… = "tech", name?: string = "Music", seed?: int, start?: number = 0 [frame], stop?: bool}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `bpm` | number | optional | — Tempo (mood default) |
 | `composition` | string\|integer | optional | |
-| `drop` | number | optional | — Frame the full beat starts: the reveal (snaps to the 16th-note grid) |
-| `drums` | boolean | optional | — false: no beat |
-| `duck_db` | number | optional default=-9 | — Dip under voiceover lines; 0 off |
-| `end` | number | optional | — Default: comp end |
-| `ending` | number | optional | — Frame of the final chord |
-| `energy` | number | optional | — 0..1 |
-| `gain_db` | number | optional default=0 | — dB on top of the mix-ready level |
-| `hits` | array | optional | — Accent frames |
-| `key` | string | optional | — e.g. D minor |
 | `mood` | enum["tech"|"corporate"|"uplifting"|"epic"|"hype"|"chill"|"ambient"|"dark"|"playful"|"minimal"|"luxury"] | optional default="tech" | — Style (guide sound) |
-| `name` | string | optional default="Music" | — Display name |
-| `seed` | integer | optional | — Another arrangement |
+| `bpm` | number | optional | — Tempo (mood default) |
+| `key` | string | optional | — e.g. D minor |
+| `energy` | number | optional | — 0..1 |
 | `start` | number | optional default=0 | — Start frame |
+| `end` | number | optional | — Default: comp end |
+| `hits` | array | optional | — Accent frames |
+| `drop` | number | optional | — Frame the full beat starts: the reveal (snaps to the 16th-note grid) |
+| `ending` | number | optional | — Frame of the final chord |
+| `drums` | boolean | optional | — false: no beat |
 | `stop` | boolean | optional | — Dead stop (~0.4 s) before the drop so it lands (default on for hype, epic, dark) |
+| `seed` | integer | optional | — Another arrangement |
+| `gain_db` | number | optional | — Default 0, lower under quiet talking (ducked ~14 LU under the words) |
+| `duck_db` | number | optional default=-9 | — Dip under voiceover lines; 0 off |
+| `name` | string | optional default="Music" | — Display name |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -661,25 +661,25 @@ Voice a script as timed lines: built-in Kokoro (offline, free), or Gemini / Elev
 | param | type | required/default | notes |
 |---|---|---|---|
 | `action` | enum["generate"|"voices"|"sample"|"pronounce"|"transcribe"|"words"] | optional default="generate" | — What to do |
-| `composition` | string\|integer | optional | |
-| `extend` | boolean | optional default=true | — Lengthen the comp to fit |
-| `file` | string | optional | — transcribe: audio file |
-| `find` | string | optional | — words: word or phrase |
-| `gain_db` | number | optional default=0 | — Level nudge |
-| `gap` | number | optional default=0.25 | — Seconds between lines |
-| `layer` | string\|integer | optional | — transcribe / words: audio layer |
-| `locale` | string | optional default="en-US" | — transcribe: language |
-| `model` | string | optional | — Cloud model (default newest) |
-| `name` | string | optional default="VO" | — Layer prefix |
-| `pronounce` | object | optional | — Word → "MEER-un" or /phonemes/ (saved) |
-| `provider` | enum["kokoro"|"gemini"|"elevenlabs"] | optional | — Cloud only when asked |
 | `script` | string | optional | — "NAME: line" lines; blank line = pause; [tags] <short pause> |
-| `speed` | number | optional default=1 | — 0.5..2 |
-| `start_frame` | number | optional default=0 | — First line's frame |
-| `style` | string\|object | optional | — Cloud delivery, or per speaker |
-| `text` | string | optional | — sample / pronounce: words |
 | `voice` | string | optional | — af_heart, am_michael, bf_emma... or gemini:Kore, elevenlabs:<name> |
 | `voices` | object | optional | — Speaker → voice |
+| `provider` | enum["kokoro"|"gemini"|"elevenlabs"] | optional | — Cloud only when asked |
+| `model` | string | optional | — Cloud model (default newest) |
+| `speed` | number | optional default=1 | — 0.5..2 |
+| `style` | string\|object | optional | — Cloud delivery, or per speaker |
+| `pronounce` | object | optional | — Word → "MEER-un" or /phonemes/ (saved) |
+| `composition` | string\|integer | optional | |
+| `start_frame` | number | optional default=0 | — First line's frame |
+| `gap` | number | optional default=0.25 | — Seconds between lines |
+| `name` | string | optional default="VO" | — Layer prefix |
+| `gain_db` | number | optional default=0 | — Level nudge |
+| `extend` | boolean | optional default=true | — Lengthen the comp to fit |
+| `text` | string | optional | — sample / pronounce: words |
+| `layer` | string\|integer | optional | — transcribe / words: audio layer |
+| `file` | string | optional | — transcribe: audio file |
+| `locale` | string | optional default="en-US" | — transcribe: language |
+| `find` | string | optional | — words: word or phrase |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -735,8 +735,8 @@ Mix every enabled in-range audio layer of a composition to a stereo WAV; report 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | — Comp id, name, or index (default 0) |
-| `mix_rate` | integer | optional default=48000 | — Audio sample rate in Hz (default 48000) |
 | `out` | string | required | — WAV output path, workspace-relative |
+| `mix_rate` | integer | optional default=48000 | — Audio sample rate in Hz (default 48000) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -759,14 +759,14 @@ Mux a WAV beside an encoded video (stream-copy video, AAC audio); verify with ff
 
 | param | type | required/default | notes |
 |---|---|---|---|
+| `video` | string | required | — Video (.mp4) path, workspace-relative |
 | `audio` | string | required | — Audio (.wav) path, workspace-relative |
 | `out` | string | required | — Output .mp4 path |
-| `video` | string | required | — Video (.mp4) path, workspace-relative |
 CLI: `kinetic tool muxAudio --params '<json>' --workspace ./out`
 
 ## setAudioGain
 
-Set an audio layer's gain (dB), mute flag and ducking under voiceover lines. Commits.
+Set an audio or video layer's gain (dB), mute flag and ducking under voiceover lines (a video layer: its own sound). Commits.
 
 - family: `audio` · mutating: `true` · transport: CLI `kinetic tool setAudioGain` / SDK `batch([{tool: "setAudioGain"}])` / MCP `tools/call {name: "setAudioGain"}`
 - history: creates an undo step
@@ -776,10 +776,10 @@ Set an audio layer's gain (dB), mute flag and ducking under voiceover lines. Com
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `duck_db` | number | optional | — Dip under voices (-9 for a bed); 0 off |
-| `gain_db` | number | optional | — Gain in dB (0 = unity, -6 = half amplitude) |
 | `layer` | string\|integer | required | |
+| `gain_db` | number | optional | — Gain in dB (0 = unity, -6 = half amplitude) |
 | `muted` | boolean | optional | — Mute the layer |
+| `duck_db` | number | optional | — Dip under voices (-9 for a bed); 0 off |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -799,7 +799,7 @@ CLI: `kinetic tool setAudioGain --params '<json>' --workspace ./out`
 
 ## setAudioFades
 
-Set an audio layer's linear fade-in/out lengths (seconds). Commits.
+Set an audio or video layer's linear fade-in/out lengths (seconds). Commits.
 
 - family: `audio` · mutating: `true` · transport: CLI `kinetic tool setAudioFades` / SDK `batch([{tool: "setAudioFades"}])` / MCP `tools/call {name: "setAudioFades"}`
 - history: creates an undo step
@@ -809,9 +809,9 @@ Set an audio layer's linear fade-in/out lengths (seconds). Commits.
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
+| `layer` | string\|integer | required | |
 | `fade_in_s` | number | optional | — Fade-in length in seconds |
 | `fade_out_s` | number | optional | — Fade-out length in seconds |
-| `layer` | string\|integer | required | |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -825,7 +825,7 @@ CLI: `kinetic tool setAudioFades --params '<json>' --workspace ./out`
 
 ## setAudioPan
 
-Set an audio layer's constant-power pan (-1 left .. +1 right). Commits.
+Set an audio or video layer's constant-power pan (-1 left .. +1 right). Commits.
 
 - family: `audio` · mutating: `true` · transport: CLI `kinetic tool setAudioPan` / SDK `batch([{tool: "setAudioPan"}])` / MCP `tools/call {name: "setAudioPan"}`
 - history: creates an undo step
@@ -860,10 +860,10 @@ Set an audio layer's timeline window (in/out frames, or start_frame to move the 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `in_frame` | number | optional | — Composition frame the audio starts |
 | `layer` | string\|integer | required | |
-| `out_frame` | number | optional | — Composition frame the audio stops (exclusive) |
 | `start_frame` | number | optional | — Move the clip to start on this frame: length, volume moves and the words keep with it (not with in_frame) |
+| `in_frame` | number | optional | — Composition frame the audio starts |
+| `out_frame` | number | optional | — Composition frame the audio stops (exclusive) |
 | `start_time` | number | optional | — Seconds into the source |
 | `time_stretch` | number | optional | — >1 plays slower |
 

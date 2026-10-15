@@ -5,7 +5,7 @@
       "args": [],
       "env": {
         "MIRAN_TOOLS_DEFAULT": "full",
-        "MIRAN_PLUGIN_VERSION": "0.1.4"
+        "MIRAN_PLUGIN_VERSION": "0.1.5"
       }
     }
   }

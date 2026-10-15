@@ -1,7 +1,7 @@
 # Camera work — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-22 of 165 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+22 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## createCameraRig
 
@@ -14,20 +14,20 @@ Create/replace the rest rig: dolly, head euler, lens, sensor, focus, aperture, c
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `aperture` | number | optional | — 0 = pinhole (all sharp); 10-40 = visible depth of field around focus_distance |
 | `composition` | string\|integer | optional | |
-| `far` | number | optional | — Far clip distance, world units (default 20000) |
-| `focal_length` | number | optional | — mm on 36x24: 24 wide, 50 natural (default), 85+ telephoto |
-| `focus_distance` | number | optional | — Camera to sharp plane, world units (default 1000 = the Z=0 plane) |
-| `look_at` | array | optional | — [x, y, z] world point the camera aims at (overrides pitch/yaw; roll kept); null clears (setCamera) |
-| `near` | number | optional | — Near clip distance, world units (default 1) |
-| `ortho_half_height` | number | optional | — Orthographic only: world units shown from frame centre to top edge |
 | `position` | array | optional | — Camera position [x, y, z] in world units, looking toward +z. z = -comp height x focal / 24 (-2250 at 1080p, 50 mm; the default) makes 3D layers at z=0 appear at their pixel size |
-| `projection` | enum["perspective"|"orthographic"] | optional | — perspective (default) or orthographic (no size change with depth) |
 | `rotation_euler` | array | optional | — Camera head rotation [pitch, yaw, roll] in degrees |
+| `focal_length` | number | optional | — mm on 36x24: 24 wide, 50 natural (default), 85+ telephoto |
+| `sensor_width` | number | optional | — Sensor width in mm (default 36, full frame) |
 | `sensor_height` | number | optional | — Sensor height in mm (default 24) |
 | `sensor_scale` | number | optional | — Sensor scale (default 1 = real full-frame optics; projects made before 0.3.3 keep 3.5, a much wider view); leave it unless you know why |
-| `sensor_width` | number | optional | — Sensor width in mm (default 36, full frame) |
+| `focus_distance` | number | optional | — Camera to sharp plane, world units (default 1000 = the Z=0 plane) |
+| `aperture` | number | optional | — 0 = pinhole (all sharp); 10-40 = visible depth of field around focus_distance |
+| `near` | number | optional | — Near clip distance, world units (default 1) |
+| `far` | number | optional | — Far clip distance, world units (default 20000) |
+| `projection` | enum["perspective"|"orthographic"] | optional | — perspective (default) or orthographic (no size change with depth) |
+| `ortho_half_height` | number | optional | — Orthographic only: world units shown from frame centre to top edge |
+| `look_at` | array | optional | — [x, y, z] world point the camera aims at (overrides pitch/yaw; roll kept); null clears (setCamera) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -52,12 +52,12 @@ Patch rest-pose fields (position, rotation_euler, focal_length, focus_distance, 
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `aperture` | number | optional | — 0 = pinhole (all sharp); 10-40 = visible depth of field around focus_distance |
 | `composition` | string\|integer | optional | |
-| `focal_length` | number | optional | — mm on 36x24: 24 wide, 50 natural (default), 85+ telephoto |
-| `focus_distance` | number | optional | — Camera to sharp plane, world units (default 1000 = the Z=0 plane) |
 | `position` | array | optional | — Camera position [x, y, z] in world units, looking toward +z. z = -comp height x focal / 24 (-2250 at 1080p, 50 mm; the default) makes 3D layers at z=0 appear at their pixel size |
 | `rotation_euler` | array | optional | — Camera head rotation [pitch, yaw, roll] in degrees |
+| `focal_length` | number | optional | — mm on 36x24: 24 wide, 50 natural (default), 85+ telephoto |
+| `focus_distance` | number | optional | — Camera to sharp plane, world units (default 1000 = the Z=0 plane) |
+| `aperture` | number | optional | — 0 = pinhole (all sharp); 10-40 = visible depth of field around focus_distance |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -82,11 +82,11 @@ Set or clear the static look-at target: {point} | {layer, frame?} | {clear:true}
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `clear` | boolean | optional | — true removes the look-at target |
 | `composition` | string\|integer | optional | |
-| `frame` | number | optional default=0 | — Frame at which the target layer's position is sampled (default 0) |
-| `layer` | string\|integer | optional | |
 | `point` | array\|null | optional | — Aim at this fixed world point [x, y, z] (null clears, same as clear:true) |
+| `layer` | string\|integer | optional | |
+| `frame` | number | optional default=0 | — Frame at which the target layer's position is sampled (default 0) |
+| `clear` | boolean | optional | — true removes the look-at target |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -121,21 +121,21 @@ Blend the camera target from 'from' (default: current) to 'to' over [start, end]
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `axis_locks` | array | optional | — [x, y, z] booleans: a locked camera-position axis keeps its incoming value |
 | `composition` | string\|integer | optional | |
+| `id` | string | required | — Clip id, unique per composition; removeCameraConstraint deletes it |
+| `to` | object | required | — Target to move the aim to |
+| `from` | object | optional | — Starting target (default: the current aim): a target source as in animateCameraTarget.to ({point} | {layer, offset, axes, look_ahead, lag} | {blend}) |
+| `start` | number | required | — Start frame |
+| `end` | number | optional | — End frame (or give duration: end = start + duration) |
 | `duration` | number | optional | — Frames (30 = 1 s at 30 fps) |
 | `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
-| `end` | number | optional | — End frame (or give duration: end = start + duration) |
-| `from` | object | optional | — Starting target (default: the current aim): a target source as in animateCameraTarget.to ({point} | {layer, offset, axes, look_ahead, lag} | {blend}) |
-| `hold_after` | boolean | optional default=true | — Keep the final state after end (default true; false releases) |
-| `id` | string | required | — Clip id, unique per composition; removeCameraConstraint deletes it |
 | `priority` | integer | optional default=0 | — Higher wins where clips overlap (default 0) |
-| `roll_to` | number | optional | — Camera roll target in degrees, blended in by the clip envelope |
-| `screen_offset` | array | optional | — [x, y] screen px (y down) nudge of the aim, for off-centre framing |
-| `start` | number | required | — Start frame |
-| `to` | object | required | — Target to move the aim to |
 | `weight` | number | optional | — Clip blend weight 0..1 (default 1 = full effect) |
 | `weight_to` | number | optional | — Fade the weight to this across [start, end] |
+| `roll_to` | number | optional | — Camera roll target in degrees, blended in by the clip envelope |
+| `screen_offset` | array | optional | — [x, y] screen px (y down) nudge of the aim, for off-centre framing |
+| `axis_locks` | array | optional | — [x, y, z] booleans: a locked camera-position axis keeps its incoming value |
+| `hold_after` | boolean | optional default=true | — Keep the final state after end (default true; false releases) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -160,21 +160,21 @@ Blend the camera target between sources a and b over [start, end] (weighted-stac
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `a` | object | required | — First target source: a target source as in animateCameraTarget.to ({point} | {layer, offset, axes, look_ahead, lag} | {blend}) |
-| `axis_locks` | array | optional | — [x, y, z] booleans: a locked camera-position axis keeps its incoming value |
-| `b` | object | required | — Second target source: a target source as in animateCameraTarget.to ({point} | {layer, offset, axes, look_ahead, lag} | {blend}) |
 | `composition` | string\|integer | optional | |
+| `id` | string | required | — Clip id, unique per composition; removeCameraConstraint deletes it |
+| `a` | object | required | — First target source: a target source as in animateCameraTarget.to ({point} | {layer, offset, axes, look_ahead, lag} | {blend}) |
+| `b` | object | required | — Second target source: a target source as in animateCameraTarget.to ({point} | {layer, offset, axes, look_ahead, lag} | {blend}) |
+| `start` | number | required | — Start frame |
+| `end` | number | optional | — End frame (or give duration: end = start + duration) |
 | `duration` | number | optional | — Frames (30 = 1 s at 30 fps) |
 | `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
-| `end` | number | optional | — End frame (or give duration: end = start + duration) |
-| `hold_after` | boolean | optional default=true | — Keep the final state after end (default true; false releases) |
-| `id` | string | required | — Clip id, unique per composition; removeCameraConstraint deletes it |
 | `priority` | integer | optional default=0 | — Higher wins where clips overlap (default 0) |
-| `roll_to` | number | optional | — Camera roll target in degrees, blended in by the clip envelope |
-| `screen_offset` | array | optional | — [x, y] screen px (y down) nudge of the aim, for off-centre framing |
-| `start` | number | required | — Start frame |
 | `weight` | number | optional | — Clip blend weight 0..1 (default 1 = full effect) |
 | `weight_to` | number | optional | — Fade the weight to this across [start, end] |
+| `roll_to` | number | optional | — Camera roll target in degrees, blended in by the clip envelope |
+| `screen_offset` | array | optional | — [x, y] screen px (y down) nudge of the aim, for off-centre framing |
+| `axis_locks` | array | optional | — [x, y, z] booleans: a locked camera-position axis keeps its incoming value |
+| `hold_after` | boolean | optional default=true | — Keep the final state after end (default true; false releases) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -200,14 +200,14 @@ Dolly along Z to a target depth: to_z, start and duration (baked channels), or m
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
+| `mode` | enum["channels"|"constraint"] | optional default="channels" | — Omit or 'channels' for the to_z/start/duration path; 'constraint' for the weighted-stack path |
+| `id` | string | optional | — Constraint id (required when mode='constraint') |
+| `from_z` | number | optional | — Start depth, world Z (default: the camera's evaluated Z at start) |
+| `to_z` | number | optional | — Target depth (required unless mode='constraint') |
+| `start` | number | optional | — Start frame (required unless mode='constraint') |
 | `duration` | number | optional | — Duration in frames (required unless mode='constraint') |
 | `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
 | `end` | number | optional | — End frame (or give duration) |
-| `from_z` | number | optional | — Start depth, world Z (default: the camera's evaluated Z at start) |
-| `id` | string | optional | — Constraint id (required when mode='constraint') |
-| `mode` | enum["channels"|"constraint"] | optional default="channels" | — Omit or 'channels' for the to_z/start/duration path; 'constraint' for the weighted-stack path |
-| `start` | number | optional | — Start frame (required unless mode='constraint') |
-| `to_z` | number | optional | — Target depth (required unless mode='constraint') |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -243,19 +243,19 @@ Orbit a center at radius/height across a yaw sweep, aimed at the center. mode='c
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `center` | array | optional | — [x, y, z] world point to orbit (default [0, 0, 0]) |
 | `composition` | string\|integer | optional | |
-| `duration` | number | required | — Frames (30 = 1 s at 30 fps) |
-| `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
-| `end` | number | optional | — End frame (or give duration) |
-| `from_deg` | number | optional | — Default: the camera's current angle |
-| `height` | number | optional | — Camera y; default: current |
-| `id` | string | optional | — Clip id (constraint mode) |
-| `mode` | enum["channels"|"constraint"] | optional default="channels" | — channels (default): baked keys; constraint: a blendable clip (needs id) |
+| `center` | array | optional | — [x, y, z] world point to orbit (default [0, 0, 0]) |
 | `radius` | number | optional | — Default: the camera's current distance |
-| `segments` | integer | optional default=8 | — Channels mode: linear pieces approximating the arc (default 8, max 64) |
-| `start` | number | required | — Start frame |
+| `height` | number | optional | — Camera y; default: current |
+| `from_deg` | number | optional | — Default: the camera's current angle |
 | `to_deg` | number | required | — End angle in degrees (same convention as from_deg; 180 -> 150 is a gentle 30-degree arc) |
+| `start` | number | required | — Start frame |
+| `duration` | number | required | — Frames (30 = 1 s at 30 fps) |
+| `segments` | integer | optional default=8 | — Channels mode: linear pieces approximating the arc (default 8, max 64) |
+| `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
+| `mode` | enum["channels"|"constraint"] | optional default="channels" | — channels (default): baked keys; constraint: a blendable clip (needs id) |
+| `id` | string | optional | — Clip id (constraint mode) |
+| `end` | number | optional | — End frame (or give duration) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -286,17 +286,17 @@ Crane vertically with an optional head-pitch move. mode='constraint' (+id) route
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `duration` | number | required | — Frames (30 = 1 s at 30 fps) |
-| `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
-| `end` | number | optional | — End frame (or give duration) |
-| `id` | string | optional | — Clip id (constraint mode) |
-| `look` | object | optional | — Constraint mode: keep aiming at this target while craning: a target source as in animateCameraTarget.to ({point} | {layer, offset, axes, look_ahead, lag} | {blend}) |
-| `mode` | enum["channels"|"constraint"] | optional default="channels" | — channels (default): baked keys; constraint: a blendable clip (needs id) |
+| `y_to` | number | optional | — Target camera world Y (up is +) |
 | `pitch_to` | number | optional | — Degrees, + tilts down; omit to keep the subject framed |
 | `start` | number | required | — Start frame |
+| `duration` | number | required | — Frames (30 = 1 s at 30 fps) |
+| `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
+| `mode` | enum["channels"|"constraint"] | optional default="channels" | — channels (default): baked keys; constraint: a blendable clip (needs id) |
+| `id` | string | optional | — Clip id (constraint mode) |
+| `end` | number | optional | — End frame (or give duration) |
 | `x_to` | number | optional | — Constraint mode: target camera world X |
-| `y_to` | number | optional | — Target camera world Y (up is +) |
 | `z_to` | number | optional | — Constraint mode: target camera world Z |
+| `look` | object | optional | — Constraint mode: keep aiming at this target while craning: a target source as in animateCameraTarget.to ({point} | {layer, offset, axes, look_ahead, lag} | {blend}) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -326,13 +326,13 @@ Ease dolly/head/focus/aperture back to the rest pose. mode='constraint' (+id) ro
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `at_frame` | number | required | — Frame at which the settle starts (the camera eases from its pose there back to the rest rig) |
 | `composition` | string\|integer | optional | |
+| `at_frame` | number | required | — Frame at which the settle starts (the camera eases from its pose there back to the rest rig) |
 | `duration` | number | required | — Frames (30 = 1 s at 30 fps) |
 | `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
-| `end` | number | optional | — End frame (or give duration) |
-| `id` | string | optional | — Clip id (constraint mode) |
 | `mode` | enum["channels"|"constraint"] | optional default="channels" | — channels (default): baked keys; constraint: a blendable clip (needs id) |
+| `id` | string | optional | — Clip id (constraint mode) |
+| `end` | number | optional | — End frame (or give duration) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -357,16 +357,16 @@ Animate the dolly to fit a world bounds rect. mode='constraint' (+id) routes to 
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `bounds` | array | required | — [x0, y0, x1, y1] world-space rectangle to fit (y up; for 2D-placed content these are the layer px coordinates) |
 | `composition` | string\|integer | optional | |
+| `bounds` | array | required | — [x0, y0, x1, y1] world-space rectangle to fit (y up; for 2D-placed content these are the layer px coordinates) |
+| `plane_z` | number | required | — World Z of the bounds plane (0 for layers at default depth) |
+| `margin` | number | optional default=0.1 | — Headroom, fraction of the frame (0.1 = 10% each side) |
+| `start` | number | required | — Start frame |
 | `duration` | number | required | — Frames (30 = 1 s at 30 fps) |
 | `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
-| `end` | number | optional | — End frame (or give duration) |
-| `id` | string | optional | — Clip id (constraint mode) |
-| `margin` | number | optional default=0.1 | — Headroom, fraction of the frame (0.1 = 10% each side) |
 | `mode` | enum["channels"|"constraint"] | optional default="channels" | — channels (default): baked keys; constraint: a blendable clip (needs id) |
-| `plane_z` | number | required | — World Z of the bounds plane (0 for layers at default depth) |
-| `start` | number | required | — Start frame |
+| `id` | string | optional | — Clip id (constraint mode) |
+| `end` | number | optional | — End frame (or give duration) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -397,15 +397,15 @@ Fit named layers (default: all visual) at a frame. mode='constraint' (+id) route
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
+| `layers` | array | optional | — Layer ids or names (default: every visual layer) |
+| `frame` | number | required | — Frame at which the layers' positions are measured |
+| `margin` | number | optional default=0.1 | — Headroom, fraction of the frame (0.1 = 10% each side) |
+| `start` | number | required | — Start frame |
 | `duration` | number | required | — Frames (30 = 1 s at 30 fps) |
 | `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
-| `end` | number | optional | — End frame (or give duration) |
-| `frame` | number | required | — Frame at which the layers' positions are measured |
-| `id` | string | optional | — Clip id (constraint mode) |
-| `layers` | array | optional | — Layer ids or names (default: every visual layer) |
-| `margin` | number | optional default=0.1 | — Headroom, fraction of the frame (0.1 = 10% each side) |
 | `mode` | enum["channels"|"constraint"] | optional default="channels" | — channels (default): baked keys; constraint: a blendable clip (needs id) |
-| `start` | number | required | — Start frame |
+| `id` | string | optional | — Clip id (constraint mode) |
+| `end` | number | optional | — End frame (or give duration) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -435,16 +435,16 @@ Pull back from a close-up to the full fit, settling head-on. mode='constraint' (
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `closeup` | number | optional default=0.45 | — Channels mode: starting distance as a fraction of the final fit distance (default 0.45 = starts ~2.2x closer) |
 | `composition` | string\|integer | optional | |
+| `margin` | number | optional default=0.1 | — Headroom, fraction of the frame (0.1 = 10% each side) |
+| `closeup` | number | optional default=0.45 | — Channels mode: starting distance as a fraction of the final fit distance (default 0.45 = starts ~2.2x closer) |
+| `sweep_deg` | number | optional default=0 | — Channels mode: yaw sweep in degrees during the pull-back, settling head-on (default 0 = straight pull-back) |
+| `start` | number | required | — Start frame |
 | `duration` | number | required | — Frames (30 = 1 s at 30 fps) |
 | `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
-| `end` | number | optional | — End frame (or give duration) |
-| `id` | string | optional | — Clip id (constraint mode) |
-| `margin` | number | optional default=0.1 | — Headroom, fraction of the frame (0.1 = 10% each side) |
 | `mode` | enum["channels"|"constraint"] | optional default="channels" | — channels (default): baked keys; constraint: a blendable clip (needs id) |
-| `start` | number | required | — Start frame |
-| `sweep_deg` | number | optional default=0 | — Channels mode: yaw sweep in degrees during the pull-back, settling head-on (default 0 = straight pull-back) |
+| `id` | string | optional | — Clip id (constraint mode) |
+| `end` | number | optional | — End frame (or give duration) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -475,15 +475,15 @@ Aim the head at a layer over [start, end] (yaw/pitch segments). mode='constraint
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `end` | number | required | — End frame (or give duration) |
-| `id` | string | optional | — Clip id (constraint mode) |
-| `lag` | number | optional | — Constraint mode: aim at where the layer was this many frames earlier (trailing follow) |
 | `layer` | string\|integer | required | |
-| `look_ahead` | number | optional | — Constraint mode: aim at where the layer will be this many frames later (anticipation) |
-| `mode` | enum["channels"|"constraint"] | optional default="channels" | — channels (default): baked keys; constraint: a blendable clip (needs id) |
-| `offset` | array | optional | — Constraint mode: [x, y, z] world offset added to the layer origin |
 | `start` | number | required | — Start frame |
+| `end` | number | required | — End frame (or give duration) |
 | `step` | number | optional default=4 | — Channels mode: aim is re-solved every `step` frames (default 4; lower = tighter, more keys) |
+| `mode` | enum["channels"|"constraint"] | optional default="channels" | — channels (default): baked keys; constraint: a blendable clip (needs id) |
+| `id` | string | optional | — Clip id (constraint mode) |
+| `offset` | array | optional | — Constraint mode: [x, y, z] world offset added to the layer origin |
+| `look_ahead` | number | optional | — Constraint mode: aim at where the layer will be this many frames later (anticipation) |
+| `lag` | number | optional | — Constraint mode: aim at where the layer was this many frames earlier (trailing follow) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -509,15 +509,15 @@ Dolly through [{frame, position}] waypoints. mode='constraint' (+id) routes to t
 - family: `camera` · mutating: `true` · transport: CLI `kinetic tool cameraFollowPath` / SDK `batch([{tool: "cameraFollowPath"}])` / MCP `tools/call {name: "cameraFollowPath"}`
 - history: creates an undo step
 - lean tool list: not listed: call it as `miran.cameraFollowPath(...)` in runScript · inside runScript: yes
-- signature: `cameraFollowPath {keys: any[], ease?: string = "linear", id?: string, mode?: channels|constraint = "channels"}`
+- signature: `cameraFollowPath {keys: object[], ease?: string = "linear", id?: string, mode?: channels|constraint = "channels"}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `ease` | string | optional default="linear" | — Ease name (list: animateProperty.ease) |
-| `id` | string | optional | — Clip id (constraint mode) |
 | `keys` | array | required | — [{frame, position:[x,y,z]}], ascending |
+| `ease` | string | optional default="linear" | — Ease name (list: animateProperty.ease) |
 | `mode` | enum["channels"|"constraint"] | optional default="channels" | — channels (default): baked keys; constraint: a blendable clip (needs id) |
+| `id` | string | optional | — Clip id (constraint mode) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -547,23 +547,23 @@ Weighted-stack clip holding a layer at a screen point (default: center); size_px
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `axis_locks` | array | optional | — [x, y, z] booleans: a locked camera-position axis keeps its incoming value |
 | `composition` | string\|integer | optional | |
-| `duration` | number | optional | — Frames (30 = 1 s at 30 fps) |
-| `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
-| `end` | number | optional | — End frame (or give duration: end = start + duration) |
-| `hold_after` | boolean | optional default=true | — Keep the final state after end (default true; false releases) |
 | `id` | string | required | — Clip id, unique per composition; removeCameraConstraint deletes it |
 | `layer` | string\|integer | required | |
-| `priority` | integer | optional default=0 | — Higher wins where clips overlap (default 0) |
-| `roll_to` | number | optional | — Camera roll target in degrees, blended in by the clip envelope |
 | `screen` | array | optional | — [x, y] screen point in pixels from the TOP-LEFT (y down) where the layer should sit (default: frame centre) |
-| `screen_offset` | array | optional | — [x, y] screen px (y down) nudge of the aim, for off-centre framing |
 | `size_px` | number | optional | — Hold the layer at this projected size in px (needs world_size) |
+| `world_size` | number | optional | — The layer's real size in world units that size_px refers to |
 | `start` | number | required | — Start frame |
+| `end` | number | optional | — End frame (or give duration: end = start + duration) |
+| `duration` | number | optional | — Frames (30 = 1 s at 30 fps) |
+| `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
+| `priority` | integer | optional default=0 | — Higher wins where clips overlap (default 0) |
 | `weight` | number | optional | — Clip blend weight 0..1 (default 1 = full effect) |
 | `weight_to` | number | optional | — Fade the weight to this across [start, end] |
-| `world_size` | number | optional | — The layer's real size in world units that size_px refers to |
+| `roll_to` | number | optional | — Camera roll target in degrees, blended in by the clip envelope |
+| `screen_offset` | array | optional | — [x, y] screen px (y down) nudge of the aim, for off-centre framing |
+| `axis_locks` | array | optional | — [x, y, z] booleans: a locked camera-position axis keeps its incoming value |
+| `hold_after` | boolean | optional default=true | — Keep the final state after end (default true; false releases) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -589,18 +589,18 @@ Weighted-stack lens clip: focus/aperture/focal pulls over [start, end].
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `duration` | number | optional | — Frames (30 = 1 s at 30 fps) |
-| `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
-| `end` | number | optional | — End frame (or give duration: end = start + duration) |
-| `hold_after` | boolean | optional default=true | — Keep the final state after end (default true; false releases) |
 | `id` | string | required | — Clip id, unique per composition; removeCameraConstraint deletes it |
-| `priority` | integer | optional default=0 | — Higher wins where clips overlap (default 0) |
-| `start` | number | required | — Start frame |
+| `to_focus` | number | optional | — Target focus distance, world units |
 | `to_aperture` | number | optional | — Target aperture (0 = everything sharp) |
 | `to_focal` | number | optional | — Target focal length in mm (a zoom) |
-| `to_focus` | number | optional | — Target focus distance, world units |
+| `start` | number | required | — Start frame |
+| `end` | number | optional | — End frame (or give duration: end = start + duration) |
+| `duration` | number | optional | — Frames (30 = 1 s at 30 fps) |
+| `ease` | string | optional default="camera" | — Ease name (list: animateProperty.ease) |
+| `priority` | integer | optional default=0 | — Higher wins where clips overlap (default 0) |
 | `weight` | number | optional | — Clip blend weight 0..1 (default 1 = full effect) |
 | `weight_to` | number | optional | — Fade the weight to this across [start, end] |
+| `hold_after` | boolean | optional default=true | — Keep the final state after end (default true; false releases) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -626,10 +626,10 @@ Sample the exact renderer camera evaluation over [start, end]: pose, target, scr
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `end` | number | required | — End frame |
-| `start` | number | required | — Start frame |
-| `step` | number | optional default=1 | — Sampling step in frames |
 | `target_layer` | string\|integer | optional | — Also report this layer's screen position and size per sample |
+| `start` | number | required | — Start frame |
+| `end` | number | required | — End frame |
+| `step` | number | optional default=1 | — Sampling step in frames |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -653,9 +653,9 @@ Project focal layers over [start, end]; report bounds + off-frame violations.
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `end` | number | required | — End frame |
 | `layers` | array | optional | — Focal layers that must stay in frame (default: every visual layer) |
 | `start` | number | required | — Start frame |
+| `end` | number | required | — End frame |
 | `step` | number | optional default=1 | — Sample every `step` frames (default 1) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -680,12 +680,12 @@ Validate camera motion: flips, spikes, margins, focal jumps, discontinuities, co
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `end` | number | required | — End frame |
-| `profile` | enum["restrained"|"cinematic"|"energetic"|"handheld"|"legacy"] | optional | — Motion-style thresholds: restrained, cinematic, energetic, handheld (omit for the legacy defaults) |
 | `start` | number | required | — Start frame |
+| `end` | number | required | — End frame |
 | `step` | number | optional default=1 | — Sampling step in frames |
 | `story_event_frame` | number | optional | — Frame of the story beat the move must support (checks order) |
 | `story_event_name` | string | optional | — Label for that story beat in the report |
+| `profile` | enum["restrained"|"cinematic"|"energetic"|"handheld"|"legacy"] | optional | — Motion-style thresholds: restrained, cinematic, energetic, handheld (omit for the legacy defaults) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -749,14 +749,14 @@ Set composition camera fields (dolly, rotation, lens, focus, aperture, projectio
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `aperture` | number | optional | — 0 = pinhole (all sharp); 10-40 = visible depth of field around focus_distance |
 | `composition` | string\|integer | optional | |
 | `dolly` | array | optional | — Camera position [x, y, z] in world units (default: pixel-true, [0, 0, -2250] at 1080p) |
+| `rotation` | array | optional | — Camera head rotation [pitch, yaw, roll] in degrees |
 | `focal_length` | number | optional | — mm on 36x24: 24 wide, 50 natural (default), 85+ telephoto |
 | `focus_distance` | number | optional | — Camera to sharp plane, world units (default 1000 = the Z=0 plane) |
-| `look_at` | array\|null | optional | — [x, y, z] world point the camera aims at (overrides pitch/yaw; roll kept); null clears (setCamera) |
+| `aperture` | number | optional | — 0 = pinhole (all sharp); 10-40 = visible depth of field around focus_distance |
 | `projection` | enum["perspective"|"orthographic"] | optional | — perspective (default) or orthographic (no size change with depth) |
-| `rotation` | array | optional | — Camera head rotation [pitch, yaw, roll] in degrees |
+| `look_at` | array\|null | optional | — [x, y, z] world point the camera aims at (overrides pitch/yaw; roll kept); null clears (setCamera) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 

@@ -11,8 +11,8 @@ Miran is a GPU motion-graphics engine driven by tools (MCP server `miran`).
 This skill is the workflow and the build. **miran-direct** is the directing
 half (production order, shot grammar, the arc of each kind of film, the
 director's review): read it for every film. Deeper skills: **miran-create**
-(layers, SVG, HTML), **miran-motion**, **miran-camera**, **miran-critique**,
-**miran-render**. The server documents itself: `guide {topic}`,
+(layers, SVG, HTML), **miran-edit** (footage), **miran-motion**,
+**miran-camera**, **miran-critique**, **miran-render**. The server documents itself: `guide {topic}`,
 `describeTool {tool}`, and `miran.help("kit.title")` inside a script for one
 kit piece's options.
 
@@ -83,20 +83,18 @@ Then build the look from that palette:
   If the frame could open any AI startup's launch, choose again.
 
 **Launch films: a story, not a spec sheet.** Claude's launch films list
-features: a card that says "Kinetic type", one that says "Real 3D", a tag
-naming the API. Viewers do not care what the engine is called inside; they
-care what it does for them. Show one person getting one real job done with
-the product, and let the features appear inside that job (the 3D shot is
-the product's own screen tilting, not the words "Real 3D" extruded). Never
-put tool or function names on screen.
+features: a card that says "Kinetic type", one that says "Real 3D". Viewers
+care what the product does for them, not what the engine is called. Show one
+person getting one real job done, and let the features appear inside that job
+(the 3D shot is the product's own screen tilting, not the words "Real 3D"
+extruded). Never put tool or function names on screen.
 
-**Fill the frame.** Claude places a small window or a single line of UI in
-the middle of a big empty field, and the frame reads as a slide. The
-subject fills the shot it is in: a UI shot is the UI, cropped close, with
-the part that matters large enough to read on a phone; a wide shot is wide
-because the space means something (a product alone on its stage), never
-because nothing else was placed. If a sheet cell is mostly background,
-push in (`kit.frame`) or give it a second element that belongs there.
+**Fill the frame.** Claude places a small window or a line of UI in the
+middle of a big empty field, and the frame reads as a slide. A UI shot is the
+UI, cropped close, the part that matters large enough to read on a phone; a
+wide shot is wide because the space means something, never because nothing
+else was placed. If a sheet cell is mostly background, push in (`kit.frame`)
+or add a second element that belongs there.
 
 ## The workflow
 
@@ -124,9 +122,8 @@ after any pause or context compaction, and keep it true as the film
 changes: it is how the next session, or the user, knows what the film is.
 
 **The viewer.** Call `openViewer` once and give the user the link: a live
-timeline, layers and preview that update as you build. The user can edit
-there; your next result carries `viewer_edits`. Build on their edits, never
-undo them.
+timeline, layers and preview. The user can edit there; your next result
+carries `viewer_edits`. Build on their edits, never undo them.
 
 ## Real material first
 
@@ -135,34 +132,33 @@ hand as positioned SVG reads as almost real, and almost real reads as fake.
 `guide {topic:"ui"}` has the details and runnable examples.
 
 - **A product with a website**: `captureSite {url}` photographs it and reads
-  its palette, fonts, logo, headline and the boxes of its headings, buttons
-  and images; `place: true` puts the screenshot in the composition with the
-  boxes in composition px, ready for pushes. `brand {action: "capture",
+  its palette, fonts, logo, headline and the boxes of its headings, buttons and
+  images; `place: true` puts it in the composition, boxes in composition px. `brand {action: "capture",
   url}` saves the palette, fonts and logo as a brand to apply.
-- **Art lifted out of a screenshot** (an orb, a blob, a glow cut from a
-  captured page) carries the page's dither and noise; scaled, moved or used
-  as a fill, it reads as static, the cheap-video look. A screenshot works as
-  a screen at its own size. Rebuild its art in the engine: a circle with a
-  radial `gradient` and a soft `gaussian_blur`, or `kit.blob` for a living
-  shape, stays smooth at any size.
+- **Art lifted out of a screenshot** (an orb, a glow cut from a captured page)
+  carries the page's dither; scaled or used as a fill it reads as static, the
+  cheap-video look. A screenshot works as a screen at its own size. Rebuild the
+  art in the engine (a circle with a radial `gradient` and a soft
+  `gaussian_blur`, or `kit.blob`): it stays smooth at any size.
 - **Art the engine cannot draw** (a painted plate, an illustration, a
   texture, an object): `generateImage {prompt, aspect}` with the user's
-  OpenRouter key from Miran Settings. Write the film's look once in plan.md
+  OpenRouter key from Miran Settings (`generate` also runs video, music and
+  edit models on fal or Replicate keys; a `no-key` answer means the user adds
+  the key in Miran Settings with `openSettings`, never in chat). Write the film's look once in plan.md
   (the brand's palette, the medium, the light) and put it in every prompt,
   so the images belong to one film; look at each before it goes in.
-  `svg: true` traces it into vectors to animate: flat shapes and few colours
-  trace cleanly, a photographic plate stays an image. Never ask it for
-  words, logos, UI or charts. The same prompt returns the saved file; each
-  new image costs the user money.
+  `svg: true` traces it into vectors to animate (flat shapes trace cleanly, a
+  photographic plate stays an image). Never ask it for words, logos, UI or
+  charts. The same prompt returns the saved file; each new image costs money.
 - **A screen to show** (an app view, a dashboard, a chat, a settings page):
   write it as HTML and CSS and `importHtml` it. Chrome lays it out with real
   fonts, flexbox, grid and shadows, and every element with an `id` comes in
   as its own layer, so rows arrive, buttons get clicked and cards lift.
-  Size it for the film: body text 26-32 px in a 1200-1440 px page.
+  Body text 26-32 px in a 1200-1440 px page.
 - **The user's footage or a screen recording**: `createLayer {kind:
-  "video", path, fit: "cover"}` (trim with `src_in` / `src_out`, `speed`),
-  `kit.zoomFollow` to push in on each click, `kit.cursor` for a clean
-  pointer, `kit.screen3d` to tilt it.
+  "video", path, fit: "cover"}`, `kit.zoomFollow` on each click,
+  `kit.cursor`, `kit.screen3d` to tilt it. Cutting, cutouts, tracking and
+  colour: **miran-edit**.
 - **Code**: `kit.code(src, {lang, file, reveal: "type", highlight})`.
 - **Diagrams**: `kit.arrow(from, to, {label})` between layers, `kit.flow`
   for chips and tokens in wrapped rows, `kit.line {head: "arrow"}`.
@@ -176,13 +172,30 @@ hand as positioned SVG reads as almost real, and almost real reads as fake.
   draft `reference {action: "compare", video}` lists what differs, worst
   first (`guide {topic:"reference"}`).
 
-When there is no real material, say so in the plan and design screens in
-the product's style; never present invented screens as the real product.
+With no real material, say so in the plan and design screens in the
+product's style; never present invented screens as the real product.
+
+## Footage and generated media
+
+Footage and generated media are materials like any other; the film process
+above does not change. Cutting an interview or a phone clip, cutouts,
+tracking, grading, delivery: load **miran-edit**. Generated media
+(`generateImage`, `generateVideo`, `generate`) is priced first, cheapest first
+(motion graphics, a still with parallax, a draft, then the one hero shot), and
+the user hears the price before any paid call. Every role is open (`place`):
+own or generated media can be a shot, a background, the fill of a word, fire on
+black over footage, a screen inside a tracked phone, a matte, a particle
+sprite. So combine freely and invent the chain the film needs: a generated
+styleframe that becomes a shot; a person cut out over a generated world with
+light wrap; giant type with a video inside; a recording tilted in 3D with a
+generated hero shot cut in; three ads from one product link
+(`captureSite` for the brand, generated shots held to the product with a
+bible, motion design on top, `deliver` for each size). One `grade` and one
+grain pass over everything is what makes the mix one film.
 
 ## Craft as tests
 
-Rules about pixels are what the critics measure. Taste is a set of questions
-asked of every move and every frame:
+Critics measure pixels. Taste is a set of questions asked of every move:
 
 - **Every movement finishes a sentence.** "This pushes in because the
   cursor is about to click it." "This slams because it is the claim." If you
@@ -196,9 +209,8 @@ asked of every move and every frame:
 - **Rule out the obvious.** Name the concept every other video on this
   subject would use, and do not make it. One of your three concepts takes
   an unusual form: a letter, a countdown, a front page, a map, a receipt.
-- **Steer between the two failures.** Slideshow: everything arrives early,
-  then freezes. Screensaver: ambient motion that says nothing. The film
-  moves when the story does.
+- **Steer between two failures.** Slideshow: everything arrives early, then
+  freezes. Screensaver: ambient motion that says nothing.
 - **Check your lazy defaults before the first build and again before the
   export.** Each default a model reaches for, with the question that
   replaces it: a centred card fading in (what does this thing do when it
@@ -209,8 +221,6 @@ asked of every move and every frame:
   would this product really say?).
 - **Carry motion through the cut.** The outgoing move's direction and speed
   continue into the next shot, or the cut lands on a stop, on purpose.
-- **Say what you invented.** UI, numbers, quotes and claims not from the
-  brief are listed as invented in the final report.
 
 ## Review
 
@@ -229,12 +239,11 @@ the scenes), every cell labelled with its frame and time; a number (`frames:
   session), the brief and the bar; ask for defects ranked with timestamps.
   The builder is the worst judge of its own work.
 
-What usually gives a film away on the sheet: type alone on a field held
-for seconds; words read on the move; a push that crops half a word at the
-frame edge; a tilted screen asked to be read (read it face-on or in the
-push); product UI with 14 px text (push in until body text is 28 px); the
-same layout, ease or entrance beat after beat; on 9:16, an empty half.
-Never claim a beat works without looking at its sheet.
+What gives a film away on the sheet: type alone on a field held for
+seconds; words read on the move; a push that crops half a word; a tilted
+screen asked to be read; product UI at 14 px (push in until body text is 28);
+the same layout or ease beat after beat; on 9:16, an empty half. Never claim a
+beat works without looking at its sheet.
 
 ## Conventions that trip everyone
 
@@ -254,12 +263,10 @@ Never claim a beat works without looking at its sheet.
   is undefined).
 - A composition's length changes with `setCompositionField {field:
   "duration", value: seconds}`; layers that ran to the end follow it.
-- Files go in the film's folder (`miran/<name>/`): renders, sheets, sounds,
-  voices, captures. An export never replaces a file another session made
-  (the result says the name it used).
+- Files go in the film's folder (`miran/<name>/`); an export never replaces a
+  file another session made (the result says the name it used).
 - Read `warnings` and the script `log`: missing glyphs, fallback fonts, a
-  title set smaller to fit the frame, captions skipped because type shows
-  the words.
+  title set smaller to fit the frame.
 
 ## Build one scene per script
 
@@ -295,20 +302,17 @@ parameter. Shapes carry many looks with a few operators (`setShapes {ops}`,
 Fix a beat where it stands. A note on a detail is a short script on the
 layers already there, by the ids the kit returned or `listLayers`:
 `setProperty` or `setLayerField` for a place, size, colour or text,
-`editKeyframes` to move or change one key, `shiftLayerTime {frames}` to
-start a piece earlier or later (its own sounds move with it),
-`deleteLayer`, `kit.addTo(scene, ids)` for a new layer in the shot. A note
-on the shot itself is its script edited and run again: a `kit.scene` with
-that scene's name or frames rebuilds it in place, keeping its transitions,
-its place in the stack and every other shot; a `kit.transition` run again at
-a cut replaces the one there. `undo` takes back only the last script: keep
-it for a script that did something you did not mean.
+`editKeyframes` for one key, `shiftLayerTime {frames}` to start a piece
+earlier or later (its sounds move with it), `deleteLayer`, `kit.addTo(scene,
+ids)` for a new layer in the shot. A note on the shot is its script edited and
+run again: a `kit.scene` with that name or frames rebuilds it in place, keeping
+its transitions and every other shot; a `kit.transition` run again at a cut
+replaces the one there. `undo` takes back only the last script.
 
 ## Score it
 
-A silent video is unfinished. Kit pieces already play their sounds
-(whooshes on transitions, keys under typing, ticks under counters, clicks
-under the cursor); add the bed and the big moments (`guide {topic:"sound"}`):
+A silent video is unfinished. Kit pieces already play their sounds; add the
+bed and the big moments (`guide {topic:"sound"}`):
 
 ```js
 // The spine, made before the cuts: the reveal exactly on the drop, the logo on the ending
@@ -321,9 +325,8 @@ return {bpm: m.bpm, peak: mix.peak, errors: mix.errors};
 ```
 
 Pick the mood with the style (tech, luxury, minimal for product; hype and
-playful for energy; epic and dark for cinematic). On calm music (chill,
-ambient, minimal, luxury) cut on bars and section changes, not on every
-beat. One hero sound per moment.
+playful for energy; epic and dark for cinematic). On calm music cut on bars and
+section changes, not every beat. One hero sound per moment.
 
 ## Voice it, caption it
 
@@ -340,10 +343,9 @@ runScript: const inv = kit.when("invoice");     // inside a kit.scene: the time 
 ```
 
 The built-in voice is offline and free (`af_heart`, `am_michael`, `bf_emma`,
-...). Gemini or ElevenLabs only when the person asks; a missing key fails
-with `no-key`: tell them to add it in Miran Settings, never ask for a key in
-chat. Calling `voiceover` again with the same `name` re-voices the lines in
-place.
+...). Gemini or ElevenLabs only when asked; `no-key` means: tell them to add it
+in Miran Settings, never ask for a key in chat. `voiceover` again with the same
+`name` re-voices the lines in place.
 
 The voice is the film's clock. A length in the brief ("a 2 minute video") is
 where the script aims, not a wall: when the voice comes back longer, the
@@ -360,22 +362,20 @@ renderVideo names any line that is not heard to its end.
 
 Read `guide {topic:"characters"}` (it ends in a runnable two-hander). Write
 the lines with the joke's timing, dry-run them (`kit.dialogue(lines, {dry:
-true})` returns every line's frames and `end` with nothing built), size the
-composition to `end` plus an ending beat of 2-4 s (`setCompositionField
-{field: "duration"}`), then stage it: cast large (55-75% of the frame
-height), open wide, then two-shots and close-ups, the punchline close after
-`pause: 1`, the listener reacting the way the line deserves, gestures on the
-stressed word, `kit.life` under everything, a gag sound on its frame
-(`kit.sfx("boing", f)`). Draw sets 1.2x the frame so close-ups never show an
-edge.
+true})` returns every line's frames and `end`), size the composition to `end`
+plus an ending beat (`setCompositionField {field: "duration"}`), then stage it
+as miran-direct says: cast large, open wide, then two-shots and close-ups, the
+punchline close after `pause: 1`, gestures on the stressed word, `kit.life`
+under everything, a gag sound on its frame (`kit.sfx("boing", f)`). Draw sets
+1.2x the frame so close-ups never show an edge.
 
 ## Vertical (9:16)
 
 Compose for the full height: type and art in tiers, art in the lower third,
-scale contrast vertically, backgrounds bleeding off the edges. Keep text in
-the app's clear box: `kit.safe({platform: "reels"})` (or `"tiktok"`,
-`"shorts"`); `critiqueLayout {platform}` checks the same zones. Captions sit
-below the centre, three words a phrase.
+backgrounds bleeding off the edges. Keep text in the app's clear box:
+`kit.safe({platform: "reels"})` (or `"tiktok"`, `"shorts"`);
+`critiqueLayout {platform}` checks the same zones. Captions sit below the
+centre, three words a phrase.
 
 ## Export
 
@@ -393,11 +393,11 @@ true}`; adaptive, free on still frames). Over MCP a long render returns
 `{job}`: poll `jobStatus {job}`.
 
 Every export opens the file it wrote and reports `check`: frames decoded
-from the MP4 (a labelled sheet, returned as an image), duration, size,
-bitrate, audio and loudness, with problems named in `verdict`. Look at it:
-a defect that only the encoded file shows (blocky grain, a silent mix, a
-file too big to share) is caught there. `checkExport {path}` checks any
-video in the workspace.
+from the MP4 (a sheet, returned as an image), duration, size, bitrate, audio
+and loudness, with problems named in `verdict`. Look at it: a defect only the
+encoded file shows (blocky grain, a silent mix, a file too big to share) is
+caught there. `checkExport {path}` checks any video. To publish to platforms
+(sizes, captions, loudness, thumbnail) use `deliver` (**miran-render**).
 
 ## The final report
 

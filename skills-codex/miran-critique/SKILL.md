@@ -1,6 +1,6 @@
 ---
 name: miran-critique
-description: Measures and reviews Miran Fann work instead of guessing - contact sheets returned as images, critiqueLayout collision, safe-area and frozen-hold checks, critiqueMotion (arcs, eases, lockstep, follow-through), a creative-director review checklist, an independent-reviewer loop, critiqueDesign findings with suggested repairs, validateFinalDesign pass/fail, pixel diffs, text and camera coverage checks, and SVG fidelity verification. Use before claiming anything in Miran looks right, and after every change.
+description: Measures and reviews Miran Fann work instead of guessing - contact sheets returned as images, critiqueLayout collision, safe-area and frozen-hold checks, critiqueMotion (arcs, eases, lockstep, follow-through), a creative-director review checklist, an independent-reviewer loop, critiqueEdit and footage watch for cuts made from footage, critiqueDesign repairs, validateFinalDesign pass/fail, pixel diffs, text and camera coverage, and SVG fidelity. Use before claiming anything in Miran looks right, and after every change.
 ---
 
 # Measure and look
@@ -20,8 +20,7 @@ with **miran-camera**, export with **miran-render**.
   the grid as an image part: you have eyes on the output. Use them.
 - **Never claim it measures right without measuring.** "Probably fine" is not
   a state this engine produces; the critics below are.
-- Critique tools are read-only (they never commit), so run them as often as
-  they are useful.
+- Critique tools are read-only, so run them as often as they are useful.
 
 ## The loop
 
@@ -47,21 +46,19 @@ found; changing three things at once makes the next critique unreadable.
 - [ ] The brand's palette, written with its source in the plan (one accent for calm styles; colour fields for bold ones); not a house look (navy glow, cream-ink-orange, black-and-orange) unless that is the brand
 - [ ] The subject fills its shot: no small window or lone line in a big empty field, no frame of flat colour with nothing on it
 - [ ] Mid-motion frames intentional: no collisions, nothing half-offscreen by accident
-- [ ] Pushes and tilts land clean: no half-word or half-card at the four edges (unless the crop is the design); in a tilt every row stays on its panel, and the UI is read face-on
-- [ ] Motion language consistent: same eases, same stagger, exits faster than entrances
-- [ ] Moves on arcs, eased, staggered, with follow-through somewhere (`critiqueMotion` 85+)
+- [ ] Pushes and tilts land clean: no half-word or half-card at the edges (unless the crop is the design); the UI is read face-on
+- [ ] Motion language consistent: same eases and stagger, exits faster than entrances; arcs and follow-through (`critiqueMotion` 85+)
 - [ ] No clip-art primitives (giant circles, default blobs: `critiquePrimitives`), no effect soup
 - [ ] Launch films: the arc readable from six frames, the reveal on the music drop, shot sizes alternating, every camera move motivated, the director's review scored
 ```
 
 Name what is wrong in words before fixing it; **miran-direct** section 8 is
 the director's review (ten scores; fix the two lowest before exporting).
-`frames: "auto"` picks the key poses for you: the middle of every scene, a
-few frames either side of each cut and the last frame (scenes come from the
-`Scene N` nulls `kit.scene` makes; without them, 12 evenly spaced frames).
-Every cell is labelled with its frame and time, so a finding names a moment
-you can go back to. Add frames by hand for each push and tilt landing (full
-size with `renderFrame`: a thumbnail hides slivers).
+`frames: "auto"` picks the key poses: the middle of every scene, a few frames
+either side of each cut and the last frame (scenes come from the `Scene N`
+nulls `kit.scene` makes; without them, 12 evenly spaced frames). Every cell is
+labelled with its frame and time. Add frames by hand for each push and tilt
+landing (full size with `renderFrame`: a thumbnail hides slivers).
 
 ## Contact sheets: the eyes
 
@@ -87,29 +84,24 @@ moving on.
 
 `critiqueLayout {}` samples every few frames and reports, with frame ranges
 and layer names: text colliding with art or other text (`text-collision`,
-`text-overlap`; a plain shape under the text, like a highlight bar or a
-panel, is design, not a collision), lines through letters
-(`stroke-through-text`: burst rays, rings or connectors crossing a word,
-even while they play; never "intentional", shorten them or tuck them
-under the card), art painted over text (`text-hidden`),
-text on a surface of nearly its own colour, with the contrast ratio
-(`text-low-contrast`: ivory type crossing a white card vanishes), text past the safe
-area (`outside-safe`; on a 9:16 Reels, TikTok or Shorts piece pass `platform:
-"reels"` / `"tiktok"` / `"shorts"` and text under the app's top bar, caption
-block or button column is reported too; `safe` takes a margin fraction or
-`{left, top, right, bottom}`), text under ~2% of the frame height (`tiny-text`,
-about 22 px at 1080p, so 28 px body text is still yours to check), stacked
-lines of one block that share no left edge, right edge or centre (`misaligned`,
-with the offset in px: a must-fix, not a style choice; rebuild the block with
-`kit.lockup`, or give the lines one `at.x`),
-nearly empty frames or one big empty block (`sparse`, `empty-area`, with the
-block's position so you can fill it), and nothing moving for 1.5 s or more
-(`frozen`). Only layers that have landed count, so overlaps while things fly
-in are fine, and a layer in fast transit (a card flung out in a whip) is not
-held to the safe area. On a push's hold `outside-safe` names text layers the
-frame edge cuts or crowds, but words inside imported SVG artwork (a UI mockup)
-are art to it: check those by eye. Run it after the last beat and before
-every export; `sparse` and `empty-area` are notes when calm space is the idea.
+`text-overlap`; a plain shape under the text, like a highlight bar or a panel,
+is design), lines through letters (`stroke-through-text`: rays, rings or
+connectors crossing a word, even while they play; shorten them or tuck them
+under the card), art painted over text (`text-hidden`), text on a surface of
+nearly its own colour, with the contrast ratio (`text-low-contrast`), text past
+the safe area (`outside-safe`; on a 9:16 piece pass `platform: "reels"` /
+`"tiktok"` / `"shorts"` and text under the app's top bar, caption block or
+button column is reported too; `safe` takes a margin fraction or `{left, top,
+right, bottom}`), text under ~2% of the frame height (`tiny-text`, about 22 px
+at 1080p, so 28 px body text is still yours to check), stacked lines of one
+block that share no left edge, right edge or centre (`misaligned`, with the
+offset in px: a must-fix; rebuild the block with `kit.lockup`, or give the
+lines one `at.x`), nearly empty frames or one big empty block (`sparse`,
+`empty-area`, with the block's position) and nothing moving for 1.5 s or more
+(`frozen`). Only layers that have landed count, so overlaps while things fly in
+are fine. Words inside imported SVG artwork (a UI mockup) are art to it: check
+those by eye. Run it after the last beat and before every export; `sparse` and
+`empty-area` are notes when calm space is the idea.
 
 ## Motion activity: the timing
 
@@ -152,26 +144,41 @@ layer and frames, and a concrete fix for each:
   the move begins; set its `in_frame` to the move's start.
 
 It does not judge reveals (a track-matte source, a layer that never shows, a
-cover plate in the colour behind it such as a typing wipe, mask or trim
-animation). A move you chose on purpose, like a constant-speed scroll, goes in
-`ignore: [layer names or ids]` (`renderContactSheet` takes it too); the
-result's `not_judged` lists what was left out. Moves overridden by a later move
-on the same frame are skipped: the critic judges what plays. Retime with `replace: true` or `clearAnimation` so the
-project matches what you see. Aim for 85+. Contact sheet results also carry the findings near their
-frames (`motion`).
+cover plate such as a typing wipe, mask or trim animation). A move you chose on
+purpose, like a constant-speed scroll, goes in `ignore: [layer names or ids]`
+(`renderContactSheet` takes it too); the result's `not_judged` lists what was
+left out. Moves overridden by a later move are skipped: the critic judges what
+plays. Retime with `replace: true` or `clearAnimation`. Aim for 85+. Contact
+sheet results also carry the findings near their frames (`motion`).
+
+## critiqueEdit and watch: footage and the cut
+
+For a cut made from footage (**miran-edit**), `critiqueEdit` is the last look
+before export. It is a direct call that renders one small draft of the whole
+composition (a long film returns `{job}`: poll `jobStatus`) and checks `frames`
+(black, frozen), `flashes`, `jump` cuts, `eye` jumping across a cut, `beat`
+(montage cuts off the music), `mixed` (generated shots that do not match the
+footage), `audio` (clicks at cuts, clipping, loudness, music over speech, dead
+air), `captions` (speed, length, over a face or the app's buttons: pass
+`platform`) and `retention` for shorts. Each failed check gives its three worst
+moments with a small image and the fix: look at the images, fix the worst, run
+it again (`checks` reruns one). A flag can be the style (jump cuts in a vlog):
+say so. `flashes` is an approximate photosensitivity check after the WCAG
+rules, not a certified test; never call a film certified safe.
+
+To look at footage itself, `footage {action: "watch", asset, start, end}`
+returns one picture: the frames of a stretch over its waveform, silences,
+motion, words and cuts. Use it before cutting a moment and after changing one.
 
 ## Independent review: builder is not judge
 
-The builder is the worst judge of its own work. When your environment can
-start a fresh agent (a subagent), give it only the rendered film or frames,
-the brief (and the user's own words) and the bar, never your reasoning or what
-you fixed. Ask for a verdict (ship / one more pass), defects ranked by severity
-with timestamps and screen regions (holds, empty space, type cut at the frame
-edge, collisions, transitions, pacing, sound landing on events) and the three
-highest-value fixes, concrete enough to implement. Fix the biggest gap first,
+The builder is the worst judge of its own work. When you can start a fresh agent
+(a subagent), give it only the rendered film or frames, the brief (and the
+user's own words) and the bar, never your reasoning or what you fixed. Ask for a
+verdict (ship / one more pass), defects ranked with timestamps and screen
+regions, and the three highest-value fixes. Fix the biggest gap first,
 re-render, and give the next round to a new reviewer that checks each prior item
-as fixed, partly or still present and looks for regressions. Stop when what is
-left is cosmetic.
+and looks for regressions. Stop when what is left is cosmetic.
 
 ## critiqueDesign: the numbers
 
@@ -200,9 +207,8 @@ How to read it:
   can explain is a decision, one you cannot is a defect.
 - Pass `"frame"` to include the pixel lens at that frame — static structure
   plus what the pixels actually do.
-- Related: `critiquePrimitives` flags dominant full-frame circle/ellipse
-  primitives without an explicit reason (the "AI drew one giant blob" check),
-  and `compareDesigns` diffs two specs at a frame.
+- Related: `critiquePrimitives` flags full-frame circles (the "one giant blob"
+  check); `compareDesigns` diffs two specs at a frame.
 
 ## validateFinalDesign: the gate
 
@@ -223,26 +229,23 @@ tweak should be **edge-confined**; if changing the stroke recoloured the
 interior, something else moved. `inspectImage` gives dims, mean colour and
 alpha coverage for one PNG.
 
-After any "small change", diff before/after. If `fraction` is 0, your change
-did nothing and you should find out why before moving on — this is exactly how
-silent parameter no-ops get caught.
+After a "small change", diff before/after. A `fraction` of 0 means your change
+did nothing: find out why before moving on (this is how silent no-ops get
+caught).
 
 ## The exported file
 
 `renderVideo` checks what it wrote (`check: true` by default): it decodes the
-file, measures loudness and true peak, size and bitrate, and returns a strip
-of eight frames from the encoded video with its verdict. Look at that strip:
-it is the film as the viewer gets it (a black frame, a frozen tail, banding,
-a missing layer that only the encoder path shows). Fix every `problem` it
-names (silent or very quiet sound, clipping peaks, a file far too big) and
-export again. `checkExport {path}` runs the same check on any file.
+file, measures loudness, true peak, size and bitrate, and returns a strip of
+eight frames from the encoded video with its verdict. Look at that strip: it is
+the film as the viewer gets it (a black frame, a frozen tail, banding). Fix
+every `problem` it names and export again. `checkExport {path}` checks any file.
 
 ## Camera QA
 
-`inspectCameraTrajectory` (the exact renderer pose per frame: ground truth when
-a move renders differently than intended), `inspectCameraCoverage` (focal layers
-off-frame, per frame) and `validateCameraMove` (flips, spikes, margins, focal
-jumps, conflicts). Push rules and tilt limits: **miran-camera**.
+`inspectCameraTrajectory` (the exact renderer pose per frame), `inspectCameraCoverage`
+(focal layers off-frame) and `validateCameraMove` (flips, spikes, margins,
+focal jumps, conflicts). Push rules and tilt limits: **miran-camera**.
 
 ## Other gates
 
@@ -260,9 +263,8 @@ jumps, conflicts). Push rules and tilt limits: **miran-camera**.
 ## Failures you will hit
 
 - **Everything passes and it still looks wrong** — the gates measure structure
-  and pixels, not taste. Name what is wrong in words, translate it into a
-  constraint (`required_elements`, `prohibited_elements`, brand rules), and
-  re-run so the machine can hold that line too.
+  and pixels, not taste. Name what is wrong in words, turn it into a constraint
+  (`required_elements`, `prohibited_elements`, brand rules) and re-run.
 - **Score got worse after a repair** — repairs are proposals, not verdicts;
   `applyRepair` is checkpointed, so restore and take the other finding first.
 

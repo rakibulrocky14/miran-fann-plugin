@@ -1,8 +1,8 @@
 #!/bin/sh
 # Starts the Miran Fann MCP server (Claude Code, Cowork, Codex, ZCode).
 #
-# The engine is a native binary for Apple Silicon Macs, installed at
-# ~/.miran/bin/miran. When it is missing, or older than the version this
+# The engine is a native binary (Apple Silicon Macs, Linux x64 and arm64),
+# installed at ~/.miran/bin/miran. When it is missing, or older than the version this
 # plugin was released with, this downloads that version's engine package from
 # the npm registry, checks it against the SHA-512 pinned below, and installs
 # the one binary inside it there; so updating the plugin in your app updates
@@ -12,9 +12,18 @@
 # KINETIC_BIN overrides the binary; MIRAN_WORKSPACE the folder films are made in.
 set -u
 
-ENGINE_VERSION="0.1.4"
-ENGINE_SHA512="6813ba21fbe86e1141a024ac0daae7e3088b169b4c7b16be2137a150285ca9b3adfdd483f2a2cf7fb94d057a072762c8b39f926ef67f84013630cb67c1b87035"
-ENGINE_URL="https://registry.npmjs.org/miran-darwin-arm64/-/miran-darwin-arm64-$ENGINE_VERSION.tgz"
+ENGINE_VERSION="0.1.5"
+case "$(uname -s)-$(uname -m)" in
+  Darwin-arm64) PKG=miran-darwin-arm64; ENGINE_SHA512="1711b141c8b766b631ff12c54a0e1d2ffdbbe3dbeb8d95b9afdc875a2d3eb05989aefd7141cceb86427510dbc72ebb51163afec10af56cc5b99b42f3c8c8b630" ;;
+  Linux-x86_64) PKG=miran-linux-x64; ENGINE_SHA512="12e37656bae001cfa96d53336e4c52e668bbc3438260bb15afd26f8944e7c59e0c212fe05138bffa9c64dff49708693004dcb6f5ae30befd0689f4d0b7c1a3b4" ;;
+  Linux-aarch64 | Linux-arm64) PKG=miran-linux-arm64; ENGINE_SHA512="f344860549d34d440e0b88ab8f1002af06dae14e9b731c15043540e2f3f8bed524c80819e0dc5e48a18adf6438121ff3e1ab459d8ea7098788a53de58ea8b7c9" ;;
+  *) PKG=""; ENGINE_SHA512="" ;;
+esac
+ENGINE_URL="https://registry.npmjs.org/$PKG/-/$PKG-$ENGINE_VERSION.tgz"
+# On Linux two big model sets (SAM 2.1, Whisper) come in a package of their
+# own, shared with Windows (npm refuses packages much over 150 MB).
+MODELS_SHA512="ebba7ba59bad1dc3a7f4cdd865c272afff2d758d150dabad5b53175d811922a376c96b08a2fa2a42a6f6ca759f42260ee66f33eae0920f8b4580da9b5c126449"
+MODELS_URL="https://registry.npmjs.org/miran-models-onnx/-/miran-models-onnx-$ENGINE_VERSION.tgz"
 MIRAN_HOME="$HOME/.miran"
 INSTALLED="$MIRAN_HOME/bin/miran"
 tmp=""
@@ -57,8 +66,8 @@ needs_engine() {
 # Download, check and install this plugin's engine. Returns non-zero (and
 # installs nothing) when any step fails.
 install_engine() {
-  if [ "$(uname -s)" != "Darwin" ] || [ "$(uname -m)" != "arm64" ]; then
-    say "Miran Fann runs on Apple Silicon Macs for now (this is $(uname -s) $(uname -m))."
+  if [ -z "$PKG" ] || [ -z "$ENGINE_SHA512" ]; then
+    say "this plugin has no Miran Fann engine for $(uname -s) $(uname -m) (Apple Silicon Macs, Linux x64 and arm64; on Windows run: npx miran-fann setup)."
     return 1
   fi
   mkdir -p "$MIRAN_HOME/bin" "$MIRAN_HOME/cache" || { say "could not create $MIRAN_HOME"; return 1; }
@@ -77,19 +86,23 @@ install_engine() {
   lock="$MIRAN_HOME/cache/engine-install.lock"
   needs_engine || { cleanup; return 0; }
   tmp="$(mktemp -d "$MIRAN_HOME/cache/engine.XXXXXX")" || { say "could not create a temporary folder"; cleanup; return 1; }
-  say "downloading the Miran Fann engine $ENGINE_VERSION from the npm registry (about 20 MB)"
+  say "downloading the Miran Fann engine $ENGINE_VERSION and its models from the npm registry (150 to 260 MB, once)"
   if ! curl -fsSL --retry 3 --connect-timeout 15 -o "$tmp/engine.tgz" "$ENGINE_URL"; then
     say "could not download the engine from $ENGINE_URL"
     cleanup
     return 1
   fi
-  got="$(shasum -a 512 "$tmp/engine.tgz" | cut -d ' ' -f 1)"
+  if command -v sha512sum >/dev/null 2>&1; then
+    got="$(sha512sum "$tmp/engine.tgz" | cut -d ' ' -f 1)"
+  else
+    got="$(shasum -a 512 "$tmp/engine.tgz" | cut -d ' ' -f 1)"
+  fi
   if [ "$got" != "$ENGINE_SHA512" ]; then
     say "the downloaded engine does not match the SHA-512 pinned in this plugin; nothing was installed"
     cleanup
     return 1
   fi
-  if ! tar -xzf "$tmp/engine.tgz" -C "$tmp" package/bin/miran; then
+  if ! tar -xzf "$tmp/engine.tgz" -C "$tmp" package/bin/miran package/models; then
     say "could not unpack the engine"
     cleanup
     return 1
@@ -102,8 +115,49 @@ install_engine() {
     return 1
   fi
   say "installed the engine $ENGINE_VERSION to $INSTALLED"
+  # Its models (all but the voice), checked file by file against their pins.
+  set_folders "$tmp/package/models"
+  "$INSTALLED" models install "$tmp/package/models" >/dev/null 2>&1 || say "the models did not install; they will download when first needed"
+  case "$PKG" in miran-linux-*) install_shared_models ;; esac
   cleanup
   return 0
+}
+
+# miran-darwin-arm64 0.1.5 was packed without its set folders (macOS cp copied
+# each folder's contents); `models install` looks for <set>/<file>.
+set_folders() {
+  [ -d "$1/sam2.1-small" ] && return 0
+  for f in "$1"/*; do
+    case "${f##*/}" in
+      SAM2_1Small*.mlpackage) s=sam2.1-small ;;
+      DepthAnythingV2Small*.mlpackage) s=depth-v2-small ;;
+      DeepFilterNet3_onnx.tar.gz) s=deepfilternet3 ;;
+      *) continue ;;
+    esac
+    mkdir -p "$1/$s" && mv "$f" "$1/$s/"
+  done
+}
+
+# Linux: the shared model package, checked against its own pin. A failure
+# leaves the engine working; those models then download when first needed.
+install_shared_models() {
+  [ -n "$MODELS_SHA512" ] || return 0
+  if ! curl -fsSL --retry 3 --connect-timeout 15 -o "$tmp/models.tgz" "$MODELS_URL"; then
+    say "could not download $MODELS_URL; cutouts and transcripts will download their models when first used"
+    return 0
+  fi
+  if command -v sha512sum >/dev/null 2>&1; then
+    got="$(sha512sum "$tmp/models.tgz" | cut -d ' ' -f 1)"
+  else
+    got="$(shasum -a 512 "$tmp/models.tgz" | cut -d ' ' -f 1)"
+  fi
+  if [ "$got" != "$MODELS_SHA512" ]; then
+    say "the downloaded models do not match the SHA-512 pinned in this plugin; they were not installed"
+    return 0
+  fi
+  mkdir -p "$tmp/shared" && tar -xzf "$tmp/models.tgz" -C "$tmp/shared" package/models \
+    && "$INSTALLED" models install "$tmp/shared/package/models" >/dev/null 2>&1 \
+    || say "the shared models did not install; they will download when first needed"
 }
 
 ENGINE=""

@@ -1,7 +1,7 @@
 # The design pipeline — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-32 of 165 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+32 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## analyzeBrief
 
@@ -122,9 +122,9 @@ Compile a spec; optionally import the comp.
 
 | param | type | required/default | notes |
 |---|---|---|---|
+| `spec` | object | required | — DesignSpec from createDesignSpec / generateDesignCandidates |
 | `import` | boolean | optional default=false | — Also add the compiled composition to the project (default false = compile and report only) |
 | `name` | string | optional | — Comp name when importing |
-| `spec` | object | required | — DesignSpec from createDesignSpec / generateDesignCandidates |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -149,9 +149,9 @@ Recompile a spec for W×H (reflow, not rescale).
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `height` | integer | required | — Target height in px |
 | `spec` | object | required | — DesignSpec from createDesignSpec / generateDesignCandidates |
 | `width` | integer | required | — Target width in px (layout reflows, it does not stretch) |
+| `height` | integer | required | — Target height in px |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -176,9 +176,9 @@ Compile + render one frame to PNG.
 
 | param | type | required/default | notes |
 |---|---|---|---|
+| `spec` | object | required | — DesignSpec from createDesignSpec / generateDesignCandidates |
 | `frame` | number | optional default=0 | — Frame to render (default 0) |
 | `out` | string | required | — PNG output path, workspace-relative |
-| `spec` | object | required | — DesignSpec from createDesignSpec / generateDesignCandidates |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -228,9 +228,9 @@ Critique + auto-repair proposals (not applied).
 
 | param | type | required/default | notes |
 |---|---|---|---|
+| `spec` | object | required | — DesignSpec from createDesignSpec / generateDesignCandidates |
 | `frame` | number | optional | — Frame for the pixel lens (omit for static + temporal checks only) |
 | `limit` | integer | optional default=3 | — Maximum proposals (default 3) |
-| `spec` | object | required | — DesignSpec from createDesignSpec / generateDesignCandidates |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -257,12 +257,12 @@ Checkpointed repair loop; optionally import + write PNG.
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `finding` | string | optional | — Only repair this finding code |
+| `spec` | object | required | — DesignSpec from createDesignSpec / generateDesignCandidates |
 | `frame` | number | optional default=0 | — Frame used for the pixel lens and the optional PNG (default 0) |
-| `import` | boolean | optional default=false | — Also add the compiled composition to the project (default false = compile and report only) |
+| `finding` | string | optional | — Only repair this finding code |
 | `max_rounds` | integer | optional default=3 | — Critique-repair rounds before stopping (default 3) |
 | `out` | string | optional | — Write repaired frame PNG |
-| `spec` | object | required | — DesignSpec from createDesignSpec / generateDesignCandidates |
+| `import` | boolean | optional default=false | — Also add the compiled composition to the project (default false = compile and report only) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -287,18 +287,18 @@ Import SVG as editable, animatable vector layers: a workspace file (path) or mar
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `at` | array | optional | — [x, y] where the SVG's centre goes, px from the composition centre, y up (default [0, 0]) |
 | `composition` | string\|integer | optional | |
+| `path` | string | optional | — Workspace-relative .svg path |
+| `svg` | string | optional | — SVG markup instead of path; viewBox = composition size maps 1:1 (y down). One top-level <g id> per animated part; saved under svg/ |
+| `name` | string | optional | — Name for the import: split layers are named <name>/<element id> (default svg) |
+| `at` | array | optional | — [x, y] where the SVG's centre goes, px from the composition centre, y up (default [0, 0]) |
+| `width` | number | optional | — Scale the SVG uniformly to this width in px (or pass height) |
+| `height` | number | optional | — Scale the SVG uniformly to this height in px |
+| `pivot` | string | optional | — content (default when split: each layer scales and rotates around its own element) or document (the SVG centre) |
+| `mode` | string | optional | — explode_top_level_groups (default for svg markup: a layer per top-level element, animate each separately), preserve_groups (default for path: one layer), explode_all_nodes, single_vector_layer, explicit_bitmap_fallback |
+| `text_policy` | string | optional default="keep_text" | — keep_text (default): editable text; outline: exact paths |
 | `explode` | array\|string | optional | — Ids of <g> groups to split into their children, each a layer in place under a group layer (unnamed children: <group>/1, /2). For parts that move separately inside one group |
 | `filters` | enum["rasterize"|"unfiltered"|"refuse"] | optional default="rasterize" | — SVG filters with no native equivalent (feDropShadow, blur, offset, flood, merge are native) |
-| `height` | number | optional | — Scale the SVG uniformly to this height in px |
-| `mode` | string | optional | — explode_top_level_groups (default for svg markup: a layer per top-level element, animate each separately), preserve_groups (default for path: one layer), explode_all_nodes, single_vector_layer, explicit_bitmap_fallback |
-| `name` | string | optional | — Name for the import: split layers are named <name>/<element id> (default svg) |
-| `path` | string | optional | — Workspace-relative .svg path |
-| `pivot` | string | optional | — content (default when split: each layer scales and rotates around its own element) or document (the SVG centre) |
-| `svg` | string | optional | — SVG markup instead of path; viewBox = composition size maps 1:1 (y down). One top-level <g id> per animated part; saved under svg/ |
-| `text_policy` | string | optional default="keep_text" | — keep_text (default): editable text; outline: exact paths |
-| `width` | number | optional | — Scale the SVG uniformly to this width in px (or pass height) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -382,17 +382,17 @@ Lottie (After Effects' web format): import a .json or .lottie (path, url or json
 | param | type | required/default | notes |
 |---|---|---|---|
 | `action` | enum["import"|"export"] | required | — import or export |
-| `at` | array | optional | — import: centre, px from the comp centre (y up) |
-| `composition` | string\|integer | optional | — import: where to place it (default the first); export: which |
+| `path` | string | optional | — import: workspace .json or .lottie |
+| `url` | string | optional | — import: https link (saved in the workspace) |
 | `json` | any | optional | — import: the document (object or string) |
 | `name` | string | optional | — import: composition name (default the file's) |
-| `out` | string | optional | — export: .json or .lottie path (default lottie/<composition>.json) |
-| `path` | string | optional | — import: workspace .json or .lottie |
+| `composition` | string\|integer | optional | — import: where to place it (default the first); export: which |
 | `place` | boolean | optional default=true | — import: place it as a nested layer |
-| `start_frame` | number | optional default=0 | — import: first frame |
-| `text` | enum["outlines"|"live"] | optional default="outlines" | — export: outlines (same everywhere, animators kept) or live (editable, needs the font) |
-| `url` | string | optional | — import: https link (saved in the workspace) |
+| `at` | array | optional | — import: centre, px from the comp centre (y up) |
 | `width` | number | optional | — import: placed width in px (built sharp at that size) |
+| `start_frame` | number | optional default=0 | — import: first frame |
+| `out` | string | optional | — export: .json or .lottie path (default lottie/<composition>.json) |
+| `text` | enum["outlines"|"live"] | optional default="outlines" | — export: outlines (same everywhere, animators kept) or live (editable, needs the font) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -442,19 +442,19 @@ Find open-licence icons (Iconify), Lottie animations (LottieFiles) and Google Fo
 | param | type | required/default | notes |
 |---|---|---|---|
 | `action` | enum["search"|"use"|"credits"] | optional default="search" | — search, use (a result) or credits |
-| `at` | array | optional | — use: centre, px from the comp centre (y up) |
+| `query` | string | optional | — search: keywords ("rocket", "loading", "geometric sans") |
+| `kind` | enum["icon"|"lottie"|"font"] | optional default="icon" | — search: icon (SVG), lottie or font |
+| `set` | string | optional | — search: icon sets, comma separated (lucide, tabler, ph, ...): one set keeps a style |
+| `limit` | integer | optional default=8 | (min=1, max=32) — search: results |
+| `id` | string | optional | — use: a result's id |
+| `url` | string | optional | — use: Lottie file link (from the result) |
 | `author` | string | optional | — use: credited author (from the result) |
+| `name` | string | optional | — use: layer or composition name |
+| `width` | number | optional | — use: width in px |
+| `at` | array | optional | — use: centre, px from the comp centre (y up) |
 | `color` | string | optional | — use: icon colour #RRGGBB |
 | `composition` | string\|integer | optional | — use: target composition |
-| `id` | string | optional | — use: a result's id |
-| `kind` | enum["icon"|"lottie"|"font"] | optional default="icon" | — search: icon (SVG), lottie or font |
-| `limit` | integer | optional default=8 | (min=1, max=32) — search: results |
-| `name` | string | optional | — use: layer or composition name |
-| `query` | string | optional | — search: keywords ("rocket", "loading", "geometric sans") |
-| `set` | string | optional | — search: icon sets, comma separated (lucide, tabler, ph, ...): one set keeps a style |
 | `start_frame` | number | optional | — use: animation start frame |
-| `url` | string | optional | — use: Lottie file link (from the result) |
-| `width` | number | optional | — use: width in px |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -565,9 +565,9 @@ Replace a path, shape, or SVG text fill: CSS hex, none, or VectorPaint JSON.
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `fill` | any | required | — "#rgb"/"#rrggbb"/"#rrggbbaa" hex, "none", or full VectorPaint JSON (solid/linear/radial/...); RGBA channels are 0..1. See exportSvg output. |
 | `layer` | string\|integer | required | |
 | `node` | string | required | — Vector node id (listVectorNodes) |
+| `fill` | any | required | — "#rgb"/"#rrggbb"/"#rrggbbaa" hex, "none", or full VectorPaint JSON (solid/linear/radial/...); RGBA channels are 0..1. See exportSvg output. |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -623,14 +623,14 @@ Edit SVG text content and typography while keeping it a native text node.
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `font_family` | string | optional | — Installed family (e.g. "Helvetica Neue", "SF Pro") or an imported font's; inspectTextCoverage reports fallbacks |
-| `font_size` | number | optional | — Font size in px |
-| `font_style` | string | optional | — normal, italic or oblique |
-| `font_weight` | integer | optional | — CSS weight 100..900 |
 | `layer` | string\|integer | required | |
-| `letter_spacing` | number | optional | — Letter spacing in px |
 | `node` | string | required | — Vector node id (listVectorNodes) |
 | `text` | string | optional | — New text content |
+| `font_family` | string | optional | — Installed family (e.g. "Helvetica Neue", "SF Pro") or an imported font's; inspectTextCoverage reports fallbacks |
+| `font_size` | number | optional | — Font size in px |
+| `font_weight` | integer | optional | — CSS weight 100..900 |
+| `font_style` | string | optional | — normal, italic or oblique |
+| `letter_spacing` | number | optional | — Letter spacing in px |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -680,13 +680,13 @@ Morph a path node: to_segments (+optional from), frame range.
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `end` | number | required | — Frame the morph completes |
-| `from_segments` | array | optional | — Start path in the same format (default: the node's current path) |
 | `layer` | string\|integer | required | |
 | `node` | string | required | — Vector node id (listVectorNodes) |
-| `samples` | integer | optional default=128 | — Resample points per path for the morph (default 128) |
-| `start` | number | required | — Frame the morph starts |
 | `to_segments` | array | required | — Target path as segments in node space: [{"MoveTo":[x,y]}, {"LineTo":[x,y]}, {"CubicTo":[[c1x,c1y],[c2x,c2y],[x,y]]}, "Close"] (exportSvg shows the current ones) |
+| `from_segments` | array | optional | — Start path in the same format (default: the node's current path) |
+| `start` | number | required | — Frame the morph starts |
+| `end` | number | required | — Frame the morph completes |
+| `samples` | integer | optional default=128 | — Resample points per path for the morph (default 128) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -705,14 +705,14 @@ Set [[frame, affine]] keys on a node.
 - family: `vector` · mutating: `true` · transport: CLI `kinetic tool animateVectorTransform` / SDK `batch([{tool: "animateVectorTransform"}])` / MCP `tools/call {name: "animateVectorTransform"}`
 - history: creates an undo step
 - lean tool list: not listed: call it as `miran.animateVectorTransform(...)` in runScript · inside runScript: yes
-- signature: `animateVectorTransform {keys: any[], layer: string|int, node: string}`
+- signature: `animateVectorTransform {keys: any[][], layer: string|int, node: string}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `keys` | array | required | — [[frame, [a, b, c, d, e, f]], ...] affine keys (SVG matrix order), linearly interpolated |
 | `layer` | string\|integer | required | |
 | `node` | string | required | — Vector node id (listVectorNodes) |
+| `keys` | array | required | — [[frame, [a,b,c,d,e,f]], ...] |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -736,18 +736,18 @@ Morph a shape layer, or a path node in a vector layer, into another outline: a s
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `d` | string | optional | — Or: SVG path data, e.g. an icon's d attribute |
-| `duration_frames` | number | optional default=24 | — Frames to the target outline |
-| `ease` | any | optional | — Ease name or spring:<preset> (default smooth) |
-| `fit` | boolean | optional default=true | — Scale and centre the target on the source's box |
 | `layer` | string\|integer | required | — Shape layer, or vector layer (with node) |
 | `node` | string | optional | — Vector layers: path node id (default: the first path) |
-| `remove` | boolean | optional default=false | — Drop the morph |
-| `samples` | integer | optional default=128 | — Points per outline |
-| `start_frame` | number | optional default=0 | — Frame the morph starts |
 | `to` | string\|integer | optional | — Target shape layer (its outline) |
-| `to_layer` | string\|integer | optional | — Layer holding to_node |
 | `to_node` | string | optional | — Or: target path node id (in to_layer, default the same layer) |
+| `to_layer` | string\|integer | optional | — Layer holding to_node |
+| `d` | string | optional | — Or: SVG path data, e.g. an icon's d attribute |
+| `fit` | boolean | optional default=true | — Scale and centre the target on the source's box |
+| `start_frame` | number | optional default=0 | — Frame the morph starts |
+| `duration_frames` | number | optional default=24 | — Frames to the target outline |
+| `ease` | any | optional | — Ease name or spring:<preset> (default smooth) |
+| `samples` | integer | optional default=128 | — Points per outline |
+| `remove` | boolean | optional default=false | — Drop the morph |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -785,9 +785,9 @@ Create Shapes from Text: a vector layer with one path per letter (char-0, char-1
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
+| `layer` | string\|integer | required | — The text layer |
 | `frame` | number | optional | — Frame whose text, size and wrap to outline (default: the layer's first frame) |
 | `keep_text` | boolean | optional default=false | — Leave the text layer enabled too |
-| `layer` | string\|integer | required | — The text layer |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -837,14 +837,14 @@ Brand kits: save a palette, font, logo, motion style and voice once (~/.miran/br
 | param | type | required/default | notes |
 |---|---|---|---|
 | `action` | enum["save"|"list"|"show"|"apply"|"delete"|"capture"] | required | — What to do (capture: read a brand from a public page's url) |
-| `fonts` | array | optional | — save: Google Fonts, e.g. ["Inter 400", "Inter 700"] (default: the project's) |
-| `logo` | string | optional | — save: a workspace .svg or image |
-| `motion` | enum["crisp"|"smooth"|"playful"|"punchy"|"calm"] | optional | — save: the motion style (eases and springs) |
-| `name` | string | optional | — Brand name |
-| `pronounce` | object | optional | — save: word → respelling (default: the project's) |
-| `theme` | object | optional | — save: {font, text, muted, accent, accent2, bg, surface, line} (default: the project's kit theme) |
 | `url` | string | optional | — capture: the page to read |
+| `name` | string | optional | — Brand name |
+| `theme` | object | optional | — save: {font, text, muted, accent, accent2, bg, surface, line} (default: the project's kit theme) |
+| `motion` | enum["crisp"|"smooth"|"playful"|"punchy"|"calm"] | optional | — save: the motion style (eases and springs) |
+| `logo` | string | optional | — save: a workspace .svg or image |
+| `fonts` | array | optional | — save: Google Fonts, e.g. ["Inter 400", "Inter 700"] (default: the project's) |
 | `voice` | string | optional | — save: voiceover voice (default: the project's) |
+| `pronounce` | object | optional | — save: word → respelling (default: the project's) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -877,27 +877,27 @@ Templates with controls (AE Essential Graphics): list, describe and apply the st
 - family: `design` · mutating: `true` · transport: CLI `kinetic tool template` / SDK `batch([{tool: "template"}])` / MCP `tools/call {name: "template"}`
 - history: creates an undo step
 - lean tool list: listed (a direct call) · inside runScript: list, describe, apply, save, delete (a rollback undoes save and delete); not batch
-- signature: `template {action: list|describe|apply|batch|save|delete, at?: number[], brand?: string, controls?: any[], data?: string|array, description?: string, duration_frames?: number, map?: object, name?: string, out?: string, place?: bool = true, quality?: string, source?: string, start_frame?: number = 0 [frame], validate?: bool, values?: object}`
+- signature: `template {action: list|describe|apply|batch|save|delete, at?: number[], brand?: string, controls?: object[], data?: string|array, description?: string, duration_frames?: number, map?: object, name?: string, out?: string, place?: bool = true, quality?: string, source?: string, start_frame?: number = 0 [frame], validate?: bool, values?: object}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `action` | enum["list"|"describe"|"apply"|"batch"|"save"|"delete"] | required | — What to do (batch: one video per data row) |
-| `at` | array | optional | — apply (composition templates): where the nested layer sits |
-| `brand` | string | optional | — apply: apply this brand first |
+| `name` | string | optional | — Template id or name |
+| `values` | object | optional | — apply: control values (describe lists them) |
+| `start_frame` | number | optional default=0 | — apply: frame it starts |
 | `composition` | string\|integer | optional | — apply: target composition; save: the composition to save |
+| `brand` | string | optional | — apply: apply this brand first |
+| `at` | array | optional | — apply (composition templates): where the nested layer sits |
+| `place` | boolean | optional default=true | — apply (composition templates): add it as a nested layer |
+| `source` | string | optional | — save: kit script reading controls.<key> (and controls.start) |
 | `controls` | array | optional | — save: [{key, type, default, label, options}] for a script; [{key, layer, field: text|fill|stroke|enabled|opacity}] for a composition |
-| `data` | string\|array | optional | — batch: rows as CSV, JSON or a .csv/.json file; columns name controls |
 | `description` | string | optional | — save: what it is |
 | `duration_frames` | number | optional | — save (script): typical length |
+| `data` | string\|array | optional | — batch: rows as CSV, JSON or a .csv/.json file; columns name controls |
 | `map` | object | optional | — batch: control → column |
-| `name` | string | optional | — Template id or name |
 | `out` | string | optional | — batch: path pattern, {row} {template} {<column>} |
-| `place` | boolean | optional default=true | — apply (composition templates): add it as a nested layer |
 | `quality` | string | optional | — batch: renderVideo quality |
-| `source` | string | optional | — save: kit script reading controls.<key> (and controls.start) |
-| `start_frame` | number | optional default=0 | — apply: frame it starts |
 | `validate` | boolean | optional | — batch: check the rows only |
-| `values` | object | optional | — apply: control values (describe lists them) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -984,10 +984,10 @@ Replace an SVG image node with a registered image asset while retaining its plac
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `asset` | string | required | — Registered image asset id to place in the node |
 | `composition` | string\|integer | optional | |
 | `layer` | string\|integer | required | |
 | `node` | string | required | — Vector node id (listVectorNodes) |
+| `asset` | string | required | — Registered image asset id to place in the node |
 CLI: `kinetic tool setVectorImageAsset --params '<json>' --workspace ./out`
 
 ## groupVectorNodes
@@ -1002,9 +1002,9 @@ Wrap nodes in a new group (recursive take).
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `group_id` | string | optional | — Id for the new group (default: generated) |
 | `layer` | string\|integer | required | |
 | `nodes` | array | required | — Node ids to wrap into the new group |
+| `group_id` | string | optional | — Id for the new group (default: generated) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1028,8 +1028,8 @@ Copy a group into a new composition; returns its index.
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `group` | string | required | — Group node id to copy out |
 | `layer` | string\|integer | required | |
+| `group` | string | required | — Group node id to copy out |
 | `name` | string | optional | — Name of the new composition |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
