@@ -5,6 +5,13 @@ description: Directs the Miran Fann 3D camera and real 3D - rig and lens setup, 
 
 # Camera in Miran Fann
 
+For every video/animation task, search for suitable reference videos unless the
+user opts out, requests offline work, or limits reference research to supplied videos. Load
+the sibling **miran-reference** skill; inspect and adapt the references to this
+task, reusing an existing study during the same task.
+When the film or study is done, call `reference {action: "release", video: ID}`
+for each reference to delete its copied video and keep sheets, frames and notes.
+
 > **Lean tool list:** a call written below as `name {params}` is `miran.name({params})` inside `runScript` (or `query` when it only looks) unless `name` is in your tool list; exports, jobs, voiceover, downloads and panels stay direct calls.
 
 The camera is a dual-null rig: a dolly (translation) and a head (rotation),
@@ -65,7 +72,8 @@ A sensible 1080p start: 50 mm (natural) or 85 mm (compressed, elegant),
 focus at the subject depth, aperture 0 unless depth of field is a choice
 (10-40 gives visible blur). Motion craft: one motivated, slow, continuous
 move per shot; the default `camera` ease starts from rest and lands softly
-(`smooth` starts fast and jolts a still camera); motion blur on. Orbits aim
+(`smooth` starts fast and jolts a still camera); motion blur is on for new
+work, so fast moves blur without asking. Orbits aim
 at their centre and continue from the current pose when you omit `radius`,
 `height` and `from_deg`; a crane without `pitch_to` keeps the subject framed.
 

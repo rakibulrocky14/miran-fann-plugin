@@ -11,7 +11,7 @@ effects and a voice, reviews its own frames, and exports MP4, HEVC or ProRes.
 
 - **The Miran Fann MCP server**: tools for scenes, motion, camera, design,
   critique, sound and render, plus a live timeline viewer in your browser.
-- **Nine skills** that teach Claude how to direct and edit:
+- **Eleven skills** that teach Claude how to direct and edit:
   - `miran-video` makes a whole film, from brief to export.
   - `miran-edit` edits real footage, from logging to delivery.
   - `miran-direct` covers concept, board, pacing, cutting and review.
@@ -20,7 +20,9 @@ effects and a voice, reviews its own frames, and exports MP4, HEVC or ProRes.
   - `miran-camera` handles the camera, lights and 3D.
   - `miran-design` turns a brief into a design and handles SVG and Lottie.
   - `miran-critique` measures and reviews the work.
+  - `miran-polish` gives a film its last pass before export.
   - `miran-render` exports.
+  - `miran-reference` finds and studies reference videos.
 
 Ask for a video ("a 20-second launch film for my app") and Claude takes it
 from there.
@@ -66,9 +68,9 @@ The plugin starts `scripts/miran-mcp`. That script looks for the engine at
 `~/.miran/bin/miran`.
 
 If the engine is missing, or older than the version this plugin was released
-with (0.1.5), the script:
+with (0.1.6), the script:
 
-1. Downloads the npm package `miran-darwin-arm64@0.1.5` from
+1. Downloads the npm package `miran-darwin-arm64@0.1.6` from
    `https://registry.npmjs.org` (about 20 MB).
 2. Checks the download against the SHA-512 written in the script.
 3. Installs the one binary inside it to `~/.miran/bin/miran`.

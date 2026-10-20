@@ -1,7 +1,7 @@
 # Measure and look — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-23 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+23 of 181 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## query
 
@@ -126,17 +126,18 @@ CLI: `kinetic tool critiqueLayout --params '<json>' --workspace ./out`
 
 ## critiqueMotion
 
-How things move, like an animation director: straight diagonal travel (use arcs), constant-speed moves, entrances that accelerate into a dead stop, lockstep timing, one tempo for everything, nothing overshooting or following through, jumps, an empty first frame. Score, findings and a fix for each.
+How things move, like an animation director: straight diagonal travel (use arcs), constant-speed moves, entrances that accelerate into a dead stop, lockstep timing, one tempo for everything, nothing overshooting or following through, jumps, an empty first frame; and, from the frames themselves (the 3D camera too), jolts from rest, dead stops, speed jumps at hand-offs, creeping tails, stops on a beat, fast moves without blur. Score, findings and a fix call for each.
 
 - family: `design` · mutating: `false` · transport: CLI `kinetic tool critiqueMotion` / SDK `batch([{tool: "critiqueMotion"}])` / MCP `tools/call {name: "critiqueMotion"}`
 - history: read-only, no history entry
 - lean tool list: not listed: call it as `miran.critiqueMotion(...)` in runScript or query · inside runScript: yes
-- signature: `critiqueMotion {ignore?: array|string|int}`
+- signature: `critiqueMotion {frames?: number[] [frames], ignore?: array|string|int}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `ignore` | array\|string\|integer | optional | — Layers whose motion is intended: names or ids (reveals are skipped already) |
+| `ignore` | array\|string\|integer | optional | — Layers whose motion is intended: names or ids (reveals are skipped already); "camera" leaves the 3D camera out |
+| `frames` | array | optional | — [from, to]: check only this range of frames (a long film's result names the ranges it did not sample) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -154,7 +155,8 @@ Examples (they run as written on the starter scene from `guide {topic:"start"}`)
 
 Tips:
 
-- Findings come from the moves themselves (channels, paths, follows), so it runs in milliseconds; each gives the layer, frames and a concrete fix.
+- Findings come from the moves themselves (channels, paths, follows) and, for smoothness, from the film's own frames: where each subject layer sits on screen at every frame, and, when a layer is 3D, how the camera moves the scene (long films: the windows around moves, keys and drivers, spread over the whole film; stats.sampled_frames says how many, and a sample_cap note names the ranges the cap left out: critiqueMotion {frames:[from, to]} checks one range). It takes a second or two on a long film. Each finding gives the layer, frames and a fix that names a tool call (a batch when several properties change); apply it and run the check again.
+- Smoothness findings, judged on the frames a layer is shown (opacity 0.5 or more, on screen), so an entrance that starts hidden or off-frame is exempt from its start; speeds and lengths are judged in seconds, so 24, 30 and 60 fps get the same verdict: first_frame_jump (leaves rest with more than 3% of the move in its first frame and faster than 2x the move's average speed, or at full speed from the first frame, as linear keys are: use arrive, glide or easy-ease; strong ease-outs such as smooth and emphasized-decelerate are for layers that start hidden), dead_stop (arrives at speed and stops in one frame: glide), velocity_jump (the speed steps in one frame while moving, as when a second move takes over: auto keys on every axis that moves; a step that turns the layer round is an impact, a bounce, and is not judged), tail_crawl (more than 0.2 s at 0.6-9 px a second, which shimmers: another ease, a shorter move, or hold still; a layer that is meant to drift is marked), periodic_stop (three or more near-stops without turning round at an even beat, as lattice noise or back-to-back eased moves make: auto keys; a bob, a pendulum and a ping-pong turn round and are meant), stop_between_moves (a note: one stop between two moves the same way), fast_no_blur (a step above 2.5% of the width per frame with no motion blur, shutter or sized blur effect) and transition_peak (a frame that travels 15% of the width at 30 fps while the blur covers under 45% of it: turn comp blur on, shutter 180, or size a directional blur to it). Keyframe-driven layers are fixed on their keys (setPropertyDriver with keys), moves with animateProperty. A layer that is meant to snap (hold keys), step on twos (posterize, hold keys, posterizeTime), drift or stop on a beat is marked setLayerField {field: "intended", value: true} (a stage carries its children; ignore: ["camera"] leaves the 3D camera out); a stage's children that ride one move are one finding. The camera is judged for jolts, dead stops and blur only: a slow dolly is how a camera should move.
 - Scenery (backgrounds, rigs, adjustment layers) may drift at constant speed; subjects should not.
 - Reveals are not judged: the source of a track matte, a layer that never shows, a plate painted in the colour of what is behind it (a typing wipe's cover), and mask-path or trim-path animation. not_judged in the result names them. For anything else that is meant, pass ignore: [layer names or ids] (a name that is no layer is an error), or mark the layer once with setLayerField {field: "intended", value: true}. Its exit is not read time: text leaving with its shot is not flagged, and letters used as texture (ghost type, a wall of glyphs, faint ink) are not text.
 
@@ -219,7 +221,7 @@ CLI: `kinetic tool compareDesigns --params '<json>' --workspace ./out`
 
 ## renderContactSheet
 
-Grid PNG of frames (QA artifact; GPU by default).
+Grid PNG at cell size (GPU); warm-cell `eta`.
 
 - family: `render` · mutating: `false` · transport: CLI `kinetic tool renderContactSheet` / SDK `batch([{tool: "renderContactSheet"}])` / MCP `tools/call {name: "renderContactSheet"}`
 - history: read-only, no history entry
@@ -235,7 +237,7 @@ Grid PNG of frames (QA artifact; GPU by default).
 | `ignore` | array\|string\|integer | optional | — Layers whose motion is intended (names or ids) |
 | `platform` | enum["reels"|"tiktok"|"shorts"] | optional | — 9:16 app UI zones for the layout list |
 | `out` | string | required | — PNG output path; the sheet is returned inline to MCP clients |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU (Metal) if available, else Flint; cpu: Flint, the exact CPU renderer |
 | `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -268,15 +270,16 @@ Render one comp frame to PNG (GPU by default; backend=cpu for the reference).
 - family: `render` · mutating: `false` · transport: CLI `kinetic tool renderFrame` / SDK `batch([{tool: "renderFrame"}])` / MCP `tools/call {name: "renderFrame"}`
 - history: read-only, no history entry
 - lean tool list: not listed: call it as `miran.renderFrame(...)` in runScript or query · inside runScript: yes
-- signature: `renderFrame {out: string, backend?: auto|gpu|cpu = "auto", frame?: number = 0 [frame], scale?: number}`
+- signature: `renderFrame {out: string, backend?: auto|gpu|cpu = "auto", frame?: number = 0 [frame], scale?: number, supersample?: 1|2}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
 | `frame` | number | optional default=0 | — Frame to render (default 0) |
 | `out` | string | required | — PNG output path, workspace-relative; the image is returned inline to MCP clients |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU (Metal) if available, else Flint; cpu: Flint, the exact CPU renderer |
 | `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
+| `supersample` | enum[1|2] | optional | — 1 or 2: render at 2x and resolve before saving. Default 1 (guide render) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -532,7 +535,7 @@ Measure how much the picture moves over time: renders the range and reports, per
 | `start` | integer | optional default=0 | — First frame (default 0) |
 | `end` | integer | optional | — End frame, exclusive (default: the composition duration) |
 | `step` | integer | optional default=1 | (min=1) — Sample every Nth frame (1 = every frame; 2 halves the cost on long pieces) |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto (default) renders on the GPU when an adapter exists and falls back to the CPU reference otherwise |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto (default) renders on the GPU (Metal) when an adapter exists and on Flint, the CPU renderer, otherwise |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 

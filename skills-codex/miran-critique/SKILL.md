@@ -5,6 +5,11 @@ description: Measures and reviews Miran Fann work instead of guessing - contact 
 
 # Measure and look
 
+For a video/animation task without an existing reference study, search for
+suitable reference videos unless the user opts out, requests offline work, or
+limits reference research to supplied videos. Load the sibling **miran-reference** skill;
+judge the task-specific choices against the inspected references and the brief.
+
 > **Lean tool list:** a call written below as `name {params}` is `miran.name({params})` inside `runScript` (or `query` when it only looks) unless `name` is in your tool list; exports, jobs, voiceover, downloads and panels stay direct calls.
 
 Miran's advantage is not that it renders — it is that it can **tell you what
@@ -12,7 +17,9 @@ is wrong** with numbers and evidence, and show you the frame. Guessing is the
 alternative, and it loses.
 
 Build with **miran-create**, animate with **miran-motion**, move the camera
-with **miran-camera**, export with **miran-render**.
+with **miran-camera**, export with **miran-render**. When the film is built,
+**miran-polish** runs the last pass in order (content, motion, type, colour,
+sound, export) with these tools.
 
 ## Guardrails
 
@@ -47,7 +54,7 @@ found; changing three things at once makes the next critique unreadable.
 - [ ] The subject fills its shot: no small window or lone line in a big empty field, no frame of flat colour with nothing on it
 - [ ] Mid-motion frames intentional: no collisions, nothing half-offscreen by accident
 - [ ] Pushes and tilts land clean: no half-word or half-card at the edges (unless the crop is the design); the UI is read face-on
-- [ ] Motion language consistent: same eases and stagger, exits faster than entrances; arcs and follow-through (`critiqueMotion` 85+)
+- [ ] Motion language consistent: same eases and stagger, exits faster than entrances; arcs and follow-through (`critiqueMotion`: fix every finding it names; the score grades only the moves that exist)
 - [ ] No clip-art primitives (giant circles, default blobs: `critiquePrimitives`), no effect soup
 - [ ] Launch films: the arc readable from six frames, the reveal on the music drop, shot sizes alternating, every camera move motivated, the director's review scored
 ```
@@ -114,14 +121,38 @@ and findings with frame ranges:
   motion),
 - a frozen ending (keep a slow push or drift on the end card).
 
-Lively work mostly sits at 5-25% activity; above ~35% sustained is frantic.
-Run it on every draft before the final export.
+On real launch films (0.1.6 study) the energetic ones, Lovable and Claude
+Design, sit at about 5-9% median with almost nothing frozen; calm UI films,
+Cowork and Cursor 2.0, sit under 2% and hold for 2-3 s, which works only on a
+full frame of legible product with a cursor or a voice about to act. Above
+~35% sustained is frantic. For a film carried by music, aim for about 5% or
+more, and treat a still hold over about a second as a finding (the breath
+before the climax excepted). Run it after
+every beat and on every draft before the final export. It is the check a
+contact sheet cannot do: stills of a frozen film and of a living one look the
+same. Fix a hold with a performance (the camera travelling to the part that
+matters, a staged reveal, the product changing state), not a fade, and never
+by clearing motion that a critic complained about.
 
 ## critiqueMotion: how things move
 
+`critiqueMotion` grades the moves that exist; it does not count the seconds
+where nothing moves. A launch film measured in the 0.1.6 study scored 100
+with half a percent of its frame changing on a typical frame and ten frozen
+seconds in twenty-four; and its score drops to 0 while any warning stands, so
+a living film can score below a frozen one. Read it after the activity check,
+never instead of it, and read the findings rather than the number: mark
+atmosphere (dust, sparkles, a breathing spot) `intended`, fix your own moves,
+and never remove motion to raise the score. Only atmosphere: a scene group, a
+camera move or your own moves marked `intended` hide real faults, and the score
+that buys means nothing. A warning on a kit piece's own move goes into your
+`feedback` report instead.
+
 `critiqueMotion {}` reads the moves themselves (channels, curved paths,
-follows) like an animation director and returns a score, findings with
-layer and frames, and a concrete fix for each:
+follows) and, for smoothness, where every layer sits on screen at each frame,
+like an animation director, and returns a score, findings with layer and
+frames, and a fix that names a tool call for each (apply it, run the check
+again):
 
 - `straight_diagonal`: x and y moved as a straight line (move on an arc:
   `animateProperty {property:"position", to, arc:0.2}`; a path starting on
@@ -141,15 +172,54 @@ layer and frames, and a concrete fix for each:
   around them instead; a slow push is fine),
 - `held_before_move`: a layer shows its first move's start value (a flash
   at 85%, a spark at 2x, full-strength aberration) from its in point until
-  the move begins; set its `in_frame` to the move's start.
+  the move begins; set its `in_frame` to the move's start,
+- `first_frame_jump`: a visible layer leaves rest with a big first frame, or is
+  at full speed on its first frame (linear keys). Strong ease-outs (`smooth`,
+  `emphasized-decelerate`) are for a layer that starts hidden; on screen,
+  leave rest on `arrive`, `glide` or `easy-ease`. Keys are fixed on their
+  keys (`setPropertyDriver` with keys), moves with `animateProperty`,
+- `dead_stop`: it arrives at speed and stops in one frame; `glide`,
+- `velocity_jump`: the speed steps in one frame while the layer moves, as
+  when a second move takes over mid-flight and restarts at its own speed;
+  the fix puts auto keys on every axis that moves, keeping the endpoints. A
+  step that turns the layer round (a bounce, an impact) is meant and is not
+  judged,
+- `tail_crawl`: a creep of 0.6-9 px a second for over 0.2 s at the end of a
+  move, which shimmers on edges and text (a spring's settle is physics and is
+  not judged); another ease, a shorter move, or hold the layer still,
+- `periodic_stop`: it comes almost to a stop again and again on an even beat
+  without turning round (lattice noise, wiggle, five eased moves back to back);
+  auto keys carry the speed. A bob, a pendulum or a ping-pong turns round at
+  every stop and is meant,
+- `stop_between_moves` (a note): one stop between two moves the same way, so
+  they read as two moves; auto keys through the join,
+- `fast_no_blur`: it moves faster than the eye can follow (2.5% of the width a
+  frame) with no shutter or blur effect:
+  `setCompositionField {field:"motion_blur_enabled", value:true}`,
+- `transition_peak`: a push, slide or whip whose fastest frame crosses a
+  sixth of the width while the blur (shutter or a sized blur effect) covers
+  under 45% of it; blur on, shutter 180.
+
+Speeds and lengths are judged in seconds, so 24, 30 and 60 fps get the same
+verdict. A 3D camera is judged through its own motion (jolts, dead stops and
+blur); `ignore: ["camera"]` leaves it out. A long film is sampled across its
+whole length; a `sample_cap` note names what the cap left out, and
+`critiqueMotion {frames:[from, to]}` checks a range on its own.
+
+Snaps on hold keys, stepped motion (posterize, hold keys, `posterizeTime`) and
+layers marked `intended` are meant and are not judged; a stage that is marked
+carries its children, and a stage's children that ride one move are one
+finding.
 
 It does not judge reveals (a track-matte source, a layer that never shows, a
 cover plate such as a typing wipe, mask or trim animation). A move you chose on
 purpose, like a constant-speed scroll, goes in `ignore: [layer names or ids]`
 (`renderContactSheet` takes it too); the result's `not_judged` lists what was
 left out. Moves overridden by a later move are skipped: the critic judges what
-plays. Retime with `replace: true` or `clearAnimation`. Aim for 85+. Contact
-sheet results also carry the findings near their frames (`motion`).
+plays. Retime with `replace: true` or `clearAnimation`. Fix every finding it
+names: the score grades only the moves that exist, so it cannot say the film is
+alive. Contact sheet results also carry the findings near their frames
+(`motion`).
 
 ## critiqueEdit and watch: footage and the cut
 

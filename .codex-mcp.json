@@ -4,7 +4,7 @@
       "command": "/bin/sh",
       "args": [
         "-c",
-        "C=\"${CODEX_HOME:-$HOME/.codex}/plugins/cache\"; for L in \"$C/miran/miran/0.1.5\" \"$C\"/*/miran/0.1.5; do [ -f \"$L/scripts/miran-mcp\" ] && exec /bin/sh \"$L/scripts/miran-mcp\"; done; echo \"miran: the Miran Fann plugin files are missing; reinstall the plugin\" >&2; exit 1"
+        "C=\"${CODEX_HOME:-$HOME/.codex}/plugins/cache\"; for L in \"$C/miran/miran/0.1.6\" \"$C\"/*/miran/0.1.6; do [ -f \"$L/scripts/miran-mcp\" ] && exec /bin/sh \"$L/scripts/miran-mcp\"; done; echo \"miran: the Miran Fann plugin files are missing; reinstall the plugin\" >&2; exit 1"
       ],
       "env_vars": [
         "CODEX_HOME",
@@ -18,7 +18,7 @@
       "tool_timeout_sec": 120,
       "env": {
         "MIRAN_TOOLS_DEFAULT": "full",
-        "MIRAN_PLUGIN_VERSION": "0.1.5"
+        "MIRAN_PLUGIN_VERSION": "0.1.6"
       }
     }
   }

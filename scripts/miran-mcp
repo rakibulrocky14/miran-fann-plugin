@@ -12,17 +12,17 @@
 # KINETIC_BIN overrides the binary; MIRAN_WORKSPACE the folder films are made in.
 set -u
 
-ENGINE_VERSION="0.1.5"
+ENGINE_VERSION="0.1.6"
 case "$(uname -s)-$(uname -m)" in
-  Darwin-arm64) PKG=miran-darwin-arm64; ENGINE_SHA512="1711b141c8b766b631ff12c54a0e1d2ffdbbe3dbeb8d95b9afdc875a2d3eb05989aefd7141cceb86427510dbc72ebb51163afec10af56cc5b99b42f3c8c8b630" ;;
-  Linux-x86_64) PKG=miran-linux-x64; ENGINE_SHA512="12e37656bae001cfa96d53336e4c52e668bbc3438260bb15afd26f8944e7c59e0c212fe05138bffa9c64dff49708693004dcb6f5ae30befd0689f4d0b7c1a3b4" ;;
-  Linux-aarch64 | Linux-arm64) PKG=miran-linux-arm64; ENGINE_SHA512="f344860549d34d440e0b88ab8f1002af06dae14e9b731c15043540e2f3f8bed524c80819e0dc5e48a18adf6438121ff3e1ab459d8ea7098788a53de58ea8b7c9" ;;
+  Darwin-arm64) PKG=miran-darwin-arm64; ENGINE_SHA512="cd55d15253ce793b52eade562a2b97b250f136f1ee0ec9239d47b27ea7b21170c918a3e54d0153b3e909a075601ff490a6664b3887ca99ea8a8c00138f5a40e2" ;;
+  Linux-x86_64) PKG=miran-linux-x64; ENGINE_SHA512="fd6ad43336c409b969231a37e8968dbbf50d0cfc97e28040cd573a88fb96c0242d6142ec737c3ec9b33367b509f7b3b9f17039f53a83daabf4d0aa90768bfb6a" ;;
+  Linux-aarch64 | Linux-arm64) PKG=miran-linux-arm64; ENGINE_SHA512="048a7fc3b4db47a9c18ac0e8245d207b3b6b0b94db6922618367715779dccbce3a7b7bbd3edaa5440b3cb2851bd4baad136f6d5c2e98eb01b54d661951bcee3c" ;;
   *) PKG=""; ENGINE_SHA512="" ;;
 esac
 ENGINE_URL="https://registry.npmjs.org/$PKG/-/$PKG-$ENGINE_VERSION.tgz"
 # On Linux two big model sets (SAM 2.1, Whisper) come in a package of their
 # own, shared with Windows (npm refuses packages much over 150 MB).
-MODELS_SHA512="ebba7ba59bad1dc3a7f4cdd865c272afff2d758d150dabad5b53175d811922a376c96b08a2fa2a42a6f6ca759f42260ee66f33eae0920f8b4580da9b5c126449"
+MODELS_SHA512="82e39441537e9b23e7ff2fc82d1ca7756df6841716a2579c363101e98ed6848ba9bf1a9e478ca16b946aab76a0520251e36d98622c862f3b699b20a9958f4992"
 MODELS_URL="https://registry.npmjs.org/miran-models-onnx/-/miran-models-onnx-$ENGINE_VERSION.tgz"
 MIRAN_HOME="$HOME/.miran"
 INSTALLED="$MIRAN_HOME/bin/miran"
@@ -174,10 +174,14 @@ fi
 cleanup
 trap - EXIT
 
-# Films are made in the project folder; a chat with no project uses ~/miran-work.
-WS="${MIRAN_WORKSPACE:-${CLAUDE_PROJECT_DIR:-$PWD}}"
-if [ "$WS" = "/" ] || [ ! -w "$WS" ]; then
-  WS="$HOME/miran-work"
-  mkdir -p "$WS"
+# Films are made in the agent's working folder: with no workspace named
+# here the engine asks the client for its roots first, and only then falls
+# back to its own folder (~/miran-work from the home folder). Never pin
+# $PWD here: GUI hosts often start in $HOME itself.
+if [ -n "${MIRAN_WORKSPACE:-}" ]; then
+  exec "$ENGINE" mcp --workspace "$MIRAN_WORKSPACE" "$@"
+elif [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then
+  exec "$ENGINE" mcp --workspace "$CLAUDE_PROJECT_DIR" "$@"
+else
+  exec "$ENGINE" mcp "$@"
 fi
-exec "$ENGINE" mcp --workspace "$WS" "$@"

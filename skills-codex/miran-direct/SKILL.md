@@ -17,6 +17,14 @@ scoring, export); this skill is what to build and why.
 
 ## 1. The production order
 
+**Search for suitable reference videos for every film or revision unless the user
+opts out, requests offline work, or limits reference research to supplied videos.** Load the
+sibling **miran-reference** skill, inspect the selected videos and write down
+what this particular task will adopt before choosing its direction. Reuse that
+study while iterating; the brief and the user's brand remain authoritative.
+When the film or study is done, call `reference {action: "release", video: ID}`
+for each reference to delete its copied video and keep sheets, frames and notes.
+
 Every film, from a 10 s social cut to a 90 s cartoon, goes through these
 stages. Each ends in something written or rendered; do not start one
 before the last passed its test. Write stages 1-7 into `plan.md` in the
@@ -25,11 +33,11 @@ opening with the one sentence; re-read it after any pause.
 
 | # | stage | you produce | it passes when |
 |---|---|---|---|
-| 1 | Brief and research | the one sentence the viewer must remember, audience, length, format, brand; the subject's **truth** and the real material (UI, copy, numbers; or characters, setting, the joke) | you can say what the film is for in one sentence, in the subject's own words |
+| 1 | Brief and research | the one sentence the viewer must remember, audience, length, format, brand; the subject's **truth** and the real material (what it is and does, its real screens and pictures, copy, numbers; or characters, setting, the joke), in a research sheet | you can say what the film is for in one sentence, in the subject's own words, and name the real screen or picture behind each beat |
 | 2 | Concept | first the concept every other video on this subject would use, ruled out; then three one-line concepts, as different as you can (one in an unusual form: a letter, a countdown, a front page, a map); keep the most specific | another brand or story could not use it unchanged |
 | 3 | Treatment | six lines: logline, what we show, signature shot, motif, arc, look (below) | none of the six is vague |
 | 4 | Structure | the arc of this kind of film, timed to the length (section 3) | every part has a job |
-| 5 | Board | one line per shot: frames, size, picture, camera move and its reason, device, transition, music or voice cue | sizes alternate; no shot holds past its kind's limit |
+| 5 | Board | one line per shot: frames, size, picture, camera move and its reason, device, what keeps it moving after it arrives, transition, music or voice cue. With a video key set, mark the one or two shots that would gain real-world presence as generated, with their price (miran-video, "Generated hero shots") | sizes alternate; no shot holds past its kind's limit; no empty "keeps moving" cell; a generated shot passes the cover test: the beat says less without it |
 | 6 | Design system | palette and colour script, type scale, grid, light, motion language (section 5); for cartoons the character and set sheet | written as numbers, saved with `kit.theme` |
 | 7 | Timing spine | the music (`kit.music {reveal, ending}`) or the voice (`voiceover`, `kit.dialogue {dry: true}`) made first; the board snapped to it | every cut on a beat, a downbeat or a word |
 | 8 | Styleframes | the three key frames built as finished stills and rendered | each works as a poster (section 6) |
@@ -62,24 +70,34 @@ Treatment: logline "four hundred photos, finished before the kettle boils" | sho
            drop | motif: the amber dot (the button, then the proof, then the logo mark) |
            arc: a grey pile -> a finished album | look (from Lumen's own app: a dark editor
            so photos read true, its amber icon #F2A93B), SF Pro, one light from the top left
-Spine:     kit.music({mood: "tech", reveal: 270, ending: 840}), 30 fps, 900 frames
+Spine:     kit.music({mood: "tech", reveal: 540, ending: 1680}), 60 fps, 1800 frames
+Generated: one hero shot, behind 210-330 (a photographer's hands at golden hour, 5 s, 768p, about
+           $0.15, asked once with the plan); the beat works as motion design if the answer is no
 Board (frames | part | size | picture | camera and reason | device | join out):
-  0-45     open     macro   the amber "Finish all" button, the cursor arriving    push in: anticipation     kit.frame      cut on a bar
-  45-105   tension  close   grey thumbnails piling up                            track the pile            importHtml     cut
-  105-165  tension  medium  "Four hundred photos later." as one block            none: the count moves     kit.lockup     cut
-  165-240  tension  insert  the counter racing to 412, 20-frame inserts          hard cuts on beats        kit.counter    zoom: the reveal
-  240-330  reveal   wide    the app tilted, swinging face-on on the drop (270)   glide, swing on the drop  kit.screen3d   (continues)
-  330-420  reveal   close   the push into the photo grid as it warms             push: this matters        screen3d push  cut
-  420-540  feature  close   the cursor picks "Golden hour"; the card lifts       push into the card        kit.cursor     push
-  540-630  claim    -       "One tap. Every photo." a word a half beat            none: the words land      kit.words      cut
-  630-840  proof    macro   the amber dot, then "3 seconds a photo" at 420 px    punch on the hit          kit.counter    cut
-  840-900  end      -       the dot becomes the mark; wordmark, line, url        a sheen once              kit.endcard    -
+  0-90      open     macro   the amber "Finish all" button, the cursor arriving    push in: anticipation     kit.frame      cut on a bar
+  90-210    tension  close   grey thumbnails piling up                            track the pile            importHtml     cut
+  210-330   tension  medium  "Four hundred photos later." over the plate (gen)    none: the count moves     kit.lockup     cut
+  330-480   tension  insert  the counter racing to 412, 40-frame inserts          hard cuts on beats        kit.counter    zoom: the reveal
+  480-660   reveal   wide    the app tilted, swinging face-on on the drop (540)   glide, swing on the drop  kit.screen3d   (continues)
+  660-840   reveal   close   the push into the photo grid as it warms             push: this matters        screen3d push  cut
+  840-1080  feature  close   the cursor picks "Golden hour"; the card lifts       push into the card        kit.cursor     push
+  1080-1260 claim    -       "One tap. Every photo." a word a half beat            none: the words land      kit.words      cut
+  1260-1680 proof    macro   the amber dot, then "3 seconds a photo" at 420 px    punch on the hit          kit.counter    cut
+  1680-1800 end      -       the dot becomes the mark; wordmark, line, url        a sheen once              kit.endcard    -
 ```
 
 The recipe in section 7 builds these as seven scenes; split yours into shots.
 
-Research means real material: the product's or story's facts, its real
-interface, words and numbers, brand colours, type and logo (`captureSite
+Research means real material, gathered before the concept: what the subject
+really is and does, who it is for and its key moments; its real interface,
+words and numbers; its brand colours, type and logo. Read past the home page
+(feature pages, docs, the changelog, the app store listing). Capture the key
+pages, not only the first. Study the screenshots from the docs, the store and
+the press kit, and the product's own demo video through `reference`.
+miran-video ("Research the subject") has the process and an example research
+sheet. That sheet goes into `plan.md` before the treatment, naming which real
+screen or picture each beat uses. Third-party images are study material,
+rebuilt, never pasted in. The colour, type and logo come from the brand (`captureSite
 {url}` reads a public site's palette, fonts, logo and headline; `brand {action:
 "capture", url}` saves them). Write each screen as HTML and CSS (`importHtml`,
 one `id` per part that moves): Chrome lays it out with real fonts and shadows,
@@ -159,14 +177,49 @@ the idea changes, and what the two shots share picks it:
 | a detail or a world inside this shot | zoom through the part that leads there | `kit.transition {style: "zoom", into}`, `flythrough` |
 | the next step, onward | push the way progress goes, the same way every time | `push {dir}` |
 | an energy jump (into the drop, a new section) | whip or flash on the downbeat | `whip`, `flash` |
-| a new chapter, its colour taking over | the colour wipes or floods in from an element | `wipe {color}`, `iris {from_point}` |
+| a new chapter, its colour taking over | the colour wipes or floods in from an element | `wipe {colors: [a, b]}`, `iris {from_point}` |
 | a calm change, time passing | blur through | `blur` |
 
-Carry motion through the cut: the outgoing move's direction and speed
-continue in the next shot, or the cut lands on a stop, on purpose. Give the
-film one transition language (one or two of these, travelling one way) and one
-special join kept for the reveal. A background colour changes with the
-chapter, not every shot, and the join brings it in.
+**Carry speed through the cut.** A cut resets almost everything — place,
+size, subject — and the one thing it must not reset is motion. The
+outgoing shot's direction and speed continue in the incoming one: the
+subject leaves frame right, and the next subject is already travelling
+right when it appears; a push still gaining speed hands it to the next
+shot's push. So cut while both sides are moving. A shot that comes to
+rest, then a cut, then a shot that starts from rest, is a dead beat the
+viewer feels as a hiccup; when the outgoing side is still, start the
+incoming shot's entrance before the cut so it is already in flight when
+it appears. Keep one direction for "next" through the film and spend
+the others on meaning (up for a conclusion, zooming through for going
+deeper, pulling back for the big arrival); hand a real object across
+the join when you can (`kit.match`). Give the film one transition
+language (one or two of these, travelling one way) and one special join
+kept for the reveal. A background colour changes with the chapter, not
+every shot, and the join brings it in.
+
+**How a join moves.** The join itself is a camera move, not a sticker:
+it leaves rest and lands soft. A slide eases out from a stop on a camera
+curve instead of jumping in its first frame, and a push or whip eases
+in and out.
+
+**Blur is the shutter's job.** At a 180° shutter every frame integrates
+half of its own travel, so anything the eye cannot follow — a whip, a
+push, a card crossing the frame — arrives as a streak instead of a row
+of copies. It is on by default and `kit.scene` keeps it on, so push,
+whip and slide add no blur of their own: the smear comes from the
+picture moving, which is what the eye expects. With the shutter off on
+purpose, a directional blur at half the fastest frame stands in. This
+is also what makes a cut on speed read: two shots travelling the same
+way at the same speed, both smeared, join into one movement.
+
+The sound belongs to the motion: the swish lands on the frame the
+picture moves fastest, which is where the eye registers the change, not
+on the cut frame. Where a shape reveals the next shot the edge is soft,
+as a lens makes it: an iris opens with a feathered rim, wipe panels
+carry a soft leading edge and clear in the order they came (last in,
+first out). A whip between two clips of footage overlaps them at the
+cut, from their source handles, so the move carries real picture on
+both sides.
 
 ## 3. Structure by kind of film
 
@@ -182,6 +235,11 @@ Time the arc to the length. Shares are of the running time.
 | Demonstration | 10-24 s | Two or three features, each a 4-5 s sequence with its own device, sizes and camera; cause and effect on real UI; one huge number as proof |
 | Payoff | 24-27 s | The signature shot; the motif pays off; the biggest move, a speed ramp (`kit.slowmo`), a light sweep (`kit.sheen`) |
 | End card | last 2-3 s | `kit.endcard`: mark, wordmark, line, url, still alive; the music resolves |
+
+A generated shot (hands using the product, a real place, the product in real
+light) can be the cold open or the plate under the reveal when the brief gains
+from it; miran-video says when, and what it costs. UI-only product films stay
+designed.
 
 A 15 s cut keeps the cold open, the reveal, one feature and the end card.
 A teaser that does not show the product yet builds the motif toward the
@@ -265,6 +323,10 @@ beat of 2-4 s. The words set the length: a brief's "2 minutes" aims the script,
 and a longer voice makes a longer film. Shorten by cutting words and voicing
 again, never by speeding the narration up or cutting a line before its last word.
 
+Leave a breath before the big moment: a third to three quarters of a second
+where everything stops, then the hit. It is the one place a frame stops
+completely; even the end card keeps a slow push while its words hold.
+
 Once the blocks are in, export a `draft` and watch the pacing before polishing.
 
 ## 5. Design system: decide in numbers, once
@@ -291,15 +353,30 @@ Once the blocks are in, export a `draft` and watch the pacing before polishing.
   every block of type with `kit.lockup` (end cards `kit.endcard`): it measures
   the ink; titles placed one by one miss by 15-200 px (`critiqueLayout` reports
   `misaligned`). Art stays out of the text column.
+- **Planes**: every shot is built back to front: the scene's light
+  (`kit.spot {at, size}`), a faint slow atmosphere, back graphics moving
+  slower than the subject, the subject big, front details (a label, a rule, a
+  ring, the cursor), light on the subject, one camera move. Most produced
+  frames use five to eight of these; a frame with the subject alone on a flat
+  ground is a slide. The style decides what each plane is (grain and halftone
+  for print, a grid for Swiss, one soft shadow for editorial), so the planes
+  never become a house look of spot and dust. miran-video ("What goes on screen") has the recipe.
 - **Light**: one direction for the whole film (gradients, glows and
   shadows agree), a soft light behind the hero (`kit.spot`), a sweep across
   it at the payoff (`kit.sheen`), depth behind the subject (a faint grid,
   texture or a blurred plane).
-- **Motion language**: two eases (entrances `emphasized-decelerate` or
-  `spring:snappy`; exits `emphasized-accelerate`, about 30% shorter), three
-  durations (8-12 frames small, 18-24 normal, 30-36 the hero), entrances
-  staggered 2-4 frames, moves on arcs (`kit.move {arc}`), overlap and
-  follow-through (`kit.follow`, `kit.inertia`).
+- **Motion language**: how this film begins and ends its moves. Anything
+  the viewer watches start leaves rest (`arrive`; `glide` between places,
+  `depart` for an exit from rest); an entrance that begins hidden —
+  opacity 0, off-frame, behind a matte — arrives already moving on a
+  strong ease-out (`emphasized-decelerate`, `smooth`). A move hands its
+  speed to the next one (on by default) and keys are `auto`, so nothing
+  stops between poses. Entrances ride arcs, the parts follow and overlap
+  (`kit.follow`, `kit.inertia`), the shutter blurs what the eye cannot
+  read, and the joins carry the speed through (section 2). UI and tech
+  films run at 60 fps so the cursor and the small moves read smooth.
+  Write one or two sentences naming the eases and springs this film
+  uses — not a table of durations.
 - **Cartoons**: one character size, one line weight, a set drawn 1.2x the
   frame so close-ups never show an edge.
 
@@ -320,11 +397,14 @@ Each runs inside `runScript` with the kit (`miran.help("kit.name")` lists
 every option). The first block is a whole fresh project, runnable as
 printed; its scenes run long to keep it short, so split yours into shots
 (section 3). `screen` is the real product's UI as SVG markup or an .svg
-path, one `<g id>` per panel.
+path, one `<g id>` per panel. Kit pieces write their defaults at 30 fps and
+read them at the composition's rate, so a 60 fps piece lasts the same
+seconds and nothing below is doubled for the rate: a `dur`, `stagger` or
+`start` you pass is frames, exactly as written.
 
 ```js
-// A fresh project: a 30 s film at 30 fps, the reveal at 9 s, the end card at 28 s.
-miran.createComposition({name: "Lumen launch", width: 1920, height: 1080, fps: 30, duration_frames: 900});
+// A fresh project: a 30 s UI film at 60 fps, the reveal at 9 s, the end card at 28 s.
+miran.createComposition({name: "Lumen launch", width: 1920, height: 1080, fps: 60, duration_frames: 1800});
 // The palette is Lumen's own (its dark editor and amber icon), written in plan.md with its source.
 kit.theme({font: "SF Pro Display", bg: "#111014", surface: "#1C1B21", text: "#F5F2EA", muted: "#9A968C", accent: "#F2A93B"});
 kit.backdrop({style: "solid"}); // the editor's own flat surface, no glow
@@ -342,65 +422,65 @@ const logo = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" v
   <circle cx="60" cy="60" r="56" fill="#F2A93B"/><circle cx="60" cy="60" r="22" fill="#111014"/></svg>`;
 
 // The spine first: the drop lands exactly on the reveal.
-const m = kit.music({mood: "tech", reveal: 270, ending: 840});
+const m = kit.music({mood: "tech", reveal: 540, ending: 1680});
 log(m.edit);                        // where the drop and the bars are
 
-// Cold open (0-60): a macro push into the button that starts everything.
-kit.scene({start: 0, end: 60}, ({start, end}) => {
+// Cold open (0-120): a macro push into the button that starts everything.
+kit.scene({start: 0, end: 120}, ({start, end}) => {
   const ui = kit.svg(screen, {width: 1600, style: "none"});
   kit.frame(ui.parts.go, {fill: 0.3, start, dur: end - start, hold: 0});
 });
 
-// Tension (60-240): the problem as a lockup, every line on one ink edge; the counter racing
+// Tension (120-480): the problem as a lockup, every line on one ink edge; the counter racing
 // up is what keeps the hold alive (no drift under words being read).
-kit.scene({start: 60, end: 240}, ({start, end, group}) => {
+kit.scene({start: 120, end: 480}, ({start, end, group}) => {
   kit.lockup({align: "left", at: [-760, 0], kicker: "Sunday, 9:12 pm", headline: "Four hundred\nphotos later.",
-    sub: "Not one of them edited.", start: start + 8});
-  kit.counter({to: 412, size: 300, at: [470, 40], color: "#E5484D", label: "photos to edit", start: start + 6, dur: 140});
+    sub: "Not one of them edited.", start: start + 16});
+  kit.counter({to: 412, size: 300, at: [470, 40], color: "#E5484D", label: "photos to edit", start: start + 12, dur: 280});
 });
 
 // The product hero on the drop: tilted in 3D, swinging face-on on the reveal,
 // then pushing into the panel that matters; a soft light behind it.
-kit.scene({start: 240, end: 420}, ({start, end, group}) => {
-  const s = kit.screen3d(screen, {start, face: {at: 270}, push: {to: "photos", at: 330}});
+kit.scene({start: 480, end: 840}, ({start, end, group}) => {
+  const s = kit.screen3d(screen, {start, face: {at: 540}, push: {to: "photos", at: 660}});
   kit.spot({behind: s.surface});
   kit.drift(group, {start: s.end, end});            // the hold after the push stays alive
 });
 
 // A feature: the cursor picks the look, the card lifts off the screen.
-kit.scene({start: 420, end: 540}, ({start, end, group}) => {
+kit.scene({start: 840, end: 1080}, ({start, end, group}) => {
   const ui = kit.svg(screen, {width: 1700, style: "none"});
   const card = miran.inspectLayer({layer: ui.parts.look, frame: start}).bounds.center;   // aim at it, never guess
-  const c = kit.cursor({path: [[-700, -360], card], click: [1], start: start + 4});
-  kit.lift(ui.parts.look, {start: c.arrive[1] + 3, until: end - 14});
+  const c = kit.cursor({path: [[-700, -360], card], click: [1], start: start + 8});
+  kit.lift(ui.parts.look, {start: c.arrive[1] + 6, until: end - 28});
 });
 
 // A statement on the beat: a word every half beat, the key word set apart.
-kit.scene({start: 540, end: 630}, ({start, end, group}) => {
+kit.scene({start: 1080, end: 1260}, ({start, end, group}) => {
   const b = m.beat_frames.filter((f) => f >= start);
   kit.words("One tap. Every photo.", {size: 150, style: "slam", start: b[0], stagger: Math.round((b[1] - b[0]) / 2),
     highlight: {word: "Every"}});
 });
 
 // Proof: one number, huge, landing on a downbeat.
-kit.scene({start: 630, end: 840}, ({start, end, group}) => {
-  const land = kit.snap(start + 50, m, {to: "bar"});
-  kit.counter({to: 3, size: 420, start: land - 44, dur: 44, label: "seconds a photo"});
+kit.scene({start: 1260, end: 1680}, ({start, end, group}) => {
+  const land = kit.snap(start + 100, m, {to: "bar"});
+  kit.counter({to: 3, size: 420, start: land - 88, dur: 88, label: "seconds a photo"});
 });
 
 // The end card: the motif's amber dot is the mark; wordmark, line and url centred on the
 // whole lockup, light sweeping once.
-kit.scene({start: 840, end: 900}, ({start, end, group}) => {
+kit.scene({start: 1680, end: 1800}, ({start, end, group}) => {
   const e = kit.endcard({mark: logo, wordmark: "Lumen", tagline: "Your photos, finished.", url: "lumen.app", size: 150, start});
-  kit.sheen(e.wordmark.id, {start: start + 26});
+  kit.sheen(e.wordmark.id, {start: start + 52});
 });
 
 // Joins (section 2): most scenes meet on a hard cut, on the beat. One special
 // move, saved for the reveal: zoom into the product. One push carries the
 // feature onward into the statement. Sound leads picture.
-kit.transition({at: 240, style: "zoom", lead: 6});
-kit.transition({at: 540, style: "push", dir: "left", lead: 6});
-return miran.renderContactSheet({frames: [40, 150, 262, 300, 370, 480, 600, 700, 885], columns: 3, out: "qa/board.png", scale: 0.5});
+kit.transition({at: 480, style: "zoom", lead: 12});
+kit.transition({at: 1080, style: "push", dir: "left", lead: 12});
+return miran.renderContactSheet({frames: [80, 300, 524, 600, 740, 960, 1200, 1400, 1770], columns: 3, out: "qa/board.png", scale: 0.5});
 ```
 
 A dialogue beat is staged and timed with `kit.dialogue` (`guide
@@ -432,6 +512,12 @@ lowest and look once more (one pass, not a loop):
    gestures on stressed words.
 10. **Motif, payoff and ending**: the motif pays off in the signature
     shot; the end card is alive and the music resolves.
+11. **Alive**: pause anywhere and something meaningful is mid-flight.
+    `inspectMotionActivity`: for a film carried by music, at about 5% median or
+    more (energetic launch films measure 5-9%) and no still hold over about a
+    second except the breath before the climax. A high
+    `critiqueMotion` score does not answer this line: it grades the moves
+    that exist, not the seconds where nothing moves.
 
 Then look at the sheet with the notes in miran-video ("Review") and run the
 lazy-defaults check ("Craft as tests"). `guide {topic:"directing"}` and

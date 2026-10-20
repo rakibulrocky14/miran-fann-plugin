@@ -1,7 +1,7 @@
 # Building scenes — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-51 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+52 of 181 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## newProject
 
@@ -168,8 +168,8 @@ Set a composition field: its length (duration in s or duration_frames; layers th
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `field` | enum["duration"|"duration_frames"|"name"|"motion_blur_enabled"|"shutter_angle"|"shutter_phase"|"motion_blur_samples"|"motion_blur_adaptive"|"background"|"transparent"|"master_gain_db"|"loudness_target"] | required | — Which composition field to set; see value |
-| `value` | any | required | — duration: seconds; duration_frames: frames; name: text. motion_blur_enabled/motion_blur_adaptive/transparent: bool. shutter_angle: degrees 1..=720 (180 = film look). shutter_phase: degrees -720..=720 like After Effects (0 = shutter centered on the frame; -90 with a 180 shutter = shutter ends on the frame). motion_blur_samples: taps 2..=64 where motion can't be measured (else 1 per 1.5 px, up to 64). background: color. master_gain_db: dB on the whole mix. loudness_target: LUFS the mix is normalised to (-14 punchy, -16 calm; true peak kept under -1 dBTP), null for off. |
+| `field` | string | required | — Which composition field to set; see value |
+| `value` | any | required | — duration: seconds; duration_frames: frames; name: text. motion_blur_enabled/motion_blur_adaptive/transparent: bool. shutter_angle: degrees 1..=720 (180 = film look). shutter_phase: degrees -720..=720 like After Effects (0 = shutter centered on the frame; -90 with a 180 shutter = shutter ends on the frame). motion_blur_samples: taps 2..=64 where motion can't be measured (else 1 per 1.5 px, up to 64). background: color. master_gain_db: dB on the whole mix. loudness_target: LUFS the mix is normalised to (-14 punchy, -16 calm; true peak kept under -1 dBTP), null for off. noise_sampler: "v1" or "v2"; "v1" keeps 0.1.5's wiggle and noise, "v2" (the default) moves across. edges: "v1" or "v2"; "v1" keeps 0.1.5's shape edges (what a project saved before 0.1.6 loads on), "v2" (the default) measures them in pixels: strokes exactly their width, a one-pixel edge at any scale. text_spring: "v1" or "v2"; "v1" keeps 0.1.5's clamped text-spring overshoot (what a project saved before 0.1.6 loads on), "v2" (the default) lets translation, scale and rotation pass rest and settle; opacity is clamped either way. text_contrast: bool, off by default; true gamma-encodes a light glyph's coverage so antialiased edges keep their ink on a dark background (opt-in 0.1.6 approximation; 2D text only, no effect on extruded 3D text or the legacy outline path). |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -195,6 +195,18 @@ Examples (they run as written on the starter scene from `guide {topic:"start"}`)
 
   ```json
   {"field":"loudness_target","value":-14}
+  ```
+
+- Move an old project to the fixed wiggle sampler
+
+  ```json
+  {"field":"noise_sampler","value":"v2"}
+  ```
+
+- Move an old project to edges in pixels
+
+  ```json
+  {"field":"edges","value":"v2"}
   ```
 
 Tips:
@@ -362,7 +374,7 @@ Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur
 | `composition` | string\|integer | optional | |
 | `layer` | string\|integer | required | |
 | `field` | string | required | — Which base field to set; see value for each field's format |
-| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. intended: bool (true: critiqueMotion leaves this layer's motion out; false clears it). behind: the cutout layer (id or name) a text sits behind (kit.textBehind sets it; critiqueLayout reports the text if it paints over that cutout); null clears. depth (an image layer, a 3D photo): {asset: gray map, white near, scale_px: 120, near: 1, far: 0} or the asset name; null clears. name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...] (frame in this composition; source_frame in the nested composition's own frames). posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
+| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hard_light, soft_light, exclusion, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. intended: bool (true: critiqueMotion leaves this layer's motion out; false clears it). behind: the cutout layer (id or name) a text sits behind (kit.textBehind sets it; critiqueLayout reports the text if it paints over that cutout); null clears. depth (an image layer, a 3D photo): {asset: gray map, white near, scale_px: 120, near: 1, far: 0} or the asset name; null clears. name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...] (frame in this composition; source_frame in the nested composition's own frames). posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -899,9 +911,52 @@ Tips:
 
 - Effect params: guide {topic:"effects"} lists every effect with units, defaults and ranges.
 
-Related: `guide`, `inspectRenderGraph`, `createLayer`
+Related: `removeEffect`, `guide`, `inspectRenderGraph`, `createLayer`
 
 CLI: `kinetic tool addEffect --params '<json>' --workspace ./out`
+
+## removeEffect
+
+Remove one effect from a layer by id, name or index (undo restores it).
+
+- family: `content` · mutating: `true` · transport: CLI `kinetic tool removeEffect` / SDK `batch([{tool: "removeEffect"}])` / MCP `tools/call {name: "removeEffect"}`
+- history: creates an undo step
+- lean tool list: not listed: call it as `miran.removeEffect(...)` in runScript · inside runScript: yes
+- signature: `removeEffect {effect: string|int, layer: string|int}`
+
+| param | type | required/default | notes |
+|---|---|---|---|
+| `composition` | string\|integer | optional | |
+| `layer` | string\|integer | required | |
+| `effect` | string\|integer | required | (min=0) — Which effect: its id (gaussian_blur) or an everyday name (blur, shadow, Gaussian Blur) removes the first such effect on the layer; a number is the effect's position in the layer's list (0 = first added). The error lists the layer's effects. |
+
+Examples (they run as written on the starter scene from `guide {topic:"start"}`):
+
+- By id (the first drop shadow on the layer)
+
+  ```json
+  {"layer":"Card","effect":"drop_shadow"}
+  ```
+
+- By position (0 = the first effect added)
+
+  ```json
+  {"layer":"Card","effect":0}
+  ```
+
+- By the name the effects list shows
+
+  ```json
+  {"layer":"Card","effect":"Drop Shadow"}
+  ```
+
+Tips:
+
+- A name removes the first effect of that kind on the layer; a number is its place in the list (0 = first added). Moves aimed at the removed effect go with it, and later effects shift up one place. undo brings it back.
+
+Related: `addEffect`, `inspectLayer`, `undo`
+
+CLI: `kinetic tool removeEffect --params '<json>' --workspace ./out`
 
 ## addMask
 

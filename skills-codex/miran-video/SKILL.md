@@ -12,14 +12,17 @@ This skill is the workflow and the build. **miran-direct** is the directing
 half (production order, shot grammar, the arc of each kind of film, the
 director's review): read it for every film. Deeper skills: **miran-create**
 (layers, SVG, HTML), **miran-edit** (footage), **miran-motion**,
-**miran-camera**, **miran-critique**, **miran-render**. The server documents itself: `guide {topic}`,
+**miran-camera**, **miran-critique**, **miran-render**, and **miran-polish** for the
+last pass before export. The server documents itself: `guide {topic}`,
 `describeTool {tool}`, and `miran.help("kit.title")` inside a script for one
 kit piece's options.
 
 ## Codex: how these films go wrong, and the answer to each
 
-Codex films come out clean and tasteful, and too often as slides. Before
-planning, open the **miran-direct** skill (its `SKILL.md` is in the folder
+Codex films come out clean and tasteful, and too often as slides. First call
+`openViewer` and give the user the link. Then research the subject and write
+the research sheet ("Research the subject" below), so the screens are the
+product's real ones. Before planning, open the **miran-direct** skill (its `SKILL.md` is in the folder
 next to this one) and read all of it; for a launch film also `guide
 {topic:"directing"}` sections 5-7. Write the plan to `plan.md` before any
 build call. Then watch for the three failures field tests showed:
@@ -45,22 +48,34 @@ camera and type around it.
 
 Your runs finish fast: spend the saved time on a second pass. Render the film
 with `renderContactSheet {frames: "auto"}`, score it with the director's review
-(miran-direct section 8), rebuild the two weakest beats, then export.
+(miran-direct section 8), rebuild the two weakest beats. Then open the
+**miran-polish** skill (its `SKILL.md` is in the folder next to this one) and
+run its last pass in order before you export.
 
 ## The workflow
+
+**References are the default for every video task and revision.** Before planning
+or changing the film, search for the best videos relevant to this task unless the
+user opts out, requests offline work, or limits references to supplied videos. Load
+**miran-reference** (the sibling `SKILL.md`) for discovery, video-link downloads
+including Envato previews, contact sheets and task-specific application. Reuse
+the inspected studies through this task; keep the user's story and brand.
+When the film or study is done, call `reference {action: "release", video: ID}`
+for each reference to delete its copied video and keep sheets, frames and notes.
 
 Films come out average when building starts before directing. Copy this
 and tick it off:
 
 ```
+- [ ] 0. Viewer: openViewer, the link in your reply before any other work (again with {composition} once it exists)
 - [ ] 1. Brief: the one sentence to remember, audience, length, format, brand; the subject's truth
-- [ ] 2. Real material: the brand's own colours, type and logo (logo SVG, site, repo CSS; captureSite / brand capture); its screens as HTML (importHtml); the user's footage; real copy and numbers ("Real material first")
-- [ ] 3. Direct (miran-direct 1-7): three concepts (one rules out the obvious idea, one an unusual format), the treatment, the arc, the board, the design system, saved in plan.md
+- [ ] 2. Research and real material: what the subject is, does and is for, its key moments, real copy and numbers; its real screens and pictures (captureSite on the key pages, screenshots from docs, store and press kit, the demo video through reference); the brand's colours, type and logo; a research sheet in plan.md saying which real screen each beat uses ("Research the subject")
+- [ ] 3. Direct (miran-direct 1-7): three concepts (one rules out the obvious idea, one an unusual format), the treatment, the arc, the board (with a video key set: one or two generated hero shots where they lift the film, one price for the set; "Footage and generated media"), the design system, saved in plan.md
 - [ ] 4. Spine: kit.music {reveal, ending} or voiceover / kit.dialogue {dry: true}; snap the board to it
-- [ ] 5. Styleframes: opening, signature shot, end card as finished stills; openViewer link to the user
-- [ ] 6. Build: one runScript per kit.scene, a sheet after each, fix in place
-- [ ] 7. Review: renderContactSheet {frames: "auto"}; critiqueLayout, critiqueMotion (dead_frame, read_in_motion), inspectMotionActivity; the director's review; fix the two weakest beats
-- [ ] 8. Finish: joins, light, sound on every action, captions if it talks, kit.finish, loudness
+- [ ] 5. Styleframes: opening, signature shot, end card as finished stills
+- [ ] 6. Build: one runScript per kit.scene, each a stack of planes with something performing to its end ("What goes on screen"); a sheet and inspectMotionActivity after each, fix in place
+- [ ] 7. Review: inspectMotionActivity (a film carried by music: about 5% median or more and no still hold over ~1 s but the breath before the climax); renderContactSheet {frames: "auto"}; critiqueLayout, critiqueMotion (dead_frame, read_in_motion); the director's review; fix the two weakest beats
+- [ ] 8. Finish: the last pass in miran-polish's order (content, motion, type, colour, sound, export): joins, light, sound on every action, captions if it talks, kit.finish, loudness
 - [ ] 9. Export: a draft for timing, then the final; read the check that comes back (frames from the file, size, loudness)
 - [ ] 10. Report: what was checked, what came from the brief and what you invented
 ```
@@ -72,9 +87,73 @@ remember), then the treatment, the board and the design system. Re-read it
 after any pause or context compaction, and keep it true as the film
 changes: it is how the next session, or the user, knows what the film is.
 
-**The viewer.** Call `openViewer` once and give the user the link: a live
-timeline, layers and preview. The user can edit there; your next result
-carries `viewer_edits`. Build on their edits, never undo them.
+**The viewer.** The first Miran call of every film is `openViewer`, and the
+link goes into your reply before any other work: a live timeline, layers and
+preview of the film as you build it. It is not a courtesy to skip when busy:
+the user is watching there, and can edit there; your next result carries
+`viewer_edits`. Build on their edits, never undo them. If you are partway
+into a film and never opened it, open it now.
+
+## Research the subject
+
+The brand is the easy half of research: a logo, two colours, a typeface. A
+film made from only that shows guessed screens in the right colours, and
+anyone who knows the product sees it. Before the brief is final, find out
+what the subject is and what it really looks like. This holds for every film:
+a film about a city, a habit or a scientific idea starts with its facts and
+its real pictures too.
+
+- **The subject.** Read past the home page: feature pages, docs or help,
+  pricing, the changelog, the app store listing, the launch post. Note, in its
+  own words:
+  - what it is, what it does and who it is for;
+  - the three or four moments people use it for;
+  - the real names of its screens and buttons;
+  - its real copy and the numbers it quotes.
+  For a subject that is not a product, note the facts, places, people, dates
+  and numbers from sources a careful reader would trust.
+- **Its real look.**
+  - `captureSite {url}` on the home page and on each key page (a feature
+    page, a docs page with a screenshot, pricing, the latest changelog entry).
+    `scroll` reaches below the fold and `dark: true` shows the dark theme.
+  - Screenshots from the official docs, the app store listing, the press kit
+    and the README, found with your web search and fetch tools.
+  - The demo or launch video through `reference` (miran-reference): the real
+    screens in motion.
+  - Study each one closely: the layout, the sidebar width, the row height,
+    the type sizes, the icons, the empty and done states, the labels.
+- **Rebuild, don't invent.** Write each screen the film needs as HTML from
+  those screenshots (`importHtml`): real proportions, real labels, a
+  believable amount of content.
+  - Third-party images and videos are study material: rebuild from them,
+    never paste them in, and release reference videos when the film is done.
+  - When the user is the product's team, its captured pages are their own
+    material and can appear as themselves (`captureSite {place: true}`).
+- **The research sheet**, in `plan.md` before the treatment, and shown to the
+  user with the viewer link: what was found and where, and which real screen
+  or picture each beat uses. The user can correct it before anything is
+  built: a wrong guess about what the product does costs one sentence here
+  and a whole film later.
+
+```text
+Research: Pantry (a shared grocery list)
+What it is    a household list that sorts itself into the aisle order of your usual shop
+For           households of two to five who shop weekly ("never buy the second milk")
+Key moments   add by voice; the list re-sorts by aisle; a partner ticks an item and it
+              vanishes on your phone; the running total
+Real copy     "Shop once." (home), "Aisle order" (features page), "Running total" (docs)
+Numbers       4.8 stars from 12k ratings (App Store page)
+Screens       list view (store screenshot 2), aisle view (features page, captured),
+              sharing settings (docs), dark theme (captureSite dark: true)
+Beats         1 voice-add, rebuilt from store shot 1; 2 aisle view, rebuilt from the
+              features page; 3 two phones, the real ticked state; end card, the logo SVG
+Invented      the partner's name and the list items (listed in the final report)
+Not found     a demo video; the tablet layout
+```
+
+When nothing can be found (an unreleased product, no site), ask the user for
+screenshots or a screen recording. If there are none, design the screens in
+the brand's style and mark them invented.
 
 ## Real material first
 
@@ -91,6 +170,9 @@ hand as positioned SVG reads as almost real, and almost real reads as fake.
   cheap-video look. A screenshot works as a screen at its own size. Rebuild the
   art in the engine (a circle with a radial `gradient` and a soft
   `gaussian_blur`, or `kit.blob`): it stays smooth at any size.
+- **A person, a real place, liquid, glass or a product in real light**, with a
+  video key set: a generated hero shot with Miran's type and UI on top
+  ("Footage and generated media").
 - **Art the engine cannot draw** (a painted plate, an illustration, a
   texture, an object): `generateImage {prompt, aspect}` with the user's
   OpenRouter key from Miran Settings (`generate` also runs video, music and
@@ -122,18 +204,259 @@ hand as positioned SVG reads as almost real, and almost real reads as fake.
   write your look from those numbers, keep your own concept, and after a
   draft `reference {action: "compare", video}` lists what differs, worst
   first (`guide {topic:"reference"}`).
+- **A video to recreate exactly** ("rebuild this, frame by frame"): same
+  brand, words, timing and look are the brief — rebuild every element
+  natively under a guide layer (`reference {action: "guide", video}`,
+  previews-only onion skin that exports leave out), match frame by frame,
+  deliver the recreation, and offer the labelled side-by-side
+  (`reference {action: "compare", video, out}`) when they want proof.
+  **miran-reference** teaches the workflow; only the reference's own media
+  files are ever blocked, never its content.
 
 With no real material, say so in the plan and design screens in the
 product's style; never present invented screens as the real product.
 
+## What goes on screen, and keeping it alive
+
+Model-made films fail in one recognisable way: every beat is a section of a
+website. A headline on one side, a small piece of UI on the other, a dark
+empty field, the parts arriving and then nothing until the cut. A DeepSeek
+launch film measured in the 0.1.6 study did exactly that: the same layout five
+times, half a percent of the frame changing on a typical frame, ten of its
+twenty-four seconds frozen, and `critiqueMotion` 100, because the few moves it
+had were well eased. Good launch films come in two kinds:
+
+- **Calm** ones (Cowork, Cursor 2.0, Linear Agent) hold for two or three
+  seconds, but every hold is a full frame of legible product with a cursor or
+  a voice about to act.
+- **Energetic** ones (Lovable, Claude Design, Figma's Config reel) barely stop,
+  with glow, light and UI motion under every second.
+
+A launch film carried by music belongs with the energetic ones.
+
+- **A beat is a world, not a layout.** Write each beat as what the viewer
+  experiences, in two sentences, then work out the pixels; give every element
+  a verb (slams, files into, docks, draws, counts down, locks in). An element
+  without a verb is the one that fades in and sits there.
+- **Put the idea on screen, not only the UI**: the product's own element huge
+  (one row, the button, the number), the problem as a pile, the number as an
+  object (the old one struck through, the new one landing in a ring), the
+  features as objects with weight that dock into the product, the system as a
+  diagram that builds, type as image against the product in depth.
+- **Build every shot in planes**, back to front: the scene's own light
+  (`kit.spot {at, size, intensity}`, a soft pool from one side, tinted by the
+  theme), a faint slow atmosphere (`kit.particles("dust")`, a blurred
+  `kit.blob`), back graphics that move slower than the subject (depth), the
+  subject big (a UI that must be read fills 60-80% of the width), front details
+  (a label, a rule that draws, a ring, the cursor, a burst on the hit), light on
+  the subject (`kit.sheen` once, `kit.glow` that swells and settles), and one
+  camera move with intent. Most produced frames use five to eight of these.
+  The film's style decides what each plane is: the spot and dust in the
+  recipe are one style's light and atmosphere. A print film's are grain and
+  halftone, a Swiss film's a grid, an editorial film's one soft shadow.
+- **Every beat keeps performing after it arrives**, through one of five
+  things named on the board: the camera travelling to the part that matters;
+  staged reveals paid out on beats; the product doing its job (a count ticks,
+  rows land, a state flips); objects acting it out (a card files into a stack,
+  cards fan, a result assembles); the cursor leading the eye to a click that
+  starts the next thing. Atmosphere is the floor under these, never the
+  performance; words still hold their place while they are read.
+- **Cause and effect on one frame**: a click, then the ripple, the burst and
+  the rows answering one after another, all hung on the click's frame
+  (`kit.cursor(...).arrive[i]`); bigger things answer slower.
+- **Carry motion across the cut**: the next shot enters the way the last one
+  left, cut while both are still moving, one direction for "next" all film
+  long, and a real object handed across the join when you can (`kit.match`).
+- **Stillness has one job**: the breath before the climax (a third to three
+  quarters of a second, then the hit). The end card's words hold to be read
+  while a slow push or drift keeps the frame alive.
+
+```js
+// A fresh project: one beat built as planes, with the camera travelling to the part that matters.
+miran.createComposition({name: "Dayline", width: 1920, height: 1080, fps: 30, duration_frames: 150});
+// Dayline's own palette (its blue app icon, on its dark calendar), written in plan.md with its source.
+kit.theme({font: "SF Pro", display: "SF Pro", bg: "#0A0E1C", surface: "#141A30", text: "#F1F4FF", muted: "#97A0C2", accent: "#4D6BFE", accent2: "#F2B84B"});
+kit.backdrop({style: "solid"});
+const T = kit.theme();
+const {w, h} = kit.size();
+const row = (id, when, who, note, hit) => `<div class="row${hit ? " hit" : ""}" id="${id}"><b>${when}</b> ${who}<span>${note}</span></div>`;
+const html = `<style>* { box-sizing: border-box; }
+  body { margin: 0; background: ${T.surface}; color: ${T.text}; font: 500 28px/1.3 "${T.font}", system-ui; }
+  .app { display: grid; grid-template-columns: 250px 1fr; height: 100%; }
+  .side { background: ${T.bg}; padding: 34px 26px; display: flex; flex-direction: column; gap: 14px; color: ${T.muted}; }
+  .side b { color: ${T.text}; font: 700 32px "${T.display}", system-ui; margin-bottom: 18px; }
+  .main { padding: 32px 36px; display: flex; flex-direction: column; gap: 14px; }
+  h1 { font: 700 46px "${T.display}", system-ui; margin: 0 0 6px; }
+  .row { display: flex; gap: 18px; padding: 20px 24px; border-radius: 16px; background: ${T.bg}; }
+  .row span { margin-left: auto; color: ${T.muted}; font-size: 24px; }
+  .row.hit { background: ${T.accent}; } .row.hit span { color: ${T.text}; }</style>
+  <div class="app"><div class="side"><b>Dayline</b><div>This week</div><div>Team: Design</div><div>Rooms</div></div>
+  <div class="main"><h1>Find a time for 6 people</h1>${row("tue", "Tue 10:00", "4 of 6 free", "Ana is out")}${row("wed", "Wed 14:30", "all 6 free", "best", true)}
+  ${row("thu", "Thu 09:00", "5 of 6 free", "Raj is flying")}${row("fri", "Fri 16:00", "3 of 6 free", "two travelling")}${row("mon", "Mon 11:30", "4 of 6 free", "Lee at the dentist")}</div></div>`;
+kit.scene({start: 0, end: 150, name: "The answer"}, ({start, end}) => {
+  const light = kit.spot({at: [-w * 0.3, h * 0.35], size: w * 1.6, intensity: 0.45});      // the scene's light, from the top left
+  const dust = kit.particles("dust", {start, colors: [T.text, T.accent], count: 14, size: 3}); // atmosphere, far and slow
+  [light.id, dust.id].forEach((id) => miran.setLayerField({layer: id, field: "intended", value: true}));   // drift on purpose
+  const r = miran.importHtml({name: "Dayline", width: 1440, height: 760, html});
+  // The page's base goes in with its parts, or its background and sidebar stay flat behind the 3D screen.
+  const s = kit.screen3d([r.base, r.parts.tue, r.parts.wed, r.parts.thu, r.parts.fri, r.parts.mon], {start, width: w * 0.72,
+    face: {at: start + 45}, push: {to: "wed", at: start + 90, fill: 0.86}});
+  kit.spot({behind: s.surface, intensity: 0.35});                              // light on the subject
+  kit.sheen(r.parts.wed, {start: start + 118, dur: 26});                       // once, when the answer is close
+});
+return "the answer";
+```
+
+`miran-motion` has the reaction layer (followers, inertia) and effects as
+moves (focus, glow, light, colour on a beat).
+
 ## Footage and generated media
 
 Footage and generated media are materials like any other; the film process
-above does not change. Cutting an interview or a phone clip, cutouts,
-tracking, grading, delivery: load **miran-edit**. Generated media
-(`generateImage`, `generateVideo`, `generate`) is priced first, cheapest first
-(motion graphics, a still with parallax, a draft, then the one hero shot), and
-the user hears the price before any paid call. Every role is open (`place`):
+above does not change. Know where competitors' "cinematic" frames come from:
+the 0.1.6 study found most of Higgsfield's showcase frames are generated
+video (Seedance, Kling, Veo), with heavy re-rolling and human finishing.
+Their motion-design films are code, like ours. Their spectacle there is
+density: a sea of objects, a carousel of real cards, a point-cloud object
+with live HUD numbers, many copies of one designed element each doing
+something. Build that from kit pieces.
+
+A person, a real place, liquid, glass, fabric, food, weather or a product in
+real light are pictures the engine does not draw. Cutting an interview or a
+phone clip, cutouts, tracking, grading, delivery: load **miran-edit**. Generated
+media (`generateImage`, `generateVideo`, `generate`) is a material like the
+rest, and it earns its place the way a location shoot would: when it makes the
+film better than motion design alone.
+
+### Generated hero shots: plan them when they lift the film
+
+**With a video key set, look for the shot that would gain real-world
+presence**, and plan one or two generated hero shots into the board yourself.
+Do not wait to be asked, and do not default to motion only. Then build Miran's
+exact type, UI and motion on top of them: cutouts, screen replacement, light
+wrap, and one grade and one grain pass over everything so the mix is one film.
+
+*Can you?* `openSettings` (a direct call) returns `keys`; video models run on
+the `openrouter` entry with `set: true`. Check once, when you write the board.
+Hand the user the link only when the key is missing, and never ask for a key
+in chat.
+
+*Is this film one that gains?* Judge the shot, not the genre:
+
+- **Good fits**: a person using the thing (hands on a phone, a face reacting,
+  someone arriving in the place the product lives); a real place or weather (a
+  street at dusk, rain on a window, a kitchen at 7 a.m.); liquid, glass,
+  fabric, smoke, steam, food; the product as a physical object in real light
+  (a bottle, a device, a package) under Miran's type; a cinematic establishing
+  shot that hands off into the designed film; a brand or story film where a
+  world with no photographic frame in it would read as a slideshow.
+- **Poor fits, stay motion design**: a product-UI or screen demo (the real
+  screen is the evidence, a stranger beside it dilutes it); kinetic type and
+  lyric films; data stories and charts (the number is the picture); abstract
+  brand motion and logo animation; any shot whose point is exact words, a logo,
+  interface or a real person's likeness (models garble them, so Miran draws
+  those on top); a shot that is decoration only.
+- **The test**: cover the generated shot in the board. If the beat says the
+  same thing without it, do not buy it. If a viewer would feel the missing
+  camera (the hand, the light on the glass, the street), plan it. Two hero
+  shots at most in a short film; the rest stays designed, which is also what
+  makes the generated ones feel expensive.
+
+*Plan it with its price, once.* In the board, a shot gets a line: what it
+shows, its length, where Miran's type and UI sit over it, what the film does
+without it. Price every shot with the exact params you will send
+(`generateVideo {action: "estimate", ...}` returns the price, the user's
+caps and `spent_today_usd`), add them, and put **one total for
+the whole generated set** in the plan: "Two generated shots, about $0.45 in
+all, inside your caps." Ask once, and run only on the yes. A budget named in
+the brief is the yes up to that figure. With no yes (or no one to ask), build
+the motion version and say in the report what the shots would have added.
+
+- **Cheapest model that meets the shot.** The default is the user's video model
+  from Settings (`heygen/heygen-video-1` unless they changed it): cheaper and
+  better than Kling for most plates. `generateVideo {action: "models"}` lists
+  live models with a five-second price. Go up to a premium model only when the
+  default's draft shows it cannot do the shot, and a price above what you
+  quoted is a new question. The default makes 5-15 s: plan the shot long and
+  use two or three seconds of it (`place {duration}`).
+- **Draft first, the hero last.** One cheap take to judge the idea (the same
+  prompt at `resolution: "480p"` with a `seed`; look at the three frames in
+  `images`), build the whole film on that take, and only when everything else
+  holds, make the hero (`768p`, or `2K` when the camera pushes into it) with
+  the same seed (close to the draft, not identical: look again) and swap it in with `place {as: "replace"}`. A premium or 2K
+  call is the last thing the film buys.
+- **Reuse saved results.** The same call returns the saved file for free
+  (`cached: true`). A re-run with one word changed is a new bill, so settle the
+  prompt, seed and resolution on the draft and repeat them exactly. `fresh:
+  true` is a re-roll: say the price first.
+- **Stay inside the person's Settings caps.** `limit-exceeded` means stop and
+  offer the cheaper path (motion design, or a still with parallax); never
+  retry around it. Pass `max_cost` as the price you quoted: it becomes a ceiling, and models
+  that bill after the call need it anyway.
+  For `no-key`, `local-only`, `key-refused` and `no-credits`, say it and carry
+  on with motion design (the failures are in miran-edit).
+- **Never surprise spend.** No paid call before the total was shown and
+  accepted. Report what was spent at the end.
+
+*No key?* If `openSettings` shows no `openrouter` key and a shot in the board
+would gain, say it once, in the plan: "A generated hero shot (the opening street,
+about $0.15) could lift this film. Add an OpenRouter key in Miran Settings to
+unlock it. Carrying on with motion design." Then carry on and do not ask again.
+
+*Ask the model for pictures, never for words.* Write the shot as camera, subject,
+action, light and look, from the film's palette and light, plus "no text, no
+logos, no interface". The brand's type, logo and UI come from Miran.
+
+Three recipes (`[direct]` calls are refused inside `runScript`; the rest run
+in scripts). Prompts, names and numbers are examples: yours come from the film.
+
+**A product hero plate, Miran's type and UI over it.** The reveal of a drinks
+brand: a real bottle in real light, the designed film around it.
+
+```text
+openSettings {}                                                          [direct]   // keys: openrouter set -> plan the shot into the board
+generateVideo {action: "estimate", prompt: "A frosted glass bottle of cold brew on dark wet slate, condensation beading, a soft side light from the left, shallow focus, the camera pushes in slowly, no text, no logos", seconds: 5, resolution: "768p"}   [direct]   // add the other shots' estimates: ONE total in plan.md
+generateVideo {prompt: "<the same prompt>", seconds: 5, resolution: "480p", seed: 7, name: "bottle"}   [direct]   // the draft: look at images[0]
+place {media: "<path from the draft>", as: "background", at: 90, duration: 150, name: "Bottle plate"}
+kit.lockup(...); kit.screen3d(...) over it; kit.spot({behind: ...}) matched to the plate's real light direction   // Miran's type and UI, in the plate's light
+generateVideo {prompt: "<the same prompt>", seconds: 5, resolution: "768p", seed: 7, name: "bottle", max_cost: 0.25}   [direct]   // the hero, last
+place {media: "<path from the hero>", as: "replace", layer: "Bottle plate"}   // same timing, transform and effects
+grade {action: "look", name: "film", composition: "Launch", strength: 0.5}; kit.finish({vignette: 0.2, grain: 0.03})   // one grade and one grain over plate, type and UI
+```
+
+**A person cut out over a designed world.** A generated shot on a plain wall
+(the cutout is cleaner), the world built in Miran, giant type between them.
+
+```text
+generateVideo {prompt: "A woman in a green raincoat turns toward the camera and laughs, plain light-grey studio wall, soft front light, locked-off medium shot, no text", seconds: 5, resolution: "480p", seed: 11, name: "ana"}   [direct]   // after the one total was accepted
+place {media: "<path>", as: "layer", at: 0, name: "Ana"}
+cutout {action: "person", layer: "Ana", mode: "replace"}                  [direct]   // "Ana cutout"; the grey wall turns off
+kit.backdrop({style: "mesh", colors: [...]})                              // the world, from the brand's palette
+kit.textBehind("Ana", "ON TIME", {start: 30})                             // giant type between the world and the person
+kit.lightWrap("Ana cutout", <the backdrop's id>, {width: 24, strength: 0.5})   // the world's light on her edge
+grade {action: "look", name: "film", composition: "Launch", strength: 0.4}; kit.finish({grain: 0.03})
+```
+
+If the person holds a phone, `track {action: "plane", layer: "Ana", detect:
+"screen"}` and `kit.screenReplace("Ana", <the product's own screen>)` put the
+product's real UI on it (miran-edit); the model never draws the interface.
+
+**A generated establishing shot that hands off into motion design.** The
+opening is a street at dusk; the film continues as designed UI on its last frame.
+
+```text
+generateImage {prompt: "A rain-lit street at dusk, one warm shop window, deep blue shadows, wide, no text", aspect: "16:9", name: "street"}   [direct]   // about $0.04: approve the frame first
+generateVideo {prompt: "The camera glides slowly forward down the street, rain falling, reflections moving, no text", first_frame: "<the image path>", seconds: 5, resolution: "480p", seed: 3, name: "street"}   [direct]
+place {media: "<path>", as: "layer", at: 0, duration: 90, name: "Street"}
+place {media: {asset: "<path>", time: 4.8}, as: "background", at: 90, name: "Street held"}   // its last frame becomes the ground
+kit.frame(...) pushing the same way the camera did; the product's UI arrives in the shop window's light   // motion carried across the cut
+generateVideo {prompt: "<same>", first_frame: "<the image path>", seconds: 5, resolution: "768p", seed: 3, name: "street", max_cost: 0.25}   [direct]   // the hero last, swapped in with place {as: "replace", layer: "Street"}
+```
+
+Everything above is two or three sentences of a film, not the film: the
+board still carries the story, and the designed shots still carry the product.
+
+Every role is open (`place`):
 own or generated media can be a shot, a background, the fill of a word, fire on
 black over footage, a screen inside a tracked phone, a matte, a particle
 sprite. So combine freely and invent the chain the film needs: a generated
@@ -156,7 +479,9 @@ Critics measure pixels. Taste is a set of questions asked of every move:
   flips, a number climbs, the cursor travels, a light sweeps, a row arrives.
   A slow `kit.drift` is the fallback for a hold with nothing to change, and
   it moves the picture around the words, never the words being read
-  (`critiqueMotion` reports `read_in_motion`).
+  (`critiqueMotion` reports `read_in_motion`). When that critic flags words
+  moving, hold the words and keep the shot alive; never fix it by clearing
+  the shot's motion.
 - **Rule out the obvious.** Name the concept every other video on this
   subject would use, and do not make it. One of your three concepts takes
   an unusual form: a letter, a countdown, a front page, a map, a receipt.
@@ -180,10 +505,15 @@ samples each scene's middle and both sides of every cut (`kit.scene` makes
 the scenes), every cell labelled with its frame and time; a number (`frames:
 12`) spreads that many evenly. Then:
 
+- `inspectMotionActivity` first: for a film carried by music, about 5% to 25%
+  median activity (energetic launch films measure 5-9%; calm UI films under 2%,
+  holding only on a full frame of legible product) and no still hold over about
+  a second except the breath before the climax.
 - `critiqueLayout` (collisions, safe area, contrast, `misaligned`) and
-  `critiqueMotion` (aim for 85+; `dead_frame` is a stretch with nothing but
-  the background, `read_in_motion` is text travelling while it is read);
-  `inspectMotionActivity` for holds and dead time.
+  `critiqueMotion` (read it by its findings, not its score: `dead_frame` is a
+  stretch with nothing but the background, `read_in_motion` is text travelling
+  while it is read). It grades the moves that exist: a film with ten good
+  moves and ten frozen seconds can score 100, so never read it as "alive".
 - The director's review (miran-direct section 8): score each line 1-5, fix
   the two lowest, look once more.
 - An independent reviewer when you can start one: give it frames (not the
@@ -218,6 +548,17 @@ beat works without looking at its sheet.
   file another session made (the result says the name it used).
 - Read `warnings` and the script `log`: missing glyphs, fallback fonts, a
   title set smaller to fit the frame.
+- `importHtml`: in a page's CSS end every font stack with a system name
+  (`-apple-system, system-ui`; `ui-monospace, Menlo` for code), or Chrome
+  draws a serif. Import the page at the centre and move it by its root
+  (`setProperty {layer: r.id, property: "position"}`): in 0.1.6 `at` offsets
+  the page's base twice and its parts once. Give `kit.screen3d` the page's
+  `r.base` with its parts, or the base stays flat behind the 3D screen.
+- Atmosphere (dust, sparkles, a breathing `kit.spot`) moves on purpose: mark
+  it `setLayerField {layer, field: "intended", value: true}` so
+  `critiqueMotion` does not grade it as a crawl; never delete it to raise the
+  score. Mark only atmosphere, never a scene group, a camera move or your own
+  moves.
 
 ## Build one scene per script
 
@@ -247,6 +588,30 @@ eases and three durations (miran-direct section 5; `guide
 corner radius, stroke, type size and tracking, blur and every effect
 parameter. Shapes carry many looks with a few operators (`setShapes {ops}`,
 `kit.burst`, `kit.blob`; `guide {topic:"shapes"}`).
+
+Join the beats with `kit.transition` once both sides exist, and pick the
+style by what the two shots share (miran-direct section 2). A join moves
+like a camera: it leaves rest and lands soft, the comp's motion blur (on in
+every kit scene) does the smear, and the swish sound lands on the frame the
+picture moves fastest. Do not stack a blur effect on a push or a whip.
+
+### Look it up before you invent it
+
+Miran ships a directory of 637 motion techniques with a Miran mapping for
+each. Before designing a move you cannot name, search it:
+
+```
+motions {query: "staggered text", family: "type"}
+motions {id: "wipe"}          // mapping.kind, args, recipe
+```
+
+`kit` and `effect` mappings are calls with arguments; `recipe` is a complete
+`runScript` body you can run and adapt; `gap` names a limitation. The same
+directory lists 352 CC0 recordings (`sounds {query: "whoosh"}`, then
+`sounds {id, place: true}` as a direct call) for
+the moments a synthesised `addSound` preset is too clean. Use both as a
+vocabulary, not as a crutch: the film still has to be designed for this
+subject.
 
 ## Revising a beat
 
@@ -338,10 +703,39 @@ centre, three words a phrase.
 `draft` is half size and several times faster: watch it for timing.
 `renderVideo` defaults to the whole composition at `high` (H.264) with the
 sound mixed in; `max` is 10-bit HEVC for dark gradients and glow, `master`
-is ProRes (`.mov`), `max_mb: 25` fits an upload. Turn motion blur on for
-anything fast (`setCompositionField {field: "motion_blur_enabled", value:
-true}`; adaptive, free on still frames). Over MCP a long render returns
+is ProRes (`.mov`), `max_mb: 25` fits an upload. Motion blur is on for new
+work (adaptive, free on still frames); record an off with
+`setCompositionField {field: "motion_blur_enabled", value: false}` when a
+look needs hard edges. Over MCP a long render returns
 `{job}`: poll `jobStatus {job}`.
+
+On a machine without a GPU (Miran renders on Flint, its CPU renderer), or when the export may outlast the host's
+command, take it through in stretches. Ask `renderVideo {out:"renders/final.mp4",
+preflight:true}` at the delivery settings: `estimate` samples this backend,
+weights costly, median and cheap windows and includes pixel conversion
+plus a short encode at these settings (hardware or software). It reports render and encode times
+(`estimated_seconds` is their sum), whether the estimate is `uncertain`,
+and offers ranges on the 2 s grid. Estimates are advisory: requested exports always render, even over
+eight minutes. Only explicit `preflight:true` returns without exporting;
+`start:0` renders without automatic whole-film sampling. One cold exception:
+a first whole CPU export over 20 s with no measured rate for its settings
+samples render and conversion only (no encode probe), so its result carries
+the estimate and ranges, encode unmeasured and `uncertain: true`; a
+measured rate is always a pure lookup. Render each offered `start, end` with `cache:true`,
+`audio:false` and `check:false` to its own chunk path, keeping composition,
+quality, scale and backend fixed. Think in 10–20 s of film at a time,
+shorter on a heavy scene or a tighter command limit; keep the cuts on that
+grid. Run a failed chunk again and let its completed pieces be reused.
+Then one full `renderVideo` at the same settings, without start/end and
+with sound enabled, joins the cached pictures and mixes the sound:
+`segments.encoded` should be zero. **miran-render**
+and `guide {topic:"render"}` cover cache availability and the cloud setup
+script (`npx --yes miran-fann cloud-setup` in the release shipping it, or
+`bash scripts/cloud-setup.sh` from a Miran checkout). **Headless cloud MCP
+use needs sign-in support, which is coming:** the browser login currently
+redirects to the VM's own loopback address. Dependency setup does not unlock
+it; it works once that sign-in ships. Judge the completed film,
+with sound, after this final join.
 
 Every export opens the file it wrote and reports `check`: frames decoded
 from the MP4 (a sheet, returned as an image), duration, size, bitrate, audio

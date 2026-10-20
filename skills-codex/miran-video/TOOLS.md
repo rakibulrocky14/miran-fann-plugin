@@ -1,7 +1,7 @@
 # Making a video end to end — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-35 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+37 of 181 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## runScript
 
@@ -100,11 +100,13 @@ Private data feed of the Miran Viewer panel in chat apps. Not for direct use: ca
 - family: `project` · mutating: `false` · transport: CLI `kinetic tool viewerApi` / SDK `batch([{tool: "viewerApi"}])` / MCP `tools/call {name: "viewerApi"}`
 - history: read-only, no history entry
 - lean tool list: listed (a direct call) · inside runScript: yes
-- signature: `viewerApi {op: state|values|boxes|curve|wave|audio|thumb|frame|…, asset?: string, calls?: object[], comp?: string, frame?: number [frame], k?: string, layer?: string|int, path?: string, quality?: draft|full, rate?: int, since?: int, text?: string, to?: number [frame], urgent?: bool, v?: int, width?: int}`
+- signature: `viewerApi {op: state|values|boxes|curve|wave|audio|thumb|frame|…, asset?: string, calls?: object[], comp?: string, frame?: number [frame], k?: string, layer?: string|int, path?: string, quality?: draft|full, rate?: int, reference?: string, sheet?: string, since?: int, text?: string, to?: number [frame], urgent?: bool, v?: int, width?: int}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `op` | enum["state"|"values"|"boxes"|"curve"|"wave"|"audio"|"thumb"|"frame"|"edit"|"note"] | required | — Panel request |
+| `op` | enum["state"|"values"|"boxes"|"curve"|"wave"|"audio"|"thumb"|"frame"|"edit"|"note"|"references"|"reference-sheet"] | required | — Panel request |
+| `reference` | string | optional | — reference-sheet: saved reference id |
+| `sheet` | string | optional | — reference-sheet: generated sheet filename |
 | `since` | integer | optional | (min=0) — state: version held |
 | `comp` | string | optional | — Composition id |
 | `frame` | number | optional | — Frame |
@@ -156,7 +158,7 @@ CLI: `kinetic tool openSettings --params '<json>' --workspace ./out`
 
 ## renderContactSheet
 
-Grid PNG of frames (QA artifact; GPU by default).
+Grid PNG at cell size (GPU); warm-cell `eta`.
 
 - family: `render` · mutating: `false` · transport: CLI `kinetic tool renderContactSheet` / SDK `batch([{tool: "renderContactSheet"}])` / MCP `tools/call {name: "renderContactSheet"}`
 - history: read-only, no history entry
@@ -172,7 +174,7 @@ Grid PNG of frames (QA artifact; GPU by default).
 | `ignore` | array\|string\|integer | optional | — Layers whose motion is intended (names or ids) |
 | `platform` | enum["reels"|"tiktok"|"shorts"] | optional | — 9:16 app UI zones for the layout list |
 | `out` | string | required | — PNG output path; the sheet is returned inline to MCP clients |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU (Metal) if available, else Flint; cpu: Flint, the exact CPU renderer |
 | `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -200,17 +202,18 @@ CLI: `kinetic tool renderContactSheet --params '<json>' --workspace ./out`
 
 ## critiqueMotion
 
-How things move, like an animation director: straight diagonal travel (use arcs), constant-speed moves, entrances that accelerate into a dead stop, lockstep timing, one tempo for everything, nothing overshooting or following through, jumps, an empty first frame. Score, findings and a fix for each.
+How things move, like an animation director: straight diagonal travel (use arcs), constant-speed moves, entrances that accelerate into a dead stop, lockstep timing, one tempo for everything, nothing overshooting or following through, jumps, an empty first frame; and, from the frames themselves (the 3D camera too), jolts from rest, dead stops, speed jumps at hand-offs, creeping tails, stops on a beat, fast moves without blur. Score, findings and a fix call for each.
 
 - family: `design` · mutating: `false` · transport: CLI `kinetic tool critiqueMotion` / SDK `batch([{tool: "critiqueMotion"}])` / MCP `tools/call {name: "critiqueMotion"}`
 - history: read-only, no history entry
 - lean tool list: not listed: call it as `miran.critiqueMotion(...)` in runScript or query · inside runScript: yes
-- signature: `critiqueMotion {ignore?: array|string|int}`
+- signature: `critiqueMotion {frames?: number[] [frames], ignore?: array|string|int}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `ignore` | array\|string\|integer | optional | — Layers whose motion is intended: names or ids (reveals are skipped already) |
+| `ignore` | array\|string\|integer | optional | — Layers whose motion is intended: names or ids (reveals are skipped already); "camera" leaves the 3D camera out |
+| `frames` | array | optional | — [from, to]: check only this range of frames (a long film's result names the ranges it did not sample) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -228,7 +231,8 @@ Examples (they run as written on the starter scene from `guide {topic:"start"}`)
 
 Tips:
 
-- Findings come from the moves themselves (channels, paths, follows), so it runs in milliseconds; each gives the layer, frames and a concrete fix.
+- Findings come from the moves themselves (channels, paths, follows) and, for smoothness, from the film's own frames: where each subject layer sits on screen at every frame, and, when a layer is 3D, how the camera moves the scene (long films: the windows around moves, keys and drivers, spread over the whole film; stats.sampled_frames says how many, and a sample_cap note names the ranges the cap left out: critiqueMotion {frames:[from, to]} checks one range). It takes a second or two on a long film. Each finding gives the layer, frames and a fix that names a tool call (a batch when several properties change); apply it and run the check again.
+- Smoothness findings, judged on the frames a layer is shown (opacity 0.5 or more, on screen), so an entrance that starts hidden or off-frame is exempt from its start; speeds and lengths are judged in seconds, so 24, 30 and 60 fps get the same verdict: first_frame_jump (leaves rest with more than 3% of the move in its first frame and faster than 2x the move's average speed, or at full speed from the first frame, as linear keys are: use arrive, glide or easy-ease; strong ease-outs such as smooth and emphasized-decelerate are for layers that start hidden), dead_stop (arrives at speed and stops in one frame: glide), velocity_jump (the speed steps in one frame while moving, as when a second move takes over: auto keys on every axis that moves; a step that turns the layer round is an impact, a bounce, and is not judged), tail_crawl (more than 0.2 s at 0.6-9 px a second, which shimmers: another ease, a shorter move, or hold still; a layer that is meant to drift is marked), periodic_stop (three or more near-stops without turning round at an even beat, as lattice noise or back-to-back eased moves make: auto keys; a bob, a pendulum and a ping-pong turn round and are meant), stop_between_moves (a note: one stop between two moves the same way), fast_no_blur (a step above 2.5% of the width per frame with no motion blur, shutter or sized blur effect) and transition_peak (a frame that travels 15% of the width at 30 fps while the blur covers under 45% of it: turn comp blur on, shutter 180, or size a directional blur to it). Keyframe-driven layers are fixed on their keys (setPropertyDriver with keys), moves with animateProperty. A layer that is meant to snap (hold keys), step on twos (posterize, hold keys, posterizeTime), drift or stop on a beat is marked setLayerField {field: "intended", value: true} (a stage carries its children; ignore: ["camera"] leaves the 3D camera out); a stage's children that ride one move are one finding. The camera is judged for jolts, dead stops and blur only: a slow dolly is how a camera should move.
 - Scenery (backgrounds, rigs, adjustment layers) may drift at constant speed; subjects should not.
 - Reveals are not judged: the source of a track matte, a layer that never shows, a plate painted in the colour of what is behind it (a typing wipe's cover), and mask-path or trim-path animation. not_judged in the result names them. For anything else that is meant, pass ignore: [layer names or ids] (a name that is no layer is an error), or mark the layer once with setLayerField {field: "intended", value: true}. Its exit is not read time: text leaving with its shot is not flagged, and letters used as texture (ghost type, a wall of glyphs, faint ink) are not text.
 
@@ -299,7 +303,7 @@ Measure how much the picture moves over time: renders the range and reports, per
 | `start` | integer | optional default=0 | — First frame (default 0) |
 | `end` | integer | optional | — End frame, exclusive (default: the composition duration) |
 | `step` | integer | optional default=1 | (min=1) — Sample every Nth frame (1 = every frame; 2 halves the cost on long pieces) |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto (default) renders on the GPU when an adapter exists and falls back to the CPU reference otherwise |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto (default) renders on the GPU (Metal) when an adapter exists and on Flint, the CPU renderer, otherwise |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -625,22 +629,42 @@ CLI: `kinetic tool character --params '<json>' --workspace ./out`
 
 ## reference
 
-Learn a reference video's style: cuts and shot lengths, transitions, motion and camera, palette and contrast, type (read on device). compare: what differs in your render, worst first, with numbers. recipe: its editing (shot lengths, transitions, cuts on the beat) for edit recreate. guide reference.
+Study video references: add a public video/page URL or workspace clip, list, sheets, frame, note, guide (recreation overlay), release, analyze, compare, recipe. For every video task, search for references unless the user opts out. guide reference.
 
 - family: `design` · mutating: `false` · transport: CLI `kinetic tool reference` / SDK `batch([{tool: "reference"}])` / MCP `tools/call {name: "reference"}`
 - history: read-only, no history entry
 - lean tool list: listed (a direct call) · inside runScript: none
-- signature: `reference {video: string, action?: analyze|compare|recipe = "analyze", against?: string, read_text?: bool = true}`
+- signature: `reference {action?: add|list|sheets|frame|note|release|remove|guide|… = "analyze", against?: string, end?: number, id?: string, interval?: number = 1, layout?: side|stack = "side", mode?: overview|interval|shots = "overview", opacity?: number = 0.5, out?: string, page?: int = 0, pages?: int = 1, read_text?: bool = true, remove?: bool, source?: string, start?: number, text?: string, title?: string, video?: string}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `action` | enum["analyze"|"compare"|"recipe"] | optional default="analyze" | — What to do (recipe: its editing as a recipe for edit recreate) |
-| `video` | string | required | — The reference video (in the workspace) |
-| `against` | string | optional | — compare: your video (default: a draft render of the composition) |
-| `composition` | string\|integer | optional | — compare: what to render when `against` is not given |
+| `action` | enum["add"|"list"|"sheets"|"frame"|"note"|"release"|"remove"|"guide"|"analyze"|"compare"|"recipe"] | optional default="analyze" | — guide overlays a reference for recreating; release deletes copied video, remove the study |
+| `source` | string | optional | — add: public URL or workspace video |
+| `video` | string | optional | — Reference id from add (or a workspace video) |
+| `title` | string | optional | — add: a title for this reference |
+| `mode` | enum["overview"|"interval"|"shots"] | optional default="overview" | — sheets mode; shots needs a footage index |
+| `start` | number | optional | (min=0) — sheets: first second; frame/note: timestamp |
+| `end` | number | optional | (min=0) — sheets/note: last second |
+| `interval` | number | optional default=1 | (min=0.04, max=600) — interval sheets: step [s] |
+| `page` | integer | optional default=0 | (min=0, max=1000) — sheets: page |
+| `pages` | integer | optional default=1 | (min=1, max=4) — sheets: pages per call |
+| `text` | string | optional | — note: what to learn at this timestamp |
+| `against` | string | optional | — compare: your video |
+| `composition` | string\|integer | optional | — Composition (default first) |
+| `id` | string | optional | — guide/compare: same as video |
+| `opacity` | number | optional default=0.5 | — guide opacity (0.05-1) |
+| `remove` | boolean | optional | — guide: remove instead |
+| `out` | string | optional | — compare: write the labelled side-by-side MP4 here |
+| `layout` | enum["side"|"stack"] | optional default="side" | — compare panels: side | stack |
 | `read_text` | boolean | optional default=true | — Read the type on screen (slower) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
+
+- List saved video studies
+
+  ```json
+  {"action":"list"}
+  ```
 
 - Learn a reference video's style
 
@@ -662,6 +686,9 @@ Examples (they run as written on the starter scene from `guide {topic:"start"}`)
 
 Tips:
 
+- Search for suitable reference videos for each video task unless the user opts out. The miran-reference skill teaches discovery, URL/Envato preview extraction, contact sheets and task-specific application.
+- add accepts source: a public video/page URL or workspace file. list returns saved ids; sheets and frame show the actual clip; note records what this task should adapt. Long work stays outside scripts.
+- When the film or study is done, call reference {action: "release", video: ID} for each reference: copied video is deleted; sheets, frames, notes and source links remain. remove deletes the entire study. Reference media is refused as a production asset.
 - Learn the style, not the content: take its pacing, palette, contrast and type treatment into your own concept; never copy its footage, logos or words.
 - style gives a ready start: palette, background, accent (brand {action:"save", theme}), shot length in frames at 30 fps, the main transition and the motion level.
 - compare after each pass: fix the first differences (pacing and contrast matter most), render again, compare again. Analyses are cached in reference/.
@@ -1526,30 +1553,33 @@ CLI: `kinetic tool place --params '<json>' --workspace ./out`
 
 ## renderVideo
 
-Render a range and encode MP4 (FFmpeg); probes the result (GPU by default). Includes the mixed sound whenever the comp has audio layers (audio defaults to true then).
+Render a range and encode MP4 (FFmpeg); probes the result (GPU by default). Includes mixed sound. Long exports include an advisory estimate and cached chunk ranges and always render; preflight:true estimates without rendering. Explicit start/end renders that range.
 
 - family: `render` · mutating: `false` · transport: CLI `kinetic tool renderVideo` / SDK `batch([{tool: "renderVideo"}])` / MCP `tools/call {name: "renderVideo"}`
 - history: read-only, no history entry
 - lean tool list: listed (a direct call) · inside runScript: none
-- signature: `renderVideo {out: string, audio?: bool, backend?: auto|gpu|cpu = "auto", cache?: bool = true, check?: bool, dither?: sierra|floyd_steinberg|bayer|none, end?: int [frame], fps?: int [frames], max_mb?: number [frames], mix_rate?: int = 48000, palette?: scene|global|frame, quality?: draft|standard|web|high|max|master = "high", scale?: number, start?: int = 0 [frame]}`
+- signature: `renderVideo {out: string, audio?: bool, backend?: auto|gpu|cpu = "auto", cache?: bool = true, check?: bool, chroma?: 420|444, dither?: sierra|floyd_steinberg|bayer|none, end?: int [frame], fps?: int [frames], max_mb?: number [frames], mix_rate?: int = 48000, palette?: scene|global|frame, preflight?: bool = false, quality?: draft|standard|web|high|max|master = "high", scale?: number, start?: int = 0 [frame], supersample?: 1|2}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
 | `start` | integer | optional default=0 | — First frame (inclusive, default 0) |
 | `end` | integer | optional | — Stop frame, exclusive (default: the composition's duration) |
-| `out` | string | required | — .mp4 or .mov; .gif, .webp or .apng make a looping animated image (640 px GIF, 1080 px otherwise; scale overrides; result's image reports size, fps, mb and match) |
+| `out` | string | required | — .mp4 or .mov; .gif, .webp or .apng make a looping animated image (640 px GIF, 1080 px otherwise; scale overrides) |
 | `fps` | integer | optional | — Animated images: frame rate (GIF 15, others up to 30); only those frames render |
-| `palette` | enum["scene"|"global"|"frame"] | optional | — GIF colours: one palette per scene (cuts and markers; default), one for all (smallest), or per frame (best colour, ~30% bigger) |
+| `palette` | enum["scene"|"global"|"frame"] | optional | — GIF colours: per scene (cuts and markers; default), one for all (smallest), or per frame (best colour, ~30% bigger) |
 | `dither` | enum["sierra"|"floyd_steinberg"|"bayer"|"none"] | optional | — GIF dithering (default sierra) |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU (Metal) if available, else Flint; cpu: Flint, the exact CPU renderer |
 | `audio` | boolean | optional | — Mix the comp's audio layers into the MP4 (default: true when it has any) |
 | `mix_rate` | integer | optional default=48000 | — Audio mix sample rate when audio=true |
-| `cache` | boolean | optional default=true | — Re-export only what changed: the video is kept in 2 s pieces and a piece whose frames did not change since an earlier export (same quality and size) is reused as it is. Pictures are identical to a full export; sound is always mixed fresh. Grain exports render whole. false renders every frame |
+| `preflight` | boolean | optional default=false | — Sample up to 9 frames (costly, median, cheap) through this backend and pixel conversion plus a short software encode; return an uncertain cost-weighted estimate and chunk ranges without exporting. Sound mixing, joining and cold setup are extra |
+| `cache` | boolean | optional default=true | — Re-export only what changed: the video is kept in 2 s pieces and a piece whose frames did not change since an earlier export (same quality and size) is reused. Pictures are identical to a full export; sound is mixed fresh; grain exports render whole. false renders every frame |
 | `scale` | number | optional | (min=0.1, max=1) — Render at this fraction of the size (default 1; 0.5 for draft) |
-| `check` | boolean | optional | — Then open the exported file: frames decoded from it come back as a labelled sheet, with size, bitrate, audio and loudness (checkExport). Default on in agent sessions |
-| `max_mb` | number | optional | — Aim the whole file (sound included) under this many MB, e.g. 25 for chat uploads: x264 from lossless frames, 2-pass if needed; the result's fit reports the size and the measured match. Default from Miran Settings; 0 = no limit |
-| `quality` | enum["draft"|"standard"|"web"|"high"|"max"|"master"] | optional default="high" | — draft: fast preview at half size (H.264, motion blur capped at 4 samples). standard: H.264 High, smaller. web: x264 tuned for flat animation, about a third of high's size at 99.5% of its picture (software, slower). high (default): H.264 High at high constant quality, plays everywhere; very dark smooth gradients can band faintly (the result's encoding.tip says when). max: 10-bit HEVC Main10 from full RGB frames; gradients are dithered when rendered, so dark gradients and glows stay band-free. master: ProRes 422 HQ, 10-bit 4:2:2 (needs a .mov out path; ProRes 4444 with alpha when the composition is transparent). All tagged BT.709, hardware-encoded (VideoToolbox) on Apple Silicon with automatic software fallback. |
+| `check` | boolean | optional | — Then open the exported file: a labelled sheet of its frames, with size, bitrate, audio and loudness (checkExport). Default on in agent sessions |
+| `max_mb` | number | optional | — Aim the whole file (sound included) under this many MB, e.g. 25 for chat uploads: x264 from lossless frames, 2-pass if needed; the result's fit reports size and match. Default from Miran Settings; 0 = no limit |
+| `quality` | enum["draft"|"standard"|"web"|"high"|"max"|"master"] | optional default="high" | — draft: fast preview at half size (H.264, motion blur capped at 4 taps, measured frames too). standard: H.264 High, smaller. web: x264 tuned for flat animation, a third of high's size at 99.5% of its picture (software, slower). high (default): H.264 High at high constant quality, plays everywhere; the render's gradient dither survives this encode, so dark gradients stay band-free. max: 10-bit HEVC Main10, the cleanest gradients and glows (Apple, YouTube, modern browsers; not every chat app or Windows PC); H.264 at crf 12 without VideoToolbox HEVC. master: ProRes 422 HQ, 10-bit 4:2:2 (needs a .mov out path; ProRes 4444 with alpha when the composition is transparent). All BT.709; hardware-encoded on Apple Silicon, software fallback elsewhere. |
+| `chroma` | enum["420"|"444"] | optional | — Master only: "444" writes ProRes 4444 without alpha (full-resolution colour for compositing and grading) instead of ProRes 422 HQ. Default: the preset's own (4:2:0 for delivery, 4:2:2 for master). A transparent composition already keeps ProRes 4444 with alpha. |
+| `supersample` | enum[1|2] | optional | — 1 or 2: render at 2x and resolve before encoding. Default 2 for master up to 1440p, else 1 (guide render) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1786,4 +1816,121 @@ When the film is done: the issues you ran into in Miran, a short plain paragraph
 | `issues` | string | required | — A short plain paragraph |
 | `film` | string | optional | — What you made |
 CLI: `kinetic tool feedback --params '<json>' --workspace ./out`
+
+## motions
+
+Look up 637 motion techniques before inventing a move; get one for its Miran mapping and reference clip.
+
+- family: `content` · mutating: `false` · transport: CLI `kinetic tool motions` / SDK `batch([{tool: "motions"}])` / MCP `tools/call {name: "motions"}`
+- history: read-only, no history entry
+- lean tool list: listed (a direct call) · inside runScript: search, get, and previews already in the cache
+- signature: `motions {action?: search|get, family?: string, frames?: int [frames], id?: string, kind?: kit|effect|tool|recipe|gap, limit?: int, preview?: bool, query?: string, sheet?: string}`
+
+| param | type | required/default | notes |
+|---|---|---|---|
+| `action` | enum["search"|"get"] | optional | — get if id, else search |
+| `query` | string | optional | — words, e.g. "mask reveal" |
+| `family` | string | optional | — type, ui, transitions, data, ... |
+| `kind` | enum["kit"|"effect"|"tool"|"recipe"|"gap"] | optional | — mapping kind |
+| `limit` | integer | optional | (min=1, max=50) — results (12) |
+| `id` | string | optional | — get: an id from search |
+| `preview` | boolean | optional | — get: fetch the reference clip |
+| `frames` | integer | optional | (min=1, max=16) — get: sheet of n clip frames |
+| `sheet` | string | optional | — get: sheet path |
+
+Examples (they run as written on the starter scene from `guide {topic:"start"}`):
+
+- Families and tags: where to start
+
+  ```json
+  {}
+  ```
+
+- A launch-film move by words
+
+  ```json
+  {"query":"mask reveal","limit":5}
+  ```
+
+- Only techniques that map to a kit piece
+
+  ```json
+  {"query":"stagger","kind":"kit"}
+  ```
+
+- Only runnable recipes, in transitions
+
+  ```json
+  {"family":"transitions","kind":"recipe"}
+  ```
+
+- One technique: mapping, args, recipe, parameters
+
+  ```json
+  {"id":"wipe"}
+  ```
+
+Tips:
+
+- A kit mapping carries call, ready for a script: put your own layers in for layer, leader and textLayer. Read mapping.note first: it says where the mapping is partial (a straight edge standing in for a splatter edge).
+- Every recipe is a complete runScript body and is executed by the test suite; run it as-is on a fresh session, then adapt its constants.
+- The 128 preview clips are study material pinned to the upstream commit; fetch one with preview: true and frames: 6, then read the sheet.
+- A gap has no single call: a note starting "No preset:" lists the calls that build it, any other note names what Miran lacks. Do not dress a gap up as a kit call.
+
+CLI: `kinetic tool motions --params '<json>' --workspace ./out`
+
+## sounds
+
+Search 352 CC0 sound effects; get one; place: true fetches, caches and imports it.
+
+- family: `audio` · mutating: `true` · transport: CLI `kinetic tool sounds` / SDK `batch([{tool: "sounds"}])` / MCP `tools/call {name: "sounds"}`
+- history: creates an undo step
+- lean tool list: listed (a direct call) · inside runScript: search, get, and place for sounds already in the cache
+- signature: `sounds {action?: search|get, category?: string, id?: string, limit?: int, max_seconds?: number, min_seconds?: number, place?: bool, query?: string}`
+
+| param | type | required/default | notes |
+|---|---|---|---|
+| `action` | enum["search"|"get"] | optional | — get if id, else search |
+| `query` | string | optional | — words, e.g. "whoosh" |
+| `category` | string | optional | — ui, whoosh, riser, impact, ... |
+| `min_seconds` | number | optional | (min=0, max=600) — shortest |
+| `max_seconds` | number | optional | (min=0, max=600) — longest |
+| `limit` | integer | optional | (min=1, max=50) — results (12) |
+| `id` | string | optional | — get: an id from search |
+| `place` | boolean | optional | — get: fetch and import it |
+
+Examples (they run as written on the starter scene from `guide {topic:"start"}`):
+
+- Sources, categories, licences
+
+  ```json
+  {}
+  ```
+
+- Short whooshes
+
+  ```json
+  {"query":"whoosh","max_seconds":1}
+  ```
+
+- Risers for a build
+
+  ```json
+  {"category":"riser","limit":8}
+  ```
+
+- One sound: licence, duration, pinned URL
+
+  ```json
+  {"id":"kenney/click1"}
+  ```
+
+Tips:
+
+- placement is explicit: get without place returns metadata only, place: true downloads, caches, imports and credits the file. Place with a direct call: a script reads the cache but does not download.
+- These are recordings; addSound and kit.sfx are synthesis. Use a recording for texture and a generated sound for a precise hit on the frame.
+- Check duration_s before you place it: a 0.45 s whoosh is a cut, a 3 s riser is a build. max_seconds filters faster than listening.
+- The cache is shared across films and works offline; a cached file that is not the indexed size is fetched again.
+
+CLI: `kinetic tool sounds --params '<json>' --workspace ./out`
 

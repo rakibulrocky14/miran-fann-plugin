@@ -5,6 +5,13 @@ description: Builds and edits Miran Fann scenes - projects, compositions, layers
 
 # Building scenes in Miran Fann
 
+For every video/animation task, search for suitable reference videos unless the
+user opts out, requests offline work, or limits reference research to supplied videos. Load
+the sibling **miran-reference** skill; inspect and adapt the references to this
+task, reusing an existing study during the same task.
+When the film or study is done, call `reference {action: "release", video: ID}`
+for each reference to delete its copied video and keep sheets, frames and notes.
+
 > **Lean tool list:** a call written below as `name {params}` is `miran.name({params})` inside `runScript` (or `query` when it only looks) unless `name` is in your tool list; exports, jobs, voiceover, downloads and panels stay direct calls.
 
 Every mutating call is committed to an undo history. For animation load
@@ -155,6 +162,26 @@ on `kind:"shape"` (text: `setTextStyle`; SVG nodes: `setVectorStroke`).
   (numbers, hex colors, `[x, y]`); unknown names are refused with the valid
   list. Effect offsets are screen px, y down. One or two effects per layer;
   finish the frame with an adjustment layer (vignette, a gentle grade).
+  Defaults are the 0.1.6 quality ones: raw `grain` is the soft held film
+  grain (`amount` 0.02, `size` 2, `hold` 3 — past ~0.03 the encoder smears it
+  into blotches), `bloom` blends three halo octaves (`octaves` 3), `lens_blur`
+  takes more aperture taps as `radius` grows (`taps` 0 = automatic, ~49 at
+  radius 8) and `gaussian_blur` keeps the Gaussian tail to ±4σ (`support` 4).
+  `glow` defaults to the long falloff (`falloff:"long"`): the stacked core +
+  halo + tail look. Since 0.1.6 its halo runs on a 1/2 grid and its tail on a
+  1/4 one, so it costs about what the tight soft halo does (1.3x at 1080p)
+  instead of the 8-14x of the full-resolution tail (D54). `falloff:"soft"` is
+  the single-radius halo when the tail is not the point. Projects made before
+  0.1.6 store their old params at load and keep rendering as they always did
+  (their glow keeps the full-resolution tail through the `edges` v1 marker).
+- `removeEffect {layer, effect}`: takes one effect off (`effect` is its id,
+  `blur`-style name or place in the list, 0 = first added; undo restores it).
+  A name removes the first of that kind; moves aimed at it go too.
+- `setLayerField {layer, field:"blend_mode", value}`: how a layer meets what
+  is below: `multiply`, `screen`, `overlay`, `soft_light` (gentle contrast),
+  `hard_light` (strong, source-led), `exclusion` (low-contrast inversion),
+  `add`, `color_dodge`, `color_burn`, `difference`, `hue`, `luminosity`, ...
+  A wrong name lists the choices. Both renderers draw all of them the same.
 - `addMask {layer, points, feather}`: polygon in layer px, y up.
 - `setMatte {layer, matte, type}`: the matte layer still renders; set its
   opacity to 0 to use it purely as a matte.

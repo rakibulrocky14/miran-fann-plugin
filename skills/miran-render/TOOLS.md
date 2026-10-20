@@ -1,7 +1,7 @@
 # Exporting — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-27 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+27 of 181 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## renderFrame
 
@@ -10,15 +10,16 @@ Render one comp frame to PNG (GPU by default; backend=cpu for the reference).
 - family: `render` · mutating: `false` · transport: CLI `kinetic tool renderFrame` / SDK `batch([{tool: "renderFrame"}])` / MCP `tools/call {name: "renderFrame"}`
 - history: read-only, no history entry
 - lean tool list: not listed: call it as `miran.renderFrame(...)` in runScript or query · inside runScript: yes
-- signature: `renderFrame {out: string, backend?: auto|gpu|cpu = "auto", frame?: number = 0 [frame], scale?: number}`
+- signature: `renderFrame {out: string, backend?: auto|gpu|cpu = "auto", frame?: number = 0 [frame], scale?: number, supersample?: 1|2}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
 | `frame` | number | optional default=0 | — Frame to render (default 0) |
 | `out` | string | required | — PNG output path, workspace-relative; the image is returned inline to MCP clients |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU (Metal) if available, else Flint; cpu: Flint, the exact CPU renderer |
 | `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
+| `supersample` | enum[1|2] | optional | — 1 or 2: render at 2x and resolve before saving. Default 1 (guide render) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -39,7 +40,7 @@ Render frames start..end (exclusive) as PNG sequence (GPU by default).
 - family: `render` · mutating: `false` · transport: CLI `kinetic tool renderRange` / SDK `batch([{tool: "renderRange"}])` / MCP `tools/call {name: "renderRange"}`
 - history: read-only, no history entry
 - lean tool list: listed (a direct call) · inside runScript: none
-- signature: `renderRange {dir: string, end: int [frames], backend?: auto|gpu|cpu = "auto", scale?: number, start?: int = 0 [frame]}`
+- signature: `renderRange {dir: string, end: int [frames], backend?: auto|gpu|cpu = "auto", scale?: number, start?: int = 0 [frame], supersample?: 1|2}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
@@ -47,8 +48,9 @@ Render frames start..end (exclusive) as PNG sequence (GPU by default).
 | `start` | integer | optional default=0 | — First frame (inclusive, default 0) |
 | `end` | integer | required | — Stop frame, exclusive (end=90 renders frames 0..89); at most 3600 frames per call |
 | `dir` | string | required | — Output folder for frame_NNNNN.png files, workspace-relative |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU (Metal) if available, else Flint; cpu: Flint, the exact CPU renderer |
 | `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
+| `supersample` | enum[1|2] | optional | — 1 or 2: render at 2x and resolve before saving. Default 1 (guide render) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -62,30 +64,33 @@ CLI: `kinetic tool renderRange --params '<json>' --workspace ./out`
 
 ## renderVideo
 
-Render a range and encode MP4 (FFmpeg); probes the result (GPU by default). Includes the mixed sound whenever the comp has audio layers (audio defaults to true then).
+Render a range and encode MP4 (FFmpeg); probes the result (GPU by default). Includes mixed sound. Long exports include an advisory estimate and cached chunk ranges and always render; preflight:true estimates without rendering. Explicit start/end renders that range.
 
 - family: `render` · mutating: `false` · transport: CLI `kinetic tool renderVideo` / SDK `batch([{tool: "renderVideo"}])` / MCP `tools/call {name: "renderVideo"}`
 - history: read-only, no history entry
 - lean tool list: listed (a direct call) · inside runScript: none
-- signature: `renderVideo {out: string, audio?: bool, backend?: auto|gpu|cpu = "auto", cache?: bool = true, check?: bool, dither?: sierra|floyd_steinberg|bayer|none, end?: int [frame], fps?: int [frames], max_mb?: number [frames], mix_rate?: int = 48000, palette?: scene|global|frame, quality?: draft|standard|web|high|max|master = "high", scale?: number, start?: int = 0 [frame]}`
+- signature: `renderVideo {out: string, audio?: bool, backend?: auto|gpu|cpu = "auto", cache?: bool = true, check?: bool, chroma?: 420|444, dither?: sierra|floyd_steinberg|bayer|none, end?: int [frame], fps?: int [frames], max_mb?: number [frames], mix_rate?: int = 48000, palette?: scene|global|frame, preflight?: bool = false, quality?: draft|standard|web|high|max|master = "high", scale?: number, start?: int = 0 [frame], supersample?: 1|2}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
 | `start` | integer | optional default=0 | — First frame (inclusive, default 0) |
 | `end` | integer | optional | — Stop frame, exclusive (default: the composition's duration) |
-| `out` | string | required | — .mp4 or .mov; .gif, .webp or .apng make a looping animated image (640 px GIF, 1080 px otherwise; scale overrides; result's image reports size, fps, mb and match) |
+| `out` | string | required | — .mp4 or .mov; .gif, .webp or .apng make a looping animated image (640 px GIF, 1080 px otherwise; scale overrides) |
 | `fps` | integer | optional | — Animated images: frame rate (GIF 15, others up to 30); only those frames render |
-| `palette` | enum["scene"|"global"|"frame"] | optional | — GIF colours: one palette per scene (cuts and markers; default), one for all (smallest), or per frame (best colour, ~30% bigger) |
+| `palette` | enum["scene"|"global"|"frame"] | optional | — GIF colours: per scene (cuts and markers; default), one for all (smallest), or per frame (best colour, ~30% bigger) |
 | `dither` | enum["sierra"|"floyd_steinberg"|"bayer"|"none"] | optional | — GIF dithering (default sierra) |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU (Metal) if available, else Flint; cpu: Flint, the exact CPU renderer |
 | `audio` | boolean | optional | — Mix the comp's audio layers into the MP4 (default: true when it has any) |
 | `mix_rate` | integer | optional default=48000 | — Audio mix sample rate when audio=true |
-| `cache` | boolean | optional default=true | — Re-export only what changed: the video is kept in 2 s pieces and a piece whose frames did not change since an earlier export (same quality and size) is reused as it is. Pictures are identical to a full export; sound is always mixed fresh. Grain exports render whole. false renders every frame |
+| `preflight` | boolean | optional default=false | — Sample up to 9 frames (costly, median, cheap) through this backend and pixel conversion plus a short software encode; return an uncertain cost-weighted estimate and chunk ranges without exporting. Sound mixing, joining and cold setup are extra |
+| `cache` | boolean | optional default=true | — Re-export only what changed: the video is kept in 2 s pieces and a piece whose frames did not change since an earlier export (same quality and size) is reused. Pictures are identical to a full export; sound is mixed fresh; grain exports render whole. false renders every frame |
 | `scale` | number | optional | (min=0.1, max=1) — Render at this fraction of the size (default 1; 0.5 for draft) |
-| `check` | boolean | optional | — Then open the exported file: frames decoded from it come back as a labelled sheet, with size, bitrate, audio and loudness (checkExport). Default on in agent sessions |
-| `max_mb` | number | optional | — Aim the whole file (sound included) under this many MB, e.g. 25 for chat uploads: x264 from lossless frames, 2-pass if needed; the result's fit reports the size and the measured match. Default from Miran Settings; 0 = no limit |
-| `quality` | enum["draft"|"standard"|"web"|"high"|"max"|"master"] | optional default="high" | — draft: fast preview at half size (H.264, motion blur capped at 4 samples). standard: H.264 High, smaller. web: x264 tuned for flat animation, about a third of high's size at 99.5% of its picture (software, slower). high (default): H.264 High at high constant quality, plays everywhere; very dark smooth gradients can band faintly (the result's encoding.tip says when). max: 10-bit HEVC Main10 from full RGB frames; gradients are dithered when rendered, so dark gradients and glows stay band-free. master: ProRes 422 HQ, 10-bit 4:2:2 (needs a .mov out path; ProRes 4444 with alpha when the composition is transparent). All tagged BT.709, hardware-encoded (VideoToolbox) on Apple Silicon with automatic software fallback. |
+| `check` | boolean | optional | — Then open the exported file: a labelled sheet of its frames, with size, bitrate, audio and loudness (checkExport). Default on in agent sessions |
+| `max_mb` | number | optional | — Aim the whole file (sound included) under this many MB, e.g. 25 for chat uploads: x264 from lossless frames, 2-pass if needed; the result's fit reports size and match. Default from Miran Settings; 0 = no limit |
+| `quality` | enum["draft"|"standard"|"web"|"high"|"max"|"master"] | optional default="high" | — draft: fast preview at half size (H.264, motion blur capped at 4 taps, measured frames too). standard: H.264 High, smaller. web: x264 tuned for flat animation, a third of high's size at 99.5% of its picture (software, slower). high (default): H.264 High at high constant quality, plays everywhere; the render's gradient dither survives this encode, so dark gradients stay band-free. max: 10-bit HEVC Main10, the cleanest gradients and glows (Apple, YouTube, modern browsers; not every chat app or Windows PC); H.264 at crf 12 without VideoToolbox HEVC. master: ProRes 422 HQ, 10-bit 4:2:2 (needs a .mov out path; ProRes 4444 with alpha when the composition is transparent). All BT.709; hardware-encoded on Apple Silicon, software fallback elsewhere. |
+| `chroma` | enum["420"|"444"] | optional | — Master only: "444" writes ProRes 4444 without alpha (full-resolution colour for compositing and grading) instead of ProRes 422 HQ. Default: the preset's own (4:2:0 for delivery, 4:2:2 for master). A transparent composition already keeps ProRes 4444 with alpha. |
+| `supersample` | enum[1|2] | optional | — 1 or 2: render at 2x and resolve before encoding. Default 2 for master up to 1440p, else 1 (guide render) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -151,7 +156,7 @@ Render a range, mix composition audio, mux into the MP4, and verify. Fails loudl
 - family: `audio` · mutating: `false` · transport: CLI `kinetic tool renderVideoWithAudio` / SDK `batch([{tool: "renderVideoWithAudio"}])` / MCP `tools/call {name: "renderVideoWithAudio"}`
 - history: read-only, no history entry
 - lean tool list: listed (a direct call) · inside runScript: none
-- signature: `renderVideoWithAudio {out: string, backend?: auto|gpu|cpu = "auto", cache?: bool = true, end?: int [frame], max_mb?: number, mix_rate?: int = 48000 [Hz], quality?: draft|standard|web|high|max|master = "high", scale?: number, start?: int = 0 [frame]}`
+- signature: `renderVideoWithAudio {out: string, backend?: auto|gpu|cpu = "auto", cache?: bool = true, chroma?: 420|444, end?: int [frame], max_mb?: number, mix_rate?: int = 48000 [Hz], quality?: draft|standard|web|high|max|master = "high", scale?: number, start?: int = 0 [frame], supersample?: 1|2}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
@@ -161,10 +166,12 @@ Render a range, mix composition audio, mux into the MP4, and verify. Fails loudl
 | `out` | string | required | — Path, workspace-relative: .mp4 (or .mov, required for quality=master); .gif, .webp or .apng make a looping animated image |
 | `quality` | enum["draft"|"standard"|"web"|"high"|"max"|"master"] | optional default="high" | — Delivery preset; see renderVideo.quality |
 | `max_mb` | number | optional | — Size limit; see renderVideo.max_mb |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU (Metal) if available, else Flint; cpu: Flint, the exact CPU renderer |
 | `mix_rate` | integer | optional default=48000 | — Audio sample rate in Hz (default 48000) |
 | `cache` | boolean | optional default=true | — See renderVideo.cache |
 | `scale` | number | optional | (min=0.1, max=1) — Render at this fraction of the size (default 1; 0.5 for draft) |
+| `chroma` | enum["420"|"444"] | optional | — Master only: 444 writes ProRes 4444 without alpha; see renderVideo.chroma |
+| `supersample` | enum[1|2] | optional | — See renderVideo.supersample |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -180,7 +187,7 @@ CLI: `kinetic tool renderVideoWithAudio --params '<json>' --workspace ./out`
 
 ## renderContactSheet
 
-Grid PNG of frames (QA artifact; GPU by default).
+Grid PNG at cell size (GPU); warm-cell `eta`.
 
 - family: `render` · mutating: `false` · transport: CLI `kinetic tool renderContactSheet` / SDK `batch([{tool: "renderContactSheet"}])` / MCP `tools/call {name: "renderContactSheet"}`
 - history: read-only, no history entry
@@ -196,7 +203,7 @@ Grid PNG of frames (QA artifact; GPU by default).
 | `ignore` | array\|string\|integer | optional | — Layers whose motion is intended (names or ids) |
 | `platform` | enum["reels"|"tiktok"|"shorts"] | optional | — 9:16 app UI zones for the layout list |
 | `out` | string | required | — PNG output path; the sheet is returned inline to MCP clients |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU (Metal) if available, else Flint; cpu: Flint, the exact CPU renderer |
 | `scale` | number | optional | (min=0.1, max=1) — Fraction of the size for fast previews (0.5 = half) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
@@ -277,7 +284,7 @@ Time evaluation + render over N frames (GPU by default).
 | `composition` | string\|integer | optional | |
 | `frames` | integer | optional default=8 | — Frames to time (default 8) |
 | `repeat` | integer | optional default=1 | — Timing passes (default 1) |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU if available; cpu: slow exact reference |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto: GPU (Metal) if available, else Flint; cpu: Flint, the exact CPU renderer |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -291,7 +298,7 @@ CLI: `kinetic tool benchmarkRender --params '<json>' --workspace ./out`
 
 ## listRenderCapabilities
 
-CPU+GPU caps, effects, engine version, adapter, encoder (honest).
+CPU (Flint) + GPU (Metal) caps side by side (engines), effects, engine version, adapter, encoder (honest).
 
 - family: `render` · mutating: `false` · transport: CLI `kinetic tool listRenderCapabilities` / SDK `batch([{tool: "listRenderCapabilities"}])` / MCP `tools/call {name: "listRenderCapabilities"}`
 - history: read-only, no history entry
@@ -356,7 +363,7 @@ CLI: `kinetic tool listJobs --params '<json>' --workspace ./out`
 
 ## inspectGpuBackend
 
-Request a wgpu adapter; report it or fail honestly.
+Request a wgpu adapter (GPU · Metal); report it beside CPU · Flint, or fail honestly.
 
 - family: `render` · mutating: `false` · transport: CLI `kinetic tool inspectGpuBackend` / SDK `batch([{tool: "inspectGpuBackend"}])` / MCP `tools/call {name: "inspectGpuBackend"}`
 - history: read-only, no history entry

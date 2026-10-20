@@ -5,6 +5,13 @@ description: Runs Miran Fann's design pipeline - from a structured brief to scor
 
 # The design pipeline
 
+For every video/animation task, search for suitable reference videos unless the
+user opts out, requests offline work, or limits reference research to supplied videos. Load
+the sibling **miran-reference** skill; inspect and adapt the references to this
+task, reusing an existing study during the same task.
+When the film or study is done, call `reference {action: "release", video: ID}`
+for each reference to delete its copied video and keep sheets, frames and notes.
+
 > **Lean tool list:** a call written below as `name {params}` is `miran.name({params})` inside `runScript` (or `query` when it only looks) unless `name` is in your tool list; exports, jobs, voiceover, downloads and panels stay direct calls.
 
 Miran has a design layer that turns a structured brief into a critiqued,

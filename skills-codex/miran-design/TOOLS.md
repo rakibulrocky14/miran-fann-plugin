@@ -1,7 +1,7 @@
 # The design pipeline — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-32 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+32 of 181 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## analyzeBrief
 

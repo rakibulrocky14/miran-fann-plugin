@@ -1,7 +1,7 @@
 # Animation and timing — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-18 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+19 of 181 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## setProperty
 
@@ -74,10 +74,10 @@ Examples (they run as written on the starter scene from `guide {topic:"start"}`)
   {"layer":"Accent","path":"transform.position.x","driver":{"keyframes":{"keys":[{"frame":0,"value":-420,"ease":"smooth"},{"frame":30,"value":0,"ease":"hold"},{"frame":60,"value":0,"ease":"emphasized-accelerate"},{"frame":80,"value":420}]}}}
   ```
 
-- Gentle float
+- Gentle float (a sine bob: noise this slow creeps through its lattice points)
 
   ```json
-  {"layer":"Accent","path":"transform.position.y","driver":{"noise":{"amplitude":8,"frequency":0.5,"seed":3}}}
+  {"layer":"Accent","path":"transform.position.y","driver":{"expression":{"source":"Math.sin(time * 2.5) * 14"}}}
   ```
 
 - Physical settle to the static value
@@ -132,7 +132,7 @@ Animate one property from A to B with an ease or spring. Almost everything anima
 - family: `props` · mutating: `true` · transport: CLI `kinetic tool animateProperty` / SDK `batch([{tool: "animateProperty"}])` / MCP `tools/call {name: "animateProperty"}`
 - history: creates an undo step
 - lean tool list: not listed: call it as `miran.animateProperty(...)` in runScript · inside runScript: yes
-- signature: `animateProperty {layer: string|int, property: string, arc?: number, by?: any, duration_frames?: number [frames], ease?: linear|smooth|camera|snap|ease-in|ease-out|ease-in-out|standard|…, from?: any, interp?: string|object, keyframes?: any[], orient?: boolean|number, replace?: bool = false, start_frame?: number = 0 [frame], to?: any, via?: number[][]}`
+- signature: `animateProperty {layer: string|int, property: string, arc?: number, by?: any, duration_frames?: number [frames], ease?: linear|arrive|depart|glide|easy-ease|smooth|camera|snap|…, from?: any, handoff?: bool = true, interp?: string|object, join?: bool = true, keyframes?: any[], orient?: boolean|number, replace?: bool = false, start_frame?: number = 0 [frame], to?: any, v0?: number, value_interp?: linear|log, via?: number[][]}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
@@ -147,17 +147,21 @@ Animate one property from A to B with an ease or spring. Almost everything anima
 | `orient` | boolean\|number | optional | — position: turn the layer along the path (true, or an extra angle in degrees) |
 | `start_frame` | number | optional default=0 | — Frame the move starts (default 0); before it the layer holds `from` of the earliest move |
 | `duration_frames` | number | optional | — Move length in frames (e.g. 18 = 0.6 s at 30 fps) |
-| `interp` | string\|object | optional | — Easing. A name ("smooth", "snap", "standard", "emphasized-decelerate", "expressive", "linear", "spring:snappy", ...), or {"bezier":[x1,y1,x2,y2]} (CSS cubic-bezier), or {"spring":"bouncy"|{"duration":0.5,"bounce":0.2}}. Default linear. A named spring preset settles over duration_frames with the preset's bounce; an explicit {duration, bounce} spring keeps its own duration |
+| `interp` | string\|object | optional | — Easing: an ease name (as ease), {"bezier":[x1,y1,x2,y2]} or {"spring":"bouncy"|{"duration":0.5,"bounce":0.2}}. Omitted, the move is ease-in-out. interp: "log" (or value_interp) spaces scale by ratio, timing from ease. A spring preset settles over duration_frames; an explicit {duration, bounce} keeps its own duration |
+| `value_interp` | enum["linear"|"log"] | optional | — Value spacing: linear (default) or log (constant zoom rate on scale; same as interp: "log" with ease) |
 | `replace` | boolean | optional default=false | — Remove this property's moves that overlap the new one (retime without clearAnimation) |
-| `keyframes` | array | optional | — Instead of from/to/start_frame/duration_frames: [{frame, value, ease}] or [[frame, value], ...]; chained as one move per pair (ease of the earlier key; none = standard, so ease linear for measured curves). setPropertyDriver keyframes for holds and loops (default linear) |
-| `ease` | string | optional | — Easing name (alias of interp given as a string): smooth, snap, standard, emphasized-decelerate, expressive, linear, spring:snappy, ... Default linear (constant speed). smooth is a strong expo-out (90% of the move in the first third), made for landings, not drifts: for a gentle drift use ease-in-out or standard, or linear. See guide topic=motion |
+| `handoff` | boolean | optional default=true | — Leave at the speed the property already has; false starts from rest |
+| `join` | boolean | optional default=true | — Pass a shared end point at one speed; false stops at each |
+| `v0` | number | optional | — Incoming speed (units/frame) instead of the measured one |
+| `keyframes` | array | optional | — Instead of from/to/start_frame/duration_frames: [{frame, value, ease}] or [[frame, value], ...]; chained as one move per pair (ease of the earlier key; none = standard, so ease linear for measured curves). setPropertyDriver keyframes for holds and loops (no ease = auto) |
+| `ease` | string | optional | — Easing name (alias of interp as a string; spring:<preset> too). Omitted, a single move is ease-in-out (leaves and lands at rest). arrive: a visible layer gliding into place; smooth and emphasized-decelerate: strong ease-outs (most of the move in the first third) for entrances that begin hidden. See guide topic=motion |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
 - Rise 60 px into place
 
   ```json
-  {"layer":"Headline","property":"position.y","from":-60,"to":0,"start_frame":0,"duration_frames":24,"ease":"emphasized-decelerate"}
+  {"layer":"Headline","property":"position.y","from":-60,"to":0,"start_frame":0,"duration_frames":24,"ease":"arrive"}
   ```
 
 - Fade in
@@ -241,7 +245,7 @@ Examples (they run as written on the starter scene from `guide {topic:"start"}`)
 - Swing into place on an arc (both axes, one move)
 
   ```json
-  {"layer":"Accent","property":"position","to":[300,-120],"arc":0.25,"start_frame":0,"duration_frames":26,"ease":"emphasized-decelerate"}
+  {"layer":"Accent","property":"position","to":[300,-120],"arc":0.25,"start_frame":0,"duration_frames":26,"ease":"glide"}
   ```
 
 - Fly through a point, turning with the path
@@ -615,17 +619,18 @@ CLI: `kinetic tool motionSummary --params '<json>' --workspace ./out`
 
 ## critiqueMotion
 
-How things move, like an animation director: straight diagonal travel (use arcs), constant-speed moves, entrances that accelerate into a dead stop, lockstep timing, one tempo for everything, nothing overshooting or following through, jumps, an empty first frame. Score, findings and a fix for each.
+How things move, like an animation director: straight diagonal travel (use arcs), constant-speed moves, entrances that accelerate into a dead stop, lockstep timing, one tempo for everything, nothing overshooting or following through, jumps, an empty first frame; and, from the frames themselves (the 3D camera too), jolts from rest, dead stops, speed jumps at hand-offs, creeping tails, stops on a beat, fast moves without blur. Score, findings and a fix call for each.
 
 - family: `design` · mutating: `false` · transport: CLI `kinetic tool critiqueMotion` / SDK `batch([{tool: "critiqueMotion"}])` / MCP `tools/call {name: "critiqueMotion"}`
 - history: read-only, no history entry
 - lean tool list: not listed: call it as `miran.critiqueMotion(...)` in runScript or query · inside runScript: yes
-- signature: `critiqueMotion {ignore?: array|string|int}`
+- signature: `critiqueMotion {frames?: number[] [frames], ignore?: array|string|int}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `ignore` | array\|string\|integer | optional | — Layers whose motion is intended: names or ids (reveals are skipped already) |
+| `ignore` | array\|string\|integer | optional | — Layers whose motion is intended: names or ids (reveals are skipped already); "camera" leaves the 3D camera out |
+| `frames` | array | optional | — [from, to]: check only this range of frames (a long film's result names the ranges it did not sample) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -643,7 +648,8 @@ Examples (they run as written on the starter scene from `guide {topic:"start"}`)
 
 Tips:
 
-- Findings come from the moves themselves (channels, paths, follows), so it runs in milliseconds; each gives the layer, frames and a concrete fix.
+- Findings come from the moves themselves (channels, paths, follows) and, for smoothness, from the film's own frames: where each subject layer sits on screen at every frame, and, when a layer is 3D, how the camera moves the scene (long films: the windows around moves, keys and drivers, spread over the whole film; stats.sampled_frames says how many, and a sample_cap note names the ranges the cap left out: critiqueMotion {frames:[from, to]} checks one range). It takes a second or two on a long film. Each finding gives the layer, frames and a fix that names a tool call (a batch when several properties change); apply it and run the check again.
+- Smoothness findings, judged on the frames a layer is shown (opacity 0.5 or more, on screen), so an entrance that starts hidden or off-frame is exempt from its start; speeds and lengths are judged in seconds, so 24, 30 and 60 fps get the same verdict: first_frame_jump (leaves rest with more than 3% of the move in its first frame and faster than 2x the move's average speed, or at full speed from the first frame, as linear keys are: use arrive, glide or easy-ease; strong ease-outs such as smooth and emphasized-decelerate are for layers that start hidden), dead_stop (arrives at speed and stops in one frame: glide), velocity_jump (the speed steps in one frame while moving, as when a second move takes over: auto keys on every axis that moves; a step that turns the layer round is an impact, a bounce, and is not judged), tail_crawl (more than 0.2 s at 0.6-9 px a second, which shimmers: another ease, a shorter move, or hold still; a layer that is meant to drift is marked), periodic_stop (three or more near-stops without turning round at an even beat, as lattice noise or back-to-back eased moves make: auto keys; a bob, a pendulum and a ping-pong turn round and are meant), stop_between_moves (a note: one stop between two moves the same way), fast_no_blur (a step above 2.5% of the width per frame with no motion blur, shutter or sized blur effect) and transition_peak (a frame that travels 15% of the width at 30 fps while the blur covers under 45% of it: turn comp blur on, shutter 180, or size a directional blur to it). Keyframe-driven layers are fixed on their keys (setPropertyDriver with keys), moves with animateProperty. A layer that is meant to snap (hold keys), step on twos (posterize, hold keys, posterizeTime), drift or stop on a beat is marked setLayerField {field: "intended", value: true} (a stage carries its children; ignore: ["camera"] leaves the 3D camera out); a stage's children that ride one move are one finding. The camera is judged for jolts, dead stops and blur only: a slow dolly is how a camera should move.
 - Scenery (backgrounds, rigs, adjustment layers) may drift at constant speed; subjects should not.
 - Reveals are not judged: the source of a track matte, a layer that never shows, a plate painted in the colour of what is behind it (a typing wipe's cover), and mask-path or trim-path animation. not_judged in the result names them. For anything else that is meant, pass ignore: [layer names or ids] (a name that is no layer is an error), or mark the layer once with setLayerField {field: "intended", value: true}. Its exit is not read time: text leaving with its shot is not flagged, and letters used as texture (ghost type, a wall of glyphs, faint ink) are not text.
 
@@ -666,7 +672,7 @@ Measure how much the picture moves over time: renders the range and reports, per
 | `start` | integer | optional default=0 | — First frame (default 0) |
 | `end` | integer | optional | — End frame, exclusive (default: the composition duration) |
 | `step` | integer | optional default=1 | (min=1) — Sample every Nth frame (1 = every frame; 2 halves the cost on long pieces) |
-| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto (default) renders on the GPU when an adapter exists and falls back to the CPU reference otherwise |
+| `backend` | enum["auto"|"gpu"|"cpu"] | optional default="auto" | — auto (default) renders on the GPU (Metal) when an adapter exists and on Flint, the CPU renderer, otherwise |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -762,8 +768,8 @@ Set a composition field: its length (duration in s or duration_frames; layers th
 | param | type | required/default | notes |
 |---|---|---|---|
 | `composition` | string\|integer | optional | |
-| `field` | enum["duration"|"duration_frames"|"name"|"motion_blur_enabled"|"shutter_angle"|"shutter_phase"|"motion_blur_samples"|"motion_blur_adaptive"|"background"|"transparent"|"master_gain_db"|"loudness_target"] | required | — Which composition field to set; see value |
-| `value` | any | required | — duration: seconds; duration_frames: frames; name: text. motion_blur_enabled/motion_blur_adaptive/transparent: bool. shutter_angle: degrees 1..=720 (180 = film look). shutter_phase: degrees -720..=720 like After Effects (0 = shutter centered on the frame; -90 with a 180 shutter = shutter ends on the frame). motion_blur_samples: taps 2..=64 where motion can't be measured (else 1 per 1.5 px, up to 64). background: color. master_gain_db: dB on the whole mix. loudness_target: LUFS the mix is normalised to (-14 punchy, -16 calm; true peak kept under -1 dBTP), null for off. |
+| `field` | string | required | — Which composition field to set; see value |
+| `value` | any | required | — duration: seconds; duration_frames: frames; name: text. motion_blur_enabled/motion_blur_adaptive/transparent: bool. shutter_angle: degrees 1..=720 (180 = film look). shutter_phase: degrees -720..=720 like After Effects (0 = shutter centered on the frame; -90 with a 180 shutter = shutter ends on the frame). motion_blur_samples: taps 2..=64 where motion can't be measured (else 1 per 1.5 px, up to 64). background: color. master_gain_db: dB on the whole mix. loudness_target: LUFS the mix is normalised to (-14 punchy, -16 calm; true peak kept under -1 dBTP), null for off. noise_sampler: "v1" or "v2"; "v1" keeps 0.1.5's wiggle and noise, "v2" (the default) moves across. edges: "v1" or "v2"; "v1" keeps 0.1.5's shape edges (what a project saved before 0.1.6 loads on), "v2" (the default) measures them in pixels: strokes exactly their width, a one-pixel edge at any scale. text_spring: "v1" or "v2"; "v1" keeps 0.1.5's clamped text-spring overshoot (what a project saved before 0.1.6 loads on), "v2" (the default) lets translation, scale and rotation pass rest and settle; opacity is clamped either way. text_contrast: bool, off by default; true gamma-encodes a light glyph's coverage so antialiased edges keep their ink on a dark background (opt-in 0.1.6 approximation; 2D text only, no effect on extruded 3D text or the legacy outline path). |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -791,6 +797,18 @@ Examples (they run as written on the starter scene from `guide {topic:"start"}`)
   {"field":"loudness_target","value":-14}
   ```
 
+- Move an old project to the fixed wiggle sampler
+
+  ```json
+  {"field":"noise_sampler","value":"v2"}
+  ```
+
+- Move an old project to edges in pixels
+
+  ```json
+  {"field":"edges","value":"v2"}
+  ```
+
 Tips:
 
 - Motion blur is adaptive: still frames cost one sample, measured motion one per 1.5 px of travel (up to 64); motion_blur_samples is the count where motion cannot be measured (particles, trims, animated masks).
@@ -811,7 +829,7 @@ Set a base field (enabled, name, blend_mode, opacity, in/out, is_3d, motion_blur
 | `composition` | string\|integer | optional | |
 | `layer` | string\|integer | required | |
 | `field` | string | required | — Which base field to set; see value for each field's format |
-| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. intended: bool (true: critiqueMotion leaves this layer's motion out; false clears it). behind: the cutout layer (id or name) a text sits behind (kit.textBehind sets it; critiqueLayout reports the text if it paints over that cutout); null clears. depth (an image layer, a 3D photo): {asset: gray map, white near, scale_px: 120, near: 1, far: 0} or the asset name; null clears. name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...] (frame in this composition; source_frame in the nested composition's own frames). posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
+| `value` | any | required | — position: [x, y] or [x, y, z] px from comp centre, y up. scale: number (uniform) or [sx, sy(, sz)], 1 = 100%. rotation: degrees, a number (2D spin) or [x, y, z]. anchor: [x, y] px in layer space (the pivot). opacity: 0..1. in_frame/out_frame: frames (visible when in_frame <= f < out_frame). blend_mode: normal, multiply, screen, overlay, add, darken, lighten, subtract, difference, color_dodge, color_burn, hard_light, soft_light, exclusion, hue, saturation, color, luminosity. is_3d, motion_blur_enabled, enabled, solo, locked, shy: bool. intended: bool (true: critiqueMotion leaves this layer's motion out; false clears it). behind: the cutout layer (id or name) a text sits behind (kit.textBehind sets it; critiqueLayout reports the text if it paints over that cutout); null clears. depth (an image layer, a 3D photo): {asset: gray map, white near, scale_px: 120, near: 1, far: 0} or the asset name; null clears. name: string. follow: {layer (leader; omit = own motion), delay (frames, 3), spring, amount, axes (separate dimensions: ["x", {axis:"rotation", delay, spring, amount}])}. squash: 0.5 (1 cartoon). speed: [[frame, speed], ...]. time_remap: [[frame, source_frame(, ease|"hold")], ...] (frame in this composition; source_frame in the nested composition's own frames). posterize: fps (12). echo: {count, interval, decay}. puppet: {pins: [{name, at: [x, y] layer px from its centre, y up | "top"/"left"/... | node: svg id, kind: position|bend|advanced}], starch: [{at, radius, amount}], detail: coarse|normal|fine}, then animateProperty puppet.<pin>.x / .y (.rotation, .scale for bend pins). null removes a motion field |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
 
@@ -1025,4 +1043,66 @@ Tips:
 - ops apply in order and replace the list ([] removes); trim applies just before the first repeater. Animate any operator param as op.<type>.<param> (op.repeater.copies, op.wiggle.size, op.offset.amount). guide topic=shapes has recipes.
 
 CLI: `kinetic tool setShapes --params '<json>' --workspace ./out`
+
+## motions
+
+Look up 637 motion techniques before inventing a move; get one for its Miran mapping and reference clip.
+
+- family: `content` · mutating: `false` · transport: CLI `kinetic tool motions` / SDK `batch([{tool: "motions"}])` / MCP `tools/call {name: "motions"}`
+- history: read-only, no history entry
+- lean tool list: listed (a direct call) · inside runScript: search, get, and previews already in the cache
+- signature: `motions {action?: search|get, family?: string, frames?: int [frames], id?: string, kind?: kit|effect|tool|recipe|gap, limit?: int, preview?: bool, query?: string, sheet?: string}`
+
+| param | type | required/default | notes |
+|---|---|---|---|
+| `action` | enum["search"|"get"] | optional | — get if id, else search |
+| `query` | string | optional | — words, e.g. "mask reveal" |
+| `family` | string | optional | — type, ui, transitions, data, ... |
+| `kind` | enum["kit"|"effect"|"tool"|"recipe"|"gap"] | optional | — mapping kind |
+| `limit` | integer | optional | (min=1, max=50) — results (12) |
+| `id` | string | optional | — get: an id from search |
+| `preview` | boolean | optional | — get: fetch the reference clip |
+| `frames` | integer | optional | (min=1, max=16) — get: sheet of n clip frames |
+| `sheet` | string | optional | — get: sheet path |
+
+Examples (they run as written on the starter scene from `guide {topic:"start"}`):
+
+- Families and tags: where to start
+
+  ```json
+  {}
+  ```
+
+- A launch-film move by words
+
+  ```json
+  {"query":"mask reveal","limit":5}
+  ```
+
+- Only techniques that map to a kit piece
+
+  ```json
+  {"query":"stagger","kind":"kit"}
+  ```
+
+- Only runnable recipes, in transitions
+
+  ```json
+  {"family":"transitions","kind":"recipe"}
+  ```
+
+- One technique: mapping, args, recipe, parameters
+
+  ```json
+  {"id":"wipe"}
+  ```
+
+Tips:
+
+- A kit mapping carries call, ready for a script: put your own layers in for layer, leader and textLayer. Read mapping.note first: it says where the mapping is partial (a straight edge standing in for a splatter edge).
+- Every recipe is a complete runScript body and is executed by the test suite; run it as-is on a fresh session, then adapt its constants.
+- The 128 preview clips are study material pinned to the upstream commit; fetch one with preview: true and frames: 6, then read the sheet.
+- A gap has no single call: a note starting "No preset:" lists the calls that build it, any other note names what Miran lacks. Do not dress a gap up as a kit call.
+
+CLI: `kinetic tool motions --params '<json>' --workspace ./out`
 

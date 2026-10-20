@@ -32,6 +32,14 @@ first.
 
 ## The process, in a post house's order
 
+**Reference search is the default for every footage edit and revision**, unless
+the user opts out, requests offline work, or limits references to supplied videos.
+Load the sibling **miran-reference** skill to find and inspect relevant videos
+(including public Envato previews), then adapt their useful craft to this task's
+story and requested edit. Reuse the study throughout the edit.
+When the film or study is done, call `reference {action: "release", video: ID}`
+for each reference to delete its copied video and keep sheets, frames and notes.
+
 1. **Log.** `footage index` once per clip or folder (cached until the file
    changes). Then read, never guess from file names: `map` level 0 for the
    shoot and level 1 for its shots, `search` for moments (`query: "pricing"`,
@@ -113,6 +121,14 @@ Before **any** paid call (`generateImage`, `generateVideo`, `generate`, `broll
 cheaper path, and wait for a yes. A budget named in the brief ("under $2")
 is the yes up to that figure. Fal and Replicate show no price first: pass
 `max_cost` and say it. Report what was spent at the end.
+
+Cheapest first is the order for B-roll that fills a gap. A film that would
+gain real-world presence from a generated hero shot (a person, a place, the
+product in real light) plans one or two into the board when `openSettings`
+shows an OpenRouter key; the price is one total for the whole set, asked once
+(miran-video, "Generated hero shots"). The footage rules still hold there:
+a generated person over your footage gets the same grade and grain, and the
+real footage stays the evidence.
 
 When a generate call fails, say what happened and stop there. `no-key`: the user
 adds the key (OpenRouter, fal or Replicate) in Miran Settings, so call

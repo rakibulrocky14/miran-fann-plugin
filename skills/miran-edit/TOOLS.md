@@ -1,7 +1,7 @@
 # Editing footage — tool reference (generated)
 
 Source: the runtime registry via `kinetic schemas` — do not hand-edit; run `bun scripts/gen-docs.ts`.
-16 of 178 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
+16 of 181 tools — the ones this skill teaches. The full registry lives in docs/TOOLS.md.
 
 ## footage
 
@@ -823,22 +823,42 @@ CLI: `kinetic tool place --params '<json>' --workspace ./out`
 
 ## reference
 
-Learn a reference video's style: cuts and shot lengths, transitions, motion and camera, palette and contrast, type (read on device). compare: what differs in your render, worst first, with numbers. recipe: its editing (shot lengths, transitions, cuts on the beat) for edit recreate. guide reference.
+Study video references: add a public video/page URL or workspace clip, list, sheets, frame, note, guide (recreation overlay), release, analyze, compare, recipe. For every video task, search for references unless the user opts out. guide reference.
 
 - family: `design` · mutating: `false` · transport: CLI `kinetic tool reference` / SDK `batch([{tool: "reference"}])` / MCP `tools/call {name: "reference"}`
 - history: read-only, no history entry
 - lean tool list: listed (a direct call) · inside runScript: none
-- signature: `reference {video: string, action?: analyze|compare|recipe = "analyze", against?: string, read_text?: bool = true}`
+- signature: `reference {action?: add|list|sheets|frame|note|release|remove|guide|… = "analyze", against?: string, end?: number, id?: string, interval?: number = 1, layout?: side|stack = "side", mode?: overview|interval|shots = "overview", opacity?: number = 0.5, out?: string, page?: int = 0, pages?: int = 1, read_text?: bool = true, remove?: bool, source?: string, start?: number, text?: string, title?: string, video?: string}`
 
 | param | type | required/default | notes |
 |---|---|---|---|
-| `action` | enum["analyze"|"compare"|"recipe"] | optional default="analyze" | — What to do (recipe: its editing as a recipe for edit recreate) |
-| `video` | string | required | — The reference video (in the workspace) |
-| `against` | string | optional | — compare: your video (default: a draft render of the composition) |
-| `composition` | string\|integer | optional | — compare: what to render when `against` is not given |
+| `action` | enum["add"|"list"|"sheets"|"frame"|"note"|"release"|"remove"|"guide"|"analyze"|"compare"|"recipe"] | optional default="analyze" | — guide overlays a reference for recreating; release deletes copied video, remove the study |
+| `source` | string | optional | — add: public URL or workspace video |
+| `video` | string | optional | — Reference id from add (or a workspace video) |
+| `title` | string | optional | — add: a title for this reference |
+| `mode` | enum["overview"|"interval"|"shots"] | optional default="overview" | — sheets mode; shots needs a footage index |
+| `start` | number | optional | (min=0) — sheets: first second; frame/note: timestamp |
+| `end` | number | optional | (min=0) — sheets/note: last second |
+| `interval` | number | optional default=1 | (min=0.04, max=600) — interval sheets: step [s] |
+| `page` | integer | optional default=0 | (min=0, max=1000) — sheets: page |
+| `pages` | integer | optional default=1 | (min=1, max=4) — sheets: pages per call |
+| `text` | string | optional | — note: what to learn at this timestamp |
+| `against` | string | optional | — compare: your video |
+| `composition` | string\|integer | optional | — Composition (default first) |
+| `id` | string | optional | — guide/compare: same as video |
+| `opacity` | number | optional default=0.5 | — guide opacity (0.05-1) |
+| `remove` | boolean | optional | — guide: remove instead |
+| `out` | string | optional | — compare: write the labelled side-by-side MP4 here |
+| `layout` | enum["side"|"stack"] | optional default="side" | — compare panels: side | stack |
 | `read_text` | boolean | optional default=true | — Read the type on screen (slower) |
 
 Examples (they run as written on the starter scene from `guide {topic:"start"}`):
+
+- List saved video studies
+
+  ```json
+  {"action":"list"}
+  ```
 
 - Learn a reference video's style
 
@@ -860,6 +880,9 @@ Examples (they run as written on the starter scene from `guide {topic:"start"}`)
 
 Tips:
 
+- Search for suitable reference videos for each video task unless the user opts out. The miran-reference skill teaches discovery, URL/Envato preview extraction, contact sheets and task-specific application.
+- add accepts source: a public video/page URL or workspace file. list returns saved ids; sheets and frame show the actual clip; note records what this task should adapt. Long work stays outside scripts.
+- When the film or study is done, call reference {action: "release", video: ID} for each reference: copied video is deleted; sheets, frames, notes and source links remain. remove deletes the entire study. Reference media is refused as a production asset.
 - Learn the style, not the content: take its pacing, palette, contrast and type treatment into your own concept; never copy its footage, logos or words.
 - style gives a ready start: palette, background, accent (brand {action:"save", theme}), shot length in frames at 30 fps, the main transition and the motion level.
 - compare after each pass: fix the first differences (pacing and contrast matter most), render again, compare again. Analyses are cached in reference/.
